@@ -1,0 +1,73 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable, ReplaySubject, tap } from 'rxjs';
+import { User } from 'src/app/core/user/user.types';
+import { environment } from 'src/environments/environment';
+
+const endpoint = environment.apiUrl;
+const USER_KEY: string = environment.user_key;
+
+@Injectable({
+    providedIn: 'root'
+})
+export class UserService {
+    private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
+
+    /**
+     * Constructor
+     */
+    constructor(private _httpClient: HttpClient) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Accessors
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Setter & getter for user
+     *
+     * @param value
+     */
+
+    set user(value: User) {
+        // Store the value
+        localStorage.setItem(USER_KEY, JSON.stringify(value));
+
+        // this._user.next(value);
+
+    }
+
+    get user$(): Observable<User> {
+        let value: any = localStorage.getItem(USER_KEY)
+        this._user.next(value ? JSON.parse(value) : '');
+        return this._user.asObservable();
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     * Get the current logged in user data
+     */
+    get(): Observable<User> {
+        return this._httpClient.get<User>('api/common/user').pipe(
+            tap((user) => {
+                this._user.next(user);
+            })
+        );
+    }
+
+    /**
+     * Update the user
+     *
+     * @param user
+     */
+    update(user: User): Observable<any> {
+        return this._httpClient.patch<User>('api/common/user', { user }).pipe(
+            map((response) => {
+                this._user.next(response);
+            })
+        );
+    }
+}
