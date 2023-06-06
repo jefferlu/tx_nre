@@ -7,14 +7,13 @@ import { FuseLoadingBarComponent } from '@fuse/components/loading-bar/loading-ba
     declarations: [
         FuseLoadingBarComponent
     ],
-    imports     : [
+    imports: [
         CommonModule,
         MatProgressBarModule
     ],
-    exports     : [
+    exports: [
         FuseLoadingBarComponent
     ]
 })
-export class FuseLoadingBarModule
-{
+export class FuseLoadingBarModule {
 }

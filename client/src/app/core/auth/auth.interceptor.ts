@@ -24,15 +24,11 @@ export class AuthInterceptor implements HttpInterceptor {
         let newReq = req.clone();
         if (this._cookieService.get('access') && !AuthUtils.isTokenExpired(this._cookieService.get('access'))) {
 
-            req.headers.set('Authorization', 'Bearer ' + this._cookieService.get('access'))
             newReq = req.clone({
-                setHeaders: {
-                    'Authorization': `Bearer ${this._cookieService.get('access')}`,
-                    'Session-ID': this._cookieService.get('session_id')
-                }
+                headers: req.headers.set('Authorization', `Bearer ${this._cookieService.get('access')}`)
             });
         }
-        return  next.handle(newReq).pipe(
+        return next.handle(newReq).pipe(
             catchError((error) => {
 
                 // Catch "401 Unauthorized" responses

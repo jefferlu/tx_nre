@@ -36,6 +36,8 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 # Application definition
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     # 'ACCESS_TOKEN_LIFETIME': timedelta(seconds=5),

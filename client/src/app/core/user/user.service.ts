@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';
-import { User } from 'src/app/core/user/user.types';
-import { environment } from 'src/environments/environment';
+import { User } from 'app/core/user/user.types';
+import { environment } from 'environments/environment';
 
 const endpoint = environment.apiUrl;
 const USER_KEY: string = environment.user_key;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
-import { environment } from 'src/environments/environment';
+import { environment } from 'environments/environment';
 
 import { UserService } from '../user/user.service';
 import { AuthUtils } from './auth.utils';
@@ -96,7 +96,6 @@ export class AuthService {
                 // Store the access token in the local storage
                 // this.accessToken = response.accessToken;
                 this.token = response;
-                this._cookieService.set('session_id', response.session_id)
 
                 // Set the authenticated flag to true
                 this._authenticated = true;
@@ -159,7 +158,6 @@ export class AuthService {
 
         this._cookieService.delete('access');
         this._cookieService.delete('refresh');
-        this._cookieService.delete('session_id');
 
         // Set the authenticated flag to false
         this._authenticated = false;
