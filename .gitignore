@@ -6,7 +6,7 @@
 # Node artifact files
 node_modules/
 dist/
-backend/static/
+static-root/
 
 # Compiled Java class files
 *.class
