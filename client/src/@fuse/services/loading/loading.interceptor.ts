@@ -30,12 +30,14 @@ export class FuseLoadingInterceptor implements HttpInterceptor
      */
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>
     {
+        
         // If the Auto mode is turned off, do nothing
         if ( !this.handleRequestsAutomatically )
         {
             return next.handle(req);
         }
 
+        console.log('-->loading.intercept')
         // Set the loading status to true
         this._fuseLoadingService._setLoadingStatus(true, req.url);
 
