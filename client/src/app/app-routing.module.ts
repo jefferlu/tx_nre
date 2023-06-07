@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
-import { LayoutComponent } from './layout/layout/layout.component';
+
 import { authGuard } from './core/auth/guards/auth.guard';
+import { LayoutComponent } from './layout/layout.component';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy: PreloadAllModules,
@@ -27,9 +28,15 @@ const routes: Routes = [
         canMatch: [authGuard],
         component: LayoutComponent,
         children: [
-            { path: 'nre', loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) }
+            { path: 'nre', loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
+
+            // 404 & Catch all
+            { path: '404', pathMatch: 'full', loadChildren: () => import('app/modules/auth/error-404/error-404.module').then(m => m.Error404Module) },
+            { path: '**', redirectTo: '404' }
         ]
-    }
+    },
+
+
 ];
 
 @NgModule({

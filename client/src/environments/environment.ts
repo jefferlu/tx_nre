@@ -4,7 +4,7 @@
 
 export const environment = {
     production: false,
-    user_key: 'gc_erp_user',
+    user_key: 'tx_nre',
     apiUrl: 'http://localhost:8000/api',
     staticUrl: '',
     mediaUrl: 'media/',
