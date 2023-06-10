@@ -17,6 +17,10 @@ const routes: Routes = [
     // Auth routes for guests
     {
         path: '',
+        component: LayoutComponent,
+        data: {
+            layout: 'empty'
+        },
         children: [
             { path: 'sign-in', loadChildren: () => import('app/modules/auth/sign-in/sign-in.module').then(m => m.SignInModule) }
         ]

@@ -103,7 +103,7 @@ const config = {
             },
             fontFamily: {
                 sans: `"Inter var", ${defaultTheme.fontFamily.sans.join(',')}`,
-                // mono: `"IBM Plex Mono", ${defaultTheme.fontFamily.mono.join(',')}`
+                mono: `"IBM Plex Mono", ${defaultTheme.fontFamily.mono.join(',')}`
             },
             opacity: {
                 12: '0.12',
@@ -287,8 +287,8 @@ const config = {
         require(path.resolve(__dirname, ('src/@fuse/tailwind/plugins/theming')))({ themes }),
 
         // Other third party and/or custom plugins
-        // require('@tailwindcss/typography')({modifiers: ['sm', 'lg']}),
-        // require('@tailwindcss/line-clamp')
+        require('@tailwindcss/typography')({ modifiers: ['sm', 'lg'] }),
+        // require('@tailwindcss/line-clamp')  // As of Tailwind CSS v3.3, the `@tailwindcss/line-clamp` plugin is now included by default.
     ]
 };
 

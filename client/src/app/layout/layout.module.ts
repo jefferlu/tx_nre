@@ -1,20 +1,29 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from 'app/shared/shared/shared.module';
+import { SharedModule } from 'app/shared/shared.module';
 import { LayoutComponent } from './layout.component';
-import { RouterModule } from '@angular/router';
-import { FuseLoadingBarModule } from '@fuse/components/loading-bar';
+import { EmptyLayoutModule } from './layouts/empty/empty.module';
+import { ModernLayoutModule } from './layouts/horizontal/modern/modern.module';
+
+const layoutModules = [
+    // Empty
+    EmptyLayoutModule,
+
+    // Horizontal navigation
+    ModernLayoutModule,
+
+];
 
 @NgModule({
     declarations: [
         LayoutComponent
     ],
     imports: [
-        RouterModule,
-        FuseLoadingBarModule,
         SharedModule,
+        ...layoutModules
     ],
     exports: [
         LayoutComponent,
+        ...layoutModules
     ]
 })
 export class LayoutModule { }

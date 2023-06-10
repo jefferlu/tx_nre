@@ -18,4 +18,9 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
 
         data = super().validate(attrs)
+        print('-->', self.user)
+        data['user'] = {
+            "name": self.user.email,
+            "email": self.user.email,
+        }
         return data

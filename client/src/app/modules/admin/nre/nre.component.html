@@ -1,1 +1,52 @@
-<p>nre works!</p>
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto" cdkScrollable>
+    <!-- Header -->
+    <div class="flex p-6 sm:p-10">
+        <div class="flex flex-col w-full max-w-xs sm:max-w-5xl mx-auto">
+            <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-xs sm:max-w-none">
+
+                <!-- Customer -->
+                <mat-form-field class="w-full sm:w-36 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                    <mat-select [value]="'A26'" [placeholder]="'Customer'">
+                        <mat-option value="A26">A26</mat-option>
+                        <mat-option value="select1-2">A31</mat-option>
+                        <!-- <ng-container *ngFor="let category of categories; trackBy: trackByFn">
+                        <mat-option [value]="category.slug">{{category.title}}</mat-option>
+                    </ng-container>-->
+                    </mat-select>
+                    <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon>
+                </mat-form-field>
+
+                <!-- Project -->
+                <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                    <mat-icon matPrefix fontSet="material-icons-outlined">folder_open</mat-icon>
+                    <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Project'">
+                </mat-form-field>
+
+                <!-- Power Ratio -->
+                <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                    <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
+                    <input type="number" min="0" matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
+                    <span matSuffix class="ml-2">W</span>
+                </mat-form-field>
+
+                <!-- Add product button -->
+                <button class="ml-auto mt-4 sm:mt-0" mat-flat-button [color]="'primary'" (click)="save()">
+                    <mat-icon fontIcon="save"></mat-icon>
+                    <span class="ml-2 mr-1">Save</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-auto p-6 sm:p-10">
+        <div class="flex flex-col flex-auto w-full max-w-xs sm:max-w-5xl mx-auto">
+            <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent">
+                <!-- <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:document-search'"></mat-icon> -->
+                <mat-icon matPrefix fontSet="material-icons-outlined" class="text-default icon-size-24">content_paste_search</mat-icon>
+                <div class="mt-6 text-2xl font-semibold tracking-tight text-default">No data found!</div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

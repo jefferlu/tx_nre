@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { Subject, takeUntil } from 'rxjs';
 import { FuseLoadingService } from '@fuse/services/loading';
@@ -21,7 +21,7 @@ export class FuseLoadingBarComponent implements OnChanges, OnInit, OnDestroy
     /**
      * Constructor
      */
-    constructor(private _fuseLoadingService: FuseLoadingService)
+    constructor(private _fuseLoadingService: FuseLoadingService,private cdr: ChangeDetectorRef)
     {
     }
 
@@ -66,8 +66,8 @@ export class FuseLoadingBarComponent implements OnChanges, OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((value) => {
                 this.show = value;
+                this.cdr.detectChanges();
             });
-
     }
 
     /**

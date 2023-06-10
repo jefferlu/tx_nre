@@ -20,7 +20,6 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.log('auth.interceptor…')
         let newReq = req.clone();
         if (this._cookieService.get('access') && !AuthUtils.isTokenExpired(this._cookieService.get('access'))) {
 
@@ -28,6 +27,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 headers: req.headers.set('Authorization', `Bearer ${this._cookieService.get('access')}`)
             });
         }
+        console.log('auth intercept...',req.url)
         return next.handle(newReq).pipe(
             catchError((error) => {
 

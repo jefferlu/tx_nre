@@ -4,7 +4,7 @@
 /* ----------------------------------------------------------------------------------------------------- */
 
 @import "../assets/fonts/inter/inter.css";
-
+@import 'material-icons/iconfont/material-icons.css';
 
 /* -------------------------------------------------------------------------- */
 /*  @ Form fields
@@ -45,14 +45,11 @@ form {
 
         /* Infix */
         .mat-mdc-text-field-wrapper {
-            .mat-mdc-form-field-flex {
+            /* .mat-mdc-form-field-flex {
                 .mat-mdc-form-field-infix {
                     min-height: 2.5rem;
                 }
-            }
+            } */
         }
     }
 }
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

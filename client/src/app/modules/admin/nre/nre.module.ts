@@ -1,7 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { SharedModule } from 'app/shared/shared/shared.module';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+
+import { SharedModule } from 'app/shared/shared.module';
 import { NreComponent } from './nre.component';
 
 
@@ -9,6 +15,11 @@ import { NreComponent } from './nre.component';
     declarations: [NreComponent],
     imports: [
         RouterModule.forChild([{ path: '', component: NreComponent }]),
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSelectModule,
         SharedModule
     ]
 })

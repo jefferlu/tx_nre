@@ -1,8 +1,2 @@
-<p>layout works!</p>
-<!-- Content -->
-<fuse-loading-bar></fuse-loading-bar>
-
-<div class="flex flex-col flex-auto w-full min-w-0">
-    123
-    <router-outlet *ngIf="true"></router-outlet>
-</div>
+<empty-layout *ngIf="layout === 'empty'"></empty-layout>
+<modern-layout *ngIf="layout === 'modern'"></modern-layout>
