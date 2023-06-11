@@ -1,45 +1,129 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto" cdkScrollable>
-    <!-- Header -->
-    <div class="flex p-6 sm:p-10">
-        <div class="flex flex-col w-full max-w-xs sm:max-w-5xl mx-auto">
-            <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-xs sm:max-w-none">
 
-                <!-- Customer -->
-                <mat-form-field class="w-full sm:w-36 fuse-mat-dense" [subscriptSizing]="'dynamic'">
-                    <mat-select [value]="'A26'" [placeholder]="'Customer'">
-                        <mat-option value="A26">A26</mat-option>
-                        <mat-option value="select1-2">A31</mat-option>
-                        <!-- <ng-container *ngFor="let category of categories; trackBy: trackByFn">
-                        <mat-option [value]="category.slug">{{category.title}}</mat-option>
-                    </ng-container>-->
-                    </mat-select>
-                    <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon>
-                </mat-form-field>
+    <div class="flex flex-auto px-2 sm:px-10">
+        <div class="flex flex-col flex-auto w-full mx-auto">
+            <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'">
 
-                <!-- Project -->
-                <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense" [subscriptSizing]="'dynamic'">
-                    <mat-icon matPrefix fontSet="material-icons-outlined">folder_open</mat-icon>
-                    <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Project'">
-                </mat-form-field>
+                <mat-tab label="User Input">
+                    <div class="flex flex-col w-full max-w-xs sm:max-w-5xl mx-auto">
+                        <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-xs sm:max-w-none">
 
-                <!-- Power Ratio -->
-                <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-auto fuse-mat-dense" [subscriptSizing]="'dynamic'">
-                    <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
-                    <input type="number" min="0" matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
-                    <span matSuffix class="ml-2">W</span>
-                </mat-form-field>
+                            <!-- Customer -->
+                            <mat-form-field class="w-full sm:w-36 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                                <mat-select [value]="'A26'" [placeholder]="'Customer'">
+                                    <mat-option value="A26">A26</mat-option>
+                                    <mat-option value="select1-2">A31</mat-option>
+                                    <!-- <ng-container *ngFor="let category of categories; trackBy: trackByFn">
+                                    <mat-option [value]="category.slug">{{category.title}}</mat-option>
+                                </ng-container>-->
+                                </mat-select>
+                                <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon>
+                            </mat-form-field>
 
-                <!-- Add product button -->
-                <button class="ml-auto sm:ml-4 mt-4 sm:mt-0" mat-flat-button [color]="'primary'" (click)="save()">
-                    <mat-icon fontIcon="save"></mat-icon>
-                    <span class="ml-2 mr-1">Save</span>
-                </button>
-            </div>
-        </div>
-    </div>
+                            <!-- Project -->
+                            <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                                <mat-icon matPrefix fontSet="material-icons-outlined">folder_open</mat-icon>
+                                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Project'">
+                            </mat-form-field>
 
-    <div class="flex flex-auto p-6 sm:p-10">
-        <div class="flex flex-col flex-auto w-full max-w-xs sm:max-w-5xl mx-auto">
+                            <!-- Power Ratio -->
+                            <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-auto fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                                <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
+                                <input type="number" min="0" matInput [formControl]="searchInputControl" [autocomplete]="'off'"
+                                    [placeholder]="'Power Ratio'">
+                                <span matSuffix class="ml-2">W</span>
+                            </mat-form-field>
+
+                            <!-- Add product button -->
+                            <button class="ml-auto sm:ml-4 mt-4 sm:mt-0" mat-flat-button [color]="'primary'" (click)="save()">
+                                <mat-icon fontIcon="save"></mat-icon>
+                                <span class="ml-2 mr-1">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </mat-tab>
+
+                <mat-tab label="Equipment">
+                    <ng-template matTabContent>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
+                            <!-- Summary -->
+                            <div class="flex flex-col flex-auto p-6 bg-card border rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Summary</div>
+                                    <div class="ml-2 -mt-2 -mr-3">
+
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">21</div>
+                                    <div class="text-lg font-medium text-blue-600 dark:text-blue-500">Due Tasks</div>
+                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                        <div class="text-md font-medium truncate">Completed:</div>
+                                        <div class="ml-1.5 text-lg font-semibold">13</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Overdue -->
+                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Overdue</div>
+                                    <div class="ml-2 -mt-2 -mr-3">
+
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">17</div>
+                                    <div class="text-lg font-medium text-red-600 dark:text-red-500">Tasks</div>
+                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                        <div class="text-md font-medium truncate">From yesterday:</div>
+                                        <div class="ml-1.5 text-lg font-semibold">9</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Issues -->
+                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Issues</div>
+                                    <div class="ml-2 -mt-2 -mr-3">
+
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-amber-500">24</div>
+                                    <div class="text-lg font-medium text-amber-600 dark:text-amber-500">Open</div>
+                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                        <div class="text-md font-medium truncate">Closed today:</div>
+                                        <div class="ml-1.5 text-lg font-semibold">19</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Features -->
+                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                                <div class="flex items-start justify-between">
+                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Features</div>
+                                    <div class="ml-2 -mt-2 -mr-3">
+
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-center mt-2">
+                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500">38</div>
+                                    <div class="text-lg font-medium text-green-600 dark:text-green-500">Proposals</div>
+                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                        <div class="text-md font-medium truncate">Implemented:</div>
+                                        <div class="ml-1.5 text-lg font-semibold">16</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+                <mat-tab label="Man Power">
+                </mat-tab>
+
+            </mat-tab-group>
+
             <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent">
                 <!-- <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:document-search'"></mat-icon> -->
                 <mat-icon matPrefix fontSet="material-icons-outlined" class="text-slate-500 icon-size-24">content_paste_search</mat-icon>
@@ -47,6 +131,4 @@
             </div>
         </div>
     </div>
-
-
 </div>

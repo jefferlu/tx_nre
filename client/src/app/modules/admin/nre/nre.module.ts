@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { SharedModule } from 'app/shared/shared.module';
 import { NreComponent } from './nre.component';
@@ -20,6 +21,7 @@ import { NreComponent } from './nre.component';
         MatInputModule,
         MatButtonModule,
         MatSelectModule,
+        MatTabsModule,
         SharedModule
     ]
 })

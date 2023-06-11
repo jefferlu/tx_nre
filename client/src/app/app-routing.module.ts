@@ -33,6 +33,11 @@ const routes: Routes = [
         component: LayoutComponent,
         children: [
             { path: 'nre', loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
+            // Profile
+            { path: 'profile', loadChildren: () => import('app/modules/admin/profile/profile.module').then(m => m.ProfileModule) },
+
+            // Settings
+            { path: 'settings', loadChildren: () => import('app/modules/admin/settings/settings.module').then(m => m.SettingsModule) },
 
             // 404 & Catch all
             { path: '404', pathMatch: 'full', loadChildren: () => import('app/modules/auth/error-404/error-404.module').then(m => m.Error404Module) },
