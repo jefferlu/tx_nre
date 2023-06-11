@@ -23,14 +23,14 @@
                 </mat-form-field>
 
                 <!-- Power Ratio -->
-                <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-auto fuse-mat-dense" [subscriptSizing]="'dynamic'">
                     <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
                     <input type="number" min="0" matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
                     <span matSuffix class="ml-2">W</span>
                 </mat-form-field>
 
                 <!-- Add product button -->
-                <button class="ml-auto mt-4 sm:mt-0" mat-flat-button [color]="'primary'" (click)="save()">
+                <button class="ml-auto sm:ml-4 mt-4 sm:mt-0" mat-flat-button [color]="'primary'" (click)="save()">
                     <mat-icon fontIcon="save"></mat-icon>
                     <span class="ml-2 mr-1">Save</span>
                 </button>
@@ -42,8 +42,8 @@
         <div class="flex flex-col flex-auto w-full max-w-xs sm:max-w-5xl mx-auto">
             <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent">
                 <!-- <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:document-search'"></mat-icon> -->
-                <mat-icon matPrefix fontSet="material-icons-outlined" class="text-default icon-size-24">content_paste_search</mat-icon>
-                <div class="mt-6 text-2xl font-semibold tracking-tight text-default">No data found!</div>
+                <mat-icon matPrefix fontSet="material-icons-outlined" class="text-slate-500 icon-size-24">content_paste_search</mat-icon>
+                <div class="mt-6 text-2xl font-semibold tracking-tight text-slate-500"></div>
             </div>
         </div>
     </div>
