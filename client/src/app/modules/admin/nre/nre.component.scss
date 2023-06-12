@@ -1,0 +1,17 @@
+table.cust-table {
+    th {
+        @apply border-2 border-slate-500 p-0.5;
+    }
+
+    td {
+        @apply border border-slate-500 p-0.5;
+
+        .checkbox{
+            @apply w-4 h-4 mt-1;
+        }
+    }
+
+    .edit {
+        @apply text-center bg-blue-100 whitespace-nowrap w-18;
+    }
+}

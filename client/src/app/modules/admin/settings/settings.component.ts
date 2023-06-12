@@ -54,7 +54,18 @@ export class SettingsComponent implements OnInit, OnDestroy {
                 title: '3rd party Test fee',
                 description: 'Manage 3rd party Test fee'
             },
-          
+            {
+                id: 'notifications',
+                icon: 'heroicons_outline:bell',
+                title: 'Notifications',
+                description: 'Manage when you\'ll be notified on which channels'
+            },
+            {
+                id: 'team',
+                icon: 'heroicons_outline:user-group',
+                title: 'Account',
+                description: 'Manage your existing team and change roles/permissions'
+            }
         ];
 
         // Subscribe to media changes
