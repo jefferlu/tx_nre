@@ -13,11 +13,12 @@ class OptionalSlashRouter(DefaultRouter):
 
 
 router = OptionalSlashRouter()
-# router.register(r'test', views.UserViewSet, basename='test')
+router.register(r'customer', views.CustomerViewSet)
+router.register(r'record', views.RecordViewSet)
 
 urlpatterns = [
     path('login', views.TokenObtainView.as_view(), name='token_obtain_pair'),
     path('token/refresh', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    
-    # path('', include(router.urls)),
+
+    path('', include(router.urls)),
 ]

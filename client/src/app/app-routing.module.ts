@@ -4,6 +4,7 @@ import { ExtraOptions, PreloadAllModules, RouterModule, Routes } from '@angular/
 
 import { authGuard } from './core/auth/guards/auth.guard';
 import { LayoutComponent } from './layout/layout.component';
+import { nreResolver } from './modules/admin/nre/nre.resolver';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy: PreloadAllModules,
@@ -32,7 +33,7 @@ const routes: Routes = [
         canMatch: [authGuard],
         component: LayoutComponent,
         children: [
-            { path: 'nre', loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
+            { path: 'nre', resolve: { initData: nreResolver }, loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
             // Profile
             { path: 'profile', loadChildren: () => import('app/modules/admin/profile/profile.module').then(m => m.ProfileModule) },
 

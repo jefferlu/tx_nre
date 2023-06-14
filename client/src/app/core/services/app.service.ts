@@ -17,8 +17,8 @@ export class AppService {
         private _fuseConfirmationService: FuseConfirmationService
     ) { }
 
-    execute_kw(request: any): Observable<any> {
-        return this._httpClient.post(`${endpoint}/login`, request).pipe(
+    get(url): Observable<any> {
+        return this._httpClient.get(`${endpoint}/${url}`).pipe(
             switchMap((response: any) => {
                 return of(response);
             }),
@@ -38,5 +38,7 @@ export class AppService {
             })
         );
     }
+
+
 
 }

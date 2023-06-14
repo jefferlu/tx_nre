@@ -35,7 +35,7 @@ export class FuseLoadingInterceptor implements HttpInterceptor
         {
             return next.handle(req);
         }
-         console.log('loading intercept...',req.url)
+         
         // Set the loading status to true
         this._fuseLoadingService._setLoadingStatus(true, req.url);
 

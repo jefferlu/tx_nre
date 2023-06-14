@@ -126,7 +126,7 @@ export class FuseLoadingService
             console.error('The request URL must be provided!');
             return;
         }
-
+8
         if ( status === true )
         {
             this._urlMap.set(url, status);

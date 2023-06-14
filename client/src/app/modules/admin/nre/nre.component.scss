@@ -6,12 +6,16 @@ table.cust-table {
     td {
         @apply border border-slate-500 p-0.5;
 
-        .checkbox{
+        .checkbox {
             @apply w-4 h-4 mt-1;
         }
     }
 
     .edit {
         @apply text-center bg-blue-100 whitespace-nowrap w-18;
+
+        input {
+            @apply w-full text-center truncate;
+        }
     }
 }

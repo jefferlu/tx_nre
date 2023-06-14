@@ -4,13 +4,11 @@
         <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-xs sm:max-w-none">
 
             <!-- Customer -->
-            <mat-form-field class="w-full sm:w-36 fuse-mat-dense" [subscriptSizing]="'dynamic'">
-                <mat-select [value]="'A26'" [placeholder]="'Customer'">
-                    <mat-option value="A26">A26</mat-option>
-                    <mat-option value="select1-2">A31</mat-option>
-                    <!-- <ng-container *ngFor="let category of categories; trackBy: trackByFn">
-                    <mat-option [value]="category.slug">{{category.title}}</mat-option>
-                </ng-container>-->
+            <mat-form-field class="w-full sm:w-40 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+                <mat-select [placeholder]="'Customer'" [(ngModel)]="selectedCustomer">
+                    <ng-container *ngFor="let cust of customers;let idx=index">
+                        <mat-option [value]="idx">{{cust.name}}</mat-option>
+                    </ng-container>
                 </mat-select>
                 <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon>
             </mat-form-field>
@@ -22,7 +20,7 @@
             </mat-form-field>
 
             <!-- Search button -->
-            <button class="ml-auto sm:ml-4 mt-4 sm:mt-0 bg-accent" mat-flat-button [color]="'primary'" (click)="save()">
+            <button class="ml-auto sm:ml-4 mt-4 sm:mt-0 bg-accent" mat-flat-button [color]="'primary'" (click)="search()">
                 <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
                 <span class="ml-2 mr-1">Search</span>
             </button>
@@ -49,6 +47,23 @@
                 <mat-tab label="User Input">
 
                     <div class="relative overflow-x-auto">
+                        <table class="cust-table">
+                            
+                            <!-- <tr>
+                                <td rowspan="3">11</td>
+                                <td>22</td>
+                                <td>33</td>
+                            </tr>
+                            <tr>
+                                <td>44</td>
+                                <td>55</td>
+                            </tr>
+                            <tr>
+
+                                <td>77</td>
+                                <td>88</td>
+                            </tr> -->
+                        </table>
                         <table class="table-auto w-full border-2 border-slate-500 cust-table">
 
                             <thead>
@@ -85,25 +100,67 @@
                                     <th>Test UUT</th>
                                     <th>Need Test</th>
                                     <th>Regression Rate</th>
-
                                 </tr>
 
                             </thead>
                             <tbody>
+                                <ng-container *ngFor="let func of cust?.functions">
+                                    <ng-container *ngFor="let item of func.test_items;let idx=index">
+                                        <ng-container *ngIf="idx==0">
+                                            <tr>
+                                                <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                                                <td>{{item.name}}</td>
+                                                <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                                    <td class="edit"><input type="number"></td>
+                                                    <td class="edit"><input type="checkbox"></td>
+                                                    <td class="edit"><input type="number"></td>
+                                                </ng-container>
+
+                                            </tr>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="idx>0">
+                                            <tr>
+                                                <td>{{item.name}}</td>
+                                                <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                                    <td class="edit"><input type="number"></td>
+                                                    <td class="edit"><input type="checkbox"></td>
+                                                    <td class="edit"><input type="number"></td>
+                                                </ng-container>
+                                            </tr>
+                                        </ng-container>
+
+                                    </ng-container>
+                                    <tr>
+
+                                    </tr>
+                                </ng-container>
+
+
                                 <tr>
                                     <td class="text-center" rowspan="3">Reliability</td>
                                     <td>REL0973 Baseline</td>
-                                </tr>
-                                <tr>
-                                    <td>REL0978 Input Power Cycle</td>
                                     <td class="edit">
-                                        <input type="number" class="w-full">
+                                        <input type="number">
                                     </td>
                                     <td class="edit">
                                         <input type="checkbox">
                                     </td>
                                     <td class="edit">
-                                        <input type="number" class="w-full">
+                                        <input type="number">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>REL0978 Input Power Cycle</td>
+                                    <td class="edit">
+                                        <input type="number">
+                                    </td>
+                                    <td class="edit">
+                                        <input type="checkbox">
+                                    </td>
+                                    <td class="edit">
+                                        <input type="number">
                                     </td>
                                 </tr>
                                 <tr>
