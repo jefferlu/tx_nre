@@ -21,7 +21,7 @@
                     <!-- Email field -->
                     <mat-form-field class="w-full fuse-mat-dense">
                         <mat-label>Email address</mat-label>
-                        <input id="email" matInput [formControlName]="'email'">
+                        <input id="email" matInput [formControlName]="'email'" placeholder="email">
                         <mat-error *ngIf="signInForm.get('email').hasError('required')">
                             Email address is required
                         </mat-error>

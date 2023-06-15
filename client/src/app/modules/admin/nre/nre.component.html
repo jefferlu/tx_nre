@@ -1,11 +1,11 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto" cdkScrollable>
 
-    <div class="flex flex-col w-full py-2 sm:py-6 max-w-xs sm:max-w-6xl mx-auto">
-        <div class="flex flex-col sm:flex-row items-center justify-between w-full max-w-xs sm:max-w-none">
+    <div class="flex flex-col w-full py-2 sm:pt-10 max-w-xs sm:max-w-6xl mx-auto">
+        <form [formGroup]="form" class="flex flex-col sm:flex-row items-center justify-between w-full max-w-xs sm:max-w-none">
 
             <!-- Customer -->
-            <mat-form-field class="w-full sm:w-40 fuse-mat-dense" [subscriptSizing]="'dynamic'">
-                <mat-select [placeholder]="'Customer'" [(ngModel)]="selectedCustomer">
+            <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
+                <mat-select [placeholder]="'Customer'" [formControlName]="'customer'">
                     <ng-container *ngFor="let cust of customers;let idx=index">
                         <mat-option [value]="idx">{{cust.name}}</mat-option>
                     </ng-container>
@@ -14,42 +14,50 @@
             </mat-form-field>
 
             <!-- Project -->
-            <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense" [subscriptSizing]="'dynamic'">
+            <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">
                 <mat-icon matPrefix fontSet="material-icons-outlined">folder_open</mat-icon>
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Project'">
+                <input matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'">
+                <mat-error *ngIf="form.get('project').hasError('required')">
+                    Project is required
+                </mat-error>
+                <mat-error *ngIf="form.get('project').hasError('invalidName')">
+                    Special characters are not allowed!
+                </mat-error>
             </mat-form-field>
 
+
             <!-- Search button -->
-            <button class="ml-auto sm:ml-4 mt-4 sm:mt-0 bg-accent" mat-flat-button [color]="'primary'" (click)="search()">
+            <button class="ml-auto sm:ml-4 mt-4 sm:-mt-5 bg-accent" mat-flat-button [color]="'primary'" (click)="search()">
                 <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
                 <span class="ml-2 mr-1">Search</span>
             </button>
 
             <!-- Power Ratio -->
-            <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-auto fuse-mat-dense" [subscriptSizing]="'dynamic'">
+            <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-auto fuse-mat-dense">
                 <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
-                <input type="number" min="0" matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
+                <input type="number" min="0" matInput [formControlName]="'power_ratio'" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
                 <span matSuffix class="ml-2">W</span>
             </mat-form-field>
 
             <!-- Save button-->
-            <button class="ml-auto sm:ml-4 mt-4 sm:mt-0" mat-flat-button [color]="'primary'" (click)="save()">
+            <button class="ml-auto sm:ml-4 mt-4 sm:-mt-5" mat-flat-button [color]="'primary'" (click)="save()">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
-        </div>
-    </div>
+        </form>
+    
+</div>
 
-    <div class="flex flex-auto">
-        <div class="flex flex-col flex-auto w-full mx-auto">
-            <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'">
+<div class="flex flex-auto">
+    <div class="flex flex-col flex-auto w-full mx-auto">
+        <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'">
 
-                <mat-tab label="User Input">
+            <mat-tab label="User Input">
 
-                    <div class="relative overflow-x-auto">
-                        <table class="cust-table">
-                            
-                            <!-- <tr>
+                <div class="relative overflow-x-auto">
+                    <table class="cust-table">
+
+                        <!-- <tr>
                                 <td rowspan="3">11</td>
                                 <td>22</td>
                                 <td>33</td>
@@ -63,215 +71,211 @@
                                 <td>77</td>
                                 <td>88</td>
                             </tr> -->
-                        </table>
-                        <table class="table-auto w-full border-2 border-slate-500 cust-table">
+                    </table>
+                    <table class="table-auto w-full border-2 border-slate-500 cust-table">
 
-                            <thead>
-                                <tr>
-                                    <th colspan="17">Reliability/S&V Test</th>
-                                </tr>
-                                <tr>
-                                    <th rowspan="2">Function</th>
-                                    <th rowspan="2">Test Item</th>
-                                    <th colspan="3">Concept</th>
-                                    <th colspan="3">BU</th>
-                                    <th colspan="3">CT</th>
-                                    <th colspan="3">NT</th>
-                                    <th colspan="3">OT</th>
-                                </tr>
+                        <thead>
+                            <tr>
+                                <th colspan="17">Reliability/S&V Test</th>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">Function</th>
+                                <th rowspan="2">Test Item</th>
+                                <th colspan="3">Concept</th>
+                                <th colspan="3">BU</th>
+                                <th colspan="3">CT</th>
+                                <th colspan="3">NT</th>
+                                <th colspan="3">OT</th>
+                            </tr>
 
-                                <tr>
-                                    <th>Test UUT</th>
-                                    <th>Need Test</th>
-                                    <th>Regression Rate</th>
+                            <tr>
+                                <th>Test UUT</th>
+                                <th>Need Test</th>
+                                <th>Regression Rate</th>
 
-                                    <th>Test UUT</th>
-                                    <th>Need Test</th>
-                                    <th>Regression Rate</th>
+                                <th>Test UUT</th>
+                                <th>Need Test</th>
+                                <th>Regression Rate</th>
 
-                                    <th>Test UUT</th>
-                                    <th>Need Test</th>
-                                    <th>Regression Rate</th>
+                                <th>Test UUT</th>
+                                <th>Need Test</th>
+                                <th>Regression Rate</th>
 
-                                    <th>Test UUT</th>
-                                    <th>Need Test</th>
-                                    <th>Regression Rate</th>
+                                <th>Test UUT</th>
+                                <th>Need Test</th>
+                                <th>Regression Rate</th>
 
-                                    <th>Test UUT</th>
-                                    <th>Need Test</th>
-                                    <th>Regression Rate</th>
-                                </tr>
+                                <th>Test UUT</th>
+                                <th>Need Test</th>
+                                <th>Regression Rate</th>
+                            </tr>
 
-                            </thead>
-                            <tbody>
-                                <ng-container *ngFor="let func of cust?.functions">
-                                    <ng-container *ngFor="let item of func.test_items;let idx=index">
-                                        <ng-container *ngIf="idx==0">
-                                            <tr>
-                                                <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                                <td>{{item.name}}</td>
-                                                <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                                    <td class="edit"><input type="number"></td>
-                                                    <td class="edit"><input type="checkbox"></td>
-                                                    <td class="edit"><input type="number"></td>
-                                                </ng-container>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let func of customer?.functions">
+                                <ng-container *ngFor="let item of func.test_items;let idx=index">
 
-                                            </tr>
+                                    <tr *ngIf="idx==0">
+                                        <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                                        <td>{{item.name}}</td>
+                                        <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                            <td class="edit"><input type="number"></td>
+                                            <td class="edit"><input type="checkbox"></td>
+                                            <td class="edit"><input type="number"></td>
                                         </ng-container>
-
-                                        <ng-container *ngIf="idx>0">
-                                            <tr>
-                                                <td>{{item.name}}</td>
-                                                <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                                    <td class="edit"><input type="number"></td>
-                                                    <td class="edit"><input type="checkbox"></td>
-                                                    <td class="edit"><input type="number"></td>
-                                                </ng-container>
-                                            </tr>
-                                        </ng-container>
-
-                                    </ng-container>
-                                    <tr>
-
                                     </tr>
+
+                                    <tr *ngIf="idx>0">
+                                        <td>{{item.name}}</td>
+                                        <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                            <td class="edit"><input type="number"></td>
+                                            <td class="edit"><input type="checkbox"></td>
+                                            <td class="edit"><input type="number"></td>
+                                        </ng-container>
+                                    </tr>
+
                                 </ng-container>
-
-
                                 <tr>
-                                    <td class="text-center" rowspan="3">Reliability</td>
-                                    <td>REL0973 Baseline</td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="checkbox">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
+
                                 </tr>
-
-                                <tr>
-                                    <td>REL0978 Input Power Cycle</td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="checkbox">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>REL0983 System Restart</td>
-                                </tr>
+                            </ng-container>
 
 
-                                <tr>
-                                    <td class="text-center" rowspan="3">S&V</td>
-                                    <td>SV0102 Enterprise Non-Operational Random Vibration Test Procedure</td>
-                                </tr>
-                                <tr>
-                                    <td>SV0105 Enterprise Operational Random Vibration Test Procedure</td>
-                                </tr>
-                                <tr>
-                                    <td>SV0106 Enterprise Non-Operational Half Sine Shock Test Procedure</td>
-                                </tr>
+                            <tr>
+                                <td class="text-center" rowspan="3">Reliability</td>
+                                <td>REL0973 Baseline</td>
+                                <td class="edit">
+                                    <input type="number">
+                                </td>
+                                <td class="edit">
+                                    <input type="checkbox">
+                                </td>
+                                <td class="edit">
+                                    <input type="number">
+                                </td>
+                            </tr>
 
-                            </tbody>
-                        </table>
-                    </div>
+                            <tr>
+                                <td>REL0978 Input Power Cycle</td>
+                                <td class="edit">
+                                    <input type="number">
+                                </td>
+                                <td class="edit">
+                                    <input type="checkbox">
+                                </td>
+                                <td class="edit">
+                                    <input type="number">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>REL0983 System Restart</td>
+                            </tr>
 
-                </mat-tab>
 
-                <mat-tab label="Equipment">
-                    <ng-template matTabContent>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
-                            <!-- Summary -->
-                            <div class="flex flex-col flex-auto p-6 bg-card border rounded-2xl overflow-hidden">
-                                <div class="flex items-start justify-between">
-                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Summary</div>
-                                    <div class="ml-2 -mt-2 -mr-3">
+                            <tr>
+                                <td class="text-center" rowspan="3">S&V</td>
+                                <td>SV0102 Enterprise Non-Operational Random Vibration Test Procedure</td>
+                            </tr>
+                            <tr>
+                                <td>SV0105 Enterprise Operational Random Vibration Test Procedure</td>
+                            </tr>
+                            <tr>
+                                <td>SV0106 Enterprise Non-Operational Half Sine Shock Test Procedure</td>
+                            </tr>
 
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-center mt-2">
-                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">21</div>
-                                    <div class="text-lg font-medium text-blue-600 dark:text-blue-500">Due Tasks</div>
-                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                                        <div class="text-md font-medium truncate">Completed:</div>
-                                        <div class="ml-1.5 text-lg font-semibold">13</div>
-                                    </div>
+                        </tbody>
+                    </table>
+                </div>
+
+            </mat-tab>
+
+            <mat-tab label="Equipment">
+                <ng-template matTabContent>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0">
+                        <!-- Summary -->
+                        <div class="flex flex-col flex-auto p-6 bg-card border rounded-2xl overflow-hidden">
+                            <div class="flex items-start justify-between">
+                                <div class="text-lg font-medium tracking-tight leading-6 truncate">Summary</div>
+                                <div class="ml-2 -mt-2 -mr-3">
+
                                 </div>
                             </div>
-                            <!-- Overdue -->
-                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
-                                <div class="flex items-start justify-between">
-                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Overdue</div>
-                                    <div class="ml-2 -mt-2 -mr-3">
-
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-center mt-2">
-                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">17</div>
-                                    <div class="text-lg font-medium text-red-600 dark:text-red-500">Tasks</div>
-                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                                        <div class="text-md font-medium truncate">From yesterday:</div>
-                                        <div class="ml-1.5 text-lg font-semibold">9</div>
-                                    </div>
+                            <div class="flex flex-col items-center mt-2">
+                                <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500">21</div>
+                                <div class="text-lg font-medium text-blue-600 dark:text-blue-500">Due Tasks</div>
+                                <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                    <div class="text-md font-medium truncate">Completed:</div>
+                                    <div class="ml-1.5 text-lg font-semibold">13</div>
                                 </div>
                             </div>
-                            <!-- Issues -->
-                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
-                                <div class="flex items-start justify-between">
-                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Issues</div>
-                                    <div class="ml-2 -mt-2 -mr-3">
-
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-center mt-2">
-                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-amber-500">24</div>
-                                    <div class="text-lg font-medium text-amber-600 dark:text-amber-500">Open</div>
-                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                                        <div class="text-md font-medium truncate">Closed today:</div>
-                                        <div class="ml-1.5 text-lg font-semibold">19</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Features -->
-                            <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
-                                <div class="flex items-start justify-between">
-                                    <div class="text-lg font-medium tracking-tight leading-6 truncate">Features</div>
-                                    <div class="ml-2 -mt-2 -mr-3">
-
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-center mt-2">
-                                    <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500">38</div>
-                                    <div class="text-lg font-medium text-green-600 dark:text-green-500">Proposals</div>
-                                    <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
-                                        <div class="text-md font-medium truncate">Implemented:</div>
-                                        <div class="ml-1.5 text-lg font-semibold">16</div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
-                    </ng-template>
-                </mat-tab>
+                        <!-- Overdue -->
+                        <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                            <div class="flex items-start justify-between">
+                                <div class="text-lg font-medium tracking-tight leading-6 truncate">Overdue</div>
+                                <div class="ml-2 -mt-2 -mr-3">
 
-                <mat-tab label="Man Power">
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center mt-2">
+                                <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500">17</div>
+                                <div class="text-lg font-medium text-red-600 dark:text-red-500">Tasks</div>
+                                <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                    <div class="text-md font-medium truncate">From yesterday:</div>
+                                    <div class="ml-1.5 text-lg font-semibold">9</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Issues -->
+                        <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                            <div class="flex items-start justify-between">
+                                <div class="text-lg font-medium tracking-tight leading-6 truncate">Issues</div>
+                                <div class="ml-2 -mt-2 -mr-3">
 
-                </mat-tab>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center mt-2">
+                                <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-amber-500">24</div>
+                                <div class="text-lg font-medium text-amber-600 dark:text-amber-500">Open</div>
+                                <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                    <div class="text-md font-medium truncate">Closed today:</div>
+                                    <div class="ml-1.5 text-lg font-semibold">19</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Features -->
+                        <div class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden">
+                            <div class="flex items-start justify-between">
+                                <div class="text-lg font-medium tracking-tight leading-6 truncate">Features</div>
+                                <div class="ml-2 -mt-2 -mr-3">
 
-            </mat-tab-group>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-center mt-2">
+                                <div class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500">38</div>
+                                <div class="text-lg font-medium text-green-600 dark:text-green-500">Proposals</div>
+                                <div class="flex items-baseline justify-center w-full mt-5 text-secondary">
+                                    <div class="text-md font-medium truncate">Implemented:</div>
+                                    <div class="ml-1.5 text-lg font-semibold">16</div>
+                                </div>
+                            </div>
+                        </div>
 
-            <!-- <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent">
+                    </div>
+                </ng-template>
+            </mat-tab>
+
+            <mat-tab label="Man Power">
+
+            </mat-tab>
+
+        </mat-tab-group>
+
+        <!-- <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent">
                 <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:document-search'"></mat-icon>
                 <mat-icon matPrefix fontSet="material-icons-outlined" class="text-slate-500 icon-size-24">content_paste_search</mat-icon>
                 <div class="mt-6 text-2xl font-semibold tracking-tight text-slate-500"></div>
             </div> -->
-        </div>
     </div>
+</div>
 </div>

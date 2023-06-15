@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+
 
 import { AppService } from 'app/core/services/app.service';
 import { NreService } from './nre.service';
 import { Subject, takeUntil } from 'rxjs';
+import { SpecialAlpha } from 'app/core/validators/special-alpha';
 
 @Component({
     selector: 'app-nre',
@@ -16,19 +18,31 @@ export class NreComponent implements OnInit {
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    form: UntypedFormGroup;
     customers: any;
     selectedCustomer: any;
-    cust: any;
+    customer: any;
 
     data: any;
-    searchInputControl: UntypedFormControl = new UntypedFormControl();
+
 
     constructor(
+        private _formBuilder: UntypedFormBuilder,
         private _changeDetectorRef: ChangeDetectorRef,
+        private _specialApha: SpecialAlpha,
         private _nreService: NreService
+
     ) { }
 
     ngOnInit(): void {
+
+        this.form = this._formBuilder.group({
+            customer: [0, [Validators.required]],
+            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]],
+            power_ratio: [],           
+
+        });
+
         // Get the categories
         this._nreService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -51,12 +65,21 @@ export class NreComponent implements OnInit {
     }
 
     search(): void {
-        this.cust = this.customers[this.selectedCustomer];
+        this.customer = this.customers[this.form.value.customer];
+        const power_ratio = this.form.get('power_ratio');
 
-        console.log(this.cust);
+        this._nreService.getProject(this.form.value.project).subscribe({
+            next: (res) => {
+                if (res) {
+                    power_ratio.setValue(res.power_ratio);
+                    this._changeDetectorRef.markForCheck();
+                }
+            }
+        });
     }
 
     save(): void {
+
 
     }
 }

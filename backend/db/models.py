@@ -71,6 +71,7 @@ class Record(models.Model):
 
     class Meta:
         db_table = 'nre_record'
+        unique_together = ('project', 'test_item',)
 
     def __str__(self):
         return '%s-%s-%s' % (self.test_item.function.customer.name, self.test_item.function.name, self.test_item.name)

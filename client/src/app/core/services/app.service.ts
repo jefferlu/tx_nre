@@ -17,8 +17,11 @@ export class AppService {
         private _fuseConfirmationService: FuseConfirmationService
     ) { }
 
-    get(url): Observable<any> {
-        return this._httpClient.get(`${endpoint}/${url}`).pipe(
+    get(method, slug?): Observable<any> {
+        console.log(method, slug)
+        let url = slug ? `${endpoint}/${method}/${slug}` : `${endpoint}/${method}`;
+
+        return this._httpClient.get(url).pipe(
             switchMap((response: any) => {
                 return of(response);
             }),
@@ -27,7 +30,7 @@ export class AppService {
                 console.log(e.error.detail ? e.error.detail : e.message)
                 const dialogRef = this._fuseConfirmationService.open({
                     // title: e.statusText,
-                    title: `API Error: execute_kw()`,
+                    title: `API Error: get()`,
                     message: e.error.detail ? e.error.detail : e.message,
                     actions: { cancel: { show: false } }
                 });

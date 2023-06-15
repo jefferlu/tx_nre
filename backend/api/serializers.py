@@ -61,12 +61,22 @@ class CustomerSerializer(serializers.ModelSerializer):
         serializer = FunctionSerializer(instance=qs, many=True, read_only=True)
         return serializer.data
 
-class RecordSerializer(serializers.ModelSerializer):
-    # customer = serializers.SerializerMethodField()
 
+class RecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Record
         fields = '__all__'
 
-    
+
+class ProjectSerializer(serializers.ModelSerializer):
+    records = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Project
+        fields = '__all__'
+
+    def get_records(self, project):
+        qs = models.Record.objects.filter(project=project)
+        serializer = RecordSerializer(instance=qs, many=True, read_only=True)
+        return serializer.data
