@@ -112,7 +112,7 @@
 
                         </thead>
                         <tbody>
-                            <ng-container *ngFor="let func of customer?.functions">
+                            <ng-container *ngFor="let func of data?.functions">
                                 <ng-container *ngFor="let item of func.test_items;let idx=index">
 
                                     <tr *ngIf="idx==0">
@@ -120,7 +120,7 @@
                                         <td>{{item.name}}</td>
                                         <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
                                             <td class="edit"><input type="number"></td>
-                                            <td class="edit"><input type="checkbox"></td>
+                                            <td class="edit"><input type="checkbox" class="hover:cursor-pointer"></td>
                                             <td class="edit"><input type="number"></td>
                                         </ng-container>
                                     </tr>
@@ -129,7 +129,7 @@
                                         <td>{{item.name}}</td>
                                         <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
                                             <td class="edit"><input type="number"></td>
-                                            <td class="edit"><input type="checkbox"></td>
+                                            <td class="edit"><input type="checkbox" class="hover:cursor-pointer"></td>
                                             <td class="edit"><input type="number"></td>
                                         </ng-container>
                                     </tr>

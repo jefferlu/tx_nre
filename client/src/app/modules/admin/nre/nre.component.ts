@@ -20,8 +20,8 @@ export class NreComponent implements OnInit {
 
     form: UntypedFormGroup;
     customers: any;
+    records: any;
     selectedCustomer: any;
-    customer: any;
 
     data: any;
 
@@ -39,7 +39,7 @@ export class NreComponent implements OnInit {
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
             project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]],
-            power_ratio: [],           
+            power_ratio: [],
 
         });
 
@@ -48,8 +48,9 @@ export class NreComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 this.customers = res.results;
+                
                 // Mark for check
-                this._changeDetectorRef.markForCheck();
+                // this._changeDetectorRef.markForCheck();
             });
 
         let request = {
@@ -65,21 +66,29 @@ export class NreComponent implements OnInit {
     }
 
     search(): void {
-        this.customer = this.customers[this.form.value.customer];
+        this.data = this.customers[this.form.value.customer];
         const power_ratio = this.form.get('power_ratio');
 
         this._nreService.getProject(this.form.value.project).subscribe({
             next: (res) => {
                 if (res) {
-                    power_ratio.setValue(res.power_ratio);
-                    this._changeDetectorRef.markForCheck();
+
+                    power_ratio.setValue(+res.power_ratio);
+                    console.log(res.records, this.data)
+                    // this._changeDetectorRef.markForCheck();
+
                 }
             }
         });
     }
 
     save(): void {
+        console.log(this.form.value)
 
+    }
 
+    private concatData(data) {
+
+        return data;
     }
 }

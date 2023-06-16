@@ -63,6 +63,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class RecordSerializer(serializers.ModelSerializer):
+    
+    customer =serializers.ReadOnlyField(source='test_item.function.customer.name')
 
     class Meta:
         model = models.Record
