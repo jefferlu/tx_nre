@@ -1,6 +1,16 @@
 from django.db import models
 
 
+class Customer(models.Model):
+    name = models.CharField(max_length=120, verbose_name='name')
+
+    class Meta:
+        db_table = 'nre_customer'
+
+    def __str__(self):
+        return '%s' % self.name
+
+
 class Project(models.Model):
     name = models.CharField(max_length=120, verbose_name='name')
     power_ratio = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,  verbose_name='power ratio')
@@ -10,16 +20,6 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Customer(models.Model):
-    name = models.CharField(max_length=120, verbose_name='name')
-
-    class Meta:
-        db_table = 'nre_customer'
-
-    def __str__(self):
-        return '%s' % self.name
 
 
 class Function(models.Model):

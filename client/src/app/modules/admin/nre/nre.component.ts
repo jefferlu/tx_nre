@@ -48,7 +48,7 @@ export class NreComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 this.customers = res.results;
-                
+
                 // Mark for check
                 // this._changeDetectorRef.markForCheck();
             });
@@ -66,6 +66,9 @@ export class NreComponent implements OnInit {
     }
 
     search(): void {
+
+        if (this.form.invalid) return;
+
         this.data = this.customers[this.form.value.customer];
         const power_ratio = this.form.get('power_ratio');
 
@@ -73,9 +76,19 @@ export class NreComponent implements OnInit {
             next: (res) => {
                 if (res) {
 
+                    for (let i in this.data.functions) {
+                        let fun = this.data.functions[i]
+                        for (let j in fun.test_items) {
+                            let item = fun.test_items[j];
+                            let record = res.records.find(e => e.test_item === item.id)
+                            if (record) {
+                                this.data.functions[i].test_items[j].record = record;
+                            }
+                        }
+                    }
                     power_ratio.setValue(+res.power_ratio);
                     console.log(res.records, this.data)
-                    // this._changeDetectorRef.markForCheck();
+                    this._changeDetectorRef.markForCheck();
 
                 }
             }
@@ -83,7 +96,7 @@ export class NreComponent implements OnInit {
     }
 
     save(): void {
-        console.log(this.form.value)
+        console.log(this.data)
 
     }
 
