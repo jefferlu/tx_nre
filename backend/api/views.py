@@ -26,13 +26,10 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, mixins.Re
     # pagination_class = None
 
 
-class ProjectViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     if (not settings.DEBUG):
         permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ProjectSerializer
     queryset = models.Project.objects.all()
     lookup_field = 'name'
 
-
-
-    

@@ -25,23 +25,43 @@ export class AppService {
             switchMap((response: any) => {
                 return of(response);
             }),
+            // catchError((e) => {
+
+            //     console.log(e.error.detail ? e.error.detail : e.message)
+            //     const dialogRef = this._fuseConfirmationService.open({
+            //         // title: e.statusText,
+            //         title: `API Error: get()`,
+            //         message: e.error.detail ? e.error.detail : e.message,
+            //         actions: { cancel: { show: false } }
+            //     });
+
+            //     // Return false
+            //     return of(false)
+            // })
+        );
+    }
+
+    post(method: string, request: any): Observable<any> {
+
+        return this._httpClient.post(`${endpoint}/${method}`, request).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            }),
             catchError((e) => {
                 console.log(e)
                 console.log(e.error.detail ? e.error.detail : e.message)
                 const dialogRef = this._fuseConfirmationService.open({
                     // title: e.statusText,
-                    title: `API Error: get()`,
+                    title: `API Error: post()`,
                     message: e.error.detail ? e.error.detail : e.message,
                     actions: { cancel: { show: false } }
                 });
 
                 // Return false
-
                 return of(false)
             })
         );
     }
-
 
 
 }

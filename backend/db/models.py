@@ -46,7 +46,7 @@ class TestItem(models.Model):
 
 
 class Record(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='project')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='project', related_name='records', null=True, blank=True)
     test_item = models.ForeignKey(TestItem, on_delete=models.CASCADE, verbose_name='test_item')
 
     concept_test_uut = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='concept_test_uut')
@@ -71,7 +71,7 @@ class Record(models.Model):
 
     class Meta:
         db_table = 'nre_record'
-        unique_together = ('project', 'test_item',)
+        # unique_together = ('project', 'test_item',)
 
     def __str__(self):
         return '%s-%s-%s' % (self.test_item.function.customer.name, self.test_item.function.name, self.test_item.name)

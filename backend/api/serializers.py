@@ -21,7 +21,6 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
 
         data = super().validate(attrs)
-        print('-->', self.user)
         data['user'] = {
             "name": self.user.email,
             "email": self.user.email,
@@ -77,20 +76,22 @@ class CustomerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_functions(self, customer):
-        print('function-->', self)
         qs = models.Function.objects.filter(customer=customer)
         serializer = FunctionSerializer(instance=qs, many=True, read_only=True)
         return serializer.data
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    records = serializers.SerializerMethodField()
+    records = RecordSerializer(many=True)
 
     class Meta:
         model = models.Project
         fields = '__all__'
 
-    def get_records(self, project):
-        qs = models.Record.objects.filter(project=project)
-        serializer = RecordSerializer(instance=qs, many=True, read_only=True)
-        return serializer.data
+    def create(self, validated_data):
+        print('create', validated_data)
+        records = validated_data.pop('records')        
+        project_instance = models.Project.objects.create(**validated_data)
+        for r in records:
+            models.Record.objects.create(project=project_instance, **r)
+        return project_instance

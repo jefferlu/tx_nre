@@ -35,4 +35,12 @@ export class NreService {
             })
         );
     }
+
+    createProject(request): Observable<any> {
+        return this._appService.post('project', request).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            })
+        );
+    }
 }
