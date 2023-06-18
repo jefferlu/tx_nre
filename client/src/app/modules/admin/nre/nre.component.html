@@ -137,26 +137,26 @@
                                                     <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                                     <td>{{item.name}}</td>
                                                     <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                                        <td class="edit"><input type="number" [(ngModel)]="item.record[n + '_test_uut']"
-                                                                (change)="change()">
+                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']"
+                                                                (change)="change()" numeric-only>
                                                         </td>
                                                         <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
                                                                 [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
-                                                        <td class="edit"><input type="number" [(ngModel)]="item.record[n + '_regression_rate']"
-                                                                (change)="change()"></td>
+                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']"
+                                                                (change)="change()" numeric-two-digit></td>
                                                     </ng-container>
                                                 </tr>
 
                                                 <tr *ngIf="idx>0">
                                                     <td>{{item.name}}</td>
                                                     <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                                        <td class="edit"><input type="number" [(ngModel)]="item.record[n + '_test_uut']"
-                                                                (change)="change()">
+                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']"
+                                                                (change)="change()" numeric-only>
                                                         </td>
                                                         <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
                                                                 [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
-                                                        <td class="edit"><input type="number" [(ngModel)]="item.record[n + '_regression_rate']"
-                                                                (change)="change()"></td>
+                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']"
+                                                                (change)="change()" numeric-two-digit></td>
                                                     </ng-container>
                                                 </tr>
 
@@ -212,6 +212,7 @@
                                 </tr> -->
 
                                     </tbody>
+
                                 </table>
                             </div>
                         </ng-template>

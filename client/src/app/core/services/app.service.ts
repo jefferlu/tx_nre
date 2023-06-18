@@ -18,7 +18,7 @@ export class AppService {
     ) { }
 
     get(method, slug?): Observable<any> {
-        console.log(method, slug)
+        
         let url = slug ? `${endpoint}/${method}/${slug}` : `${endpoint}/${method}`;
 
         return this._httpClient.get(url).pipe(

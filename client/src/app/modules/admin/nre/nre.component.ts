@@ -28,7 +28,8 @@ export class NreComponent implements OnInit {
     project = {
         id: null,
         name: '',
-        power_ratio: null
+        power_ratio: null,
+        customer: null
     };
 
     // status
@@ -74,6 +75,16 @@ export class NreComponent implements OnInit {
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+
+        if (this._nreService.project) {
+            this.project = this._nreService.project;
+            this.form.get('project').setValue(this.project.name);
+            this.form.get('power_ratio').setValue(this.project.power_ratio);
+            this.form.get('customer').setValue(this.project.customer);
+            this.search()
+        }
+        
+        console.log(this._nreService.project);
 
     }
 
@@ -129,8 +140,10 @@ export class NreComponent implements OnInit {
                     this.project = {
                         id: res.id,
                         name: res.name,
-                        power_ratio: res.power_ratio
+                        power_ratio: res.power_ratio,
+                        customer: this.form.value.customer
                     }
+                    this._nreService.project = this.project;
 
                     this.status = {
                         label: 'Archived',
@@ -148,8 +161,10 @@ export class NreComponent implements OnInit {
                     this.project = {
                         id: null,
                         name: this.form.value.project,
-                        power_ratio: null
+                        power_ratio: null,
+                        customer: this.form.value.customer
                     }
+                    this._nreService.project = this.project;
 
                     this.status = {
                         label: 'New',
@@ -206,7 +221,8 @@ export class NreComponent implements OnInit {
                     this.project = {
                         id: res.id,
                         name: res.name,
-                        power_ratio: res.power_ratio
+                        power_ratio: res.power_ratio,
+                        customer: this.form.value.customer
                     }
 
                     // let dialogRef = this._fuseConfirmationService.open({
@@ -216,7 +232,7 @@ export class NreComponent implements OnInit {
                     //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
                     // });
 
-                    
+
                     this._changeDetectorRef.markForCheck();
                 },
                 error: e => { }

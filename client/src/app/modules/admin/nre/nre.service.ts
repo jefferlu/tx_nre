@@ -8,7 +8,7 @@ import { BehaviorSubject, Observable, tap, switchMap, of } from 'rxjs';
 export class NreService {
 
     private _customers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
-    private _project: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
+    private _project: any;
 
     constructor(private _appService: AppService) { }
 
@@ -16,8 +16,13 @@ export class NreService {
         return this._customers.asObservable();
     }
 
-    get project$(): Observable<any> {
-        return this._customers.asObservable();
+
+    set project(data: any) {
+        this._project = data;
+    }
+
+    get project() {
+        return this._project;
     }
 
     getCustomers(): Observable<any> {
