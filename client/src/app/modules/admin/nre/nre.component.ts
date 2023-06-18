@@ -38,6 +38,11 @@ export class NreComponent implements OnInit {
         label: ''
     }
 
+    // tab
+    tab = {
+        index: 0
+    }
+
 
     data: any;
 
@@ -55,7 +60,7 @@ export class NreComponent implements OnInit {
 
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
-            project: ['proj-demo-2', [Validators.required, this._specialApha.nameValidator]],
+            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]],
             power_ratio: [],
 
         });
@@ -73,8 +78,11 @@ export class NreComponent implements OnInit {
     }
 
     onSearch(): void {
+
+        if (this.form.invalid) return;
+
         if (this.status.change) {
-            const dialogRef = this._fuseConfirmationService.open({
+            let dialogRef = this._fuseConfirmationService.open({
                 // title: e.statusText,
                 // title: 'Hint',
                 message: `The project has been modified and has not been archived yet. Are you sure to discard it?`,
@@ -97,8 +105,6 @@ export class NreComponent implements OnInit {
     }
 
     search(): void {
-
-        if (this.form.invalid) return;
 
         this.status.label = undefined;
 
@@ -132,8 +138,6 @@ export class NreComponent implements OnInit {
                         color: 'green'
                     }
 
-                    console.log(res.records, this.data)
-
                     this._changeDetectorRef.markForCheck();
                 }
             },
@@ -147,8 +151,11 @@ export class NreComponent implements OnInit {
                         power_ratio: null
                     }
 
-                    this.status.label = 'New';
-                    this.status.color = 'blue';
+                    this.status = {
+                        label: 'New',
+                        change: false,
+                        color: 'blue'
+                    }
 
                     power_ratio.setValue(null);
 
@@ -169,15 +176,16 @@ export class NreComponent implements OnInit {
 
     save(): void {
         console.log(this.data)
-
+        this.tab.index = 1;
         // Update
         if (this.project.id) {
+
         }
         // Crate
         else {
             let request = {
                 'name': this.project.name,
-                'power_ratio': this.project.power_ratio,
+                'power_ratio': this.form.value.power_ratio,
                 'records': []
             }
             for (let func of this.data.functions) {
@@ -201,7 +209,14 @@ export class NreComponent implements OnInit {
                         power_ratio: res.power_ratio
                     }
 
-                    console.log(res)
+                    // let dialogRef = this._fuseConfirmationService.open({
+                    //     title: 'Hint',
+                    //     message: `Save completed.`,
+                    //     icon: { color: 'success' },
+                    //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                    // });
+
+                    
                     this._changeDetectorRef.markForCheck();
                 },
                 error: e => { }

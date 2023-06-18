@@ -49,23 +49,23 @@ class Record(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='project', related_name='records', null=True, blank=True)
     test_item = models.ForeignKey(TestItem, on_delete=models.CASCADE, verbose_name='test_item')
 
-    concept_test_uut = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='concept_test_uut')
+    concept_test_uut = models.IntegerField(null=True, blank=True, verbose_name='concept_test_uut')
     concept_need_test = models.BooleanField(default=False, verbose_name='concept_need_test')
     concept_regression_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='concept_regression_rate')
 
-    bu_test_uut = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='bu_test_uut')
+    bu_test_uut = models.IntegerField(null=True, blank=True, verbose_name='bu_test_uut')
     bu_need_test = models.BooleanField(default=False, verbose_name='bu_need_test')
     bu_regression_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='bu_regression_rate')
 
-    ct_test_uut = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='ct_test_uut')
+    ct_test_uut = models.IntegerField(null=True, blank=True, verbose_name='ct_test_uut')
     ct_need_test = models.BooleanField(default=False, verbose_name='ct_need_test')
     ct_regression_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='ct_regression_rate')
 
-    nt_test_uut = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='nt_test_uut')
+    nt_test_uut = models.IntegerField(null=True, blank=True, verbose_name='nt_test_uut')
     nt_need_test = models.BooleanField(default=False, verbose_name='nt_need_test')
     nt_regression_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='nt_regression_rate')
 
-    ot_test_uut = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='ot_test_uut')
+    ot_test_uut = models.IntegerField(null=True, blank=True, verbose_name='ot_test_uut')
     ot_need_test = models.BooleanField(default=False, verbose_name='ot_need_test')
     ot_regression_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='ot_regression_rate')
 

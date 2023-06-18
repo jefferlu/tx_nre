@@ -18,4 +18,8 @@ table.cust-table {
             @apply w-full text-center truncate;
         }
     }
+
+    .view{
+        @apply text-center
+    }
 }
