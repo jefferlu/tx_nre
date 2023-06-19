@@ -24,29 +24,23 @@ export class NreComponent implements OnInit {
     records: any;
     selectedCustomer: any;
 
-    // project info
-    project = {
-        id: null,
-        name: '',
-        power_ratio: null,
-        customer: null
-    };
-
-    // status
-    status = {
-        change: false,
-        color: 'green',
-        label: ''
+    page = {
+        project: {
+            id: null,
+            name: '',
+            power_ratio: null,
+            customer: null
+        },
+        status: {
+            label: null,
+            color: null,
+            change: false,
+        },
+        tab: {
+            index: 0
+        },
+        data: null
     }
-
-    // tab
-    tab = {
-        index: 0
-    }
-
-
-    data: any;
-
 
     constructor(
         private _formBuilder: UntypedFormBuilder,
@@ -63,7 +57,6 @@ export class NreComponent implements OnInit {
             customer: [0, [Validators.required]],
             project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]],
             power_ratio: [],
-
         });
 
         // Get the categories
@@ -77,13 +70,14 @@ export class NreComponent implements OnInit {
             });
 
         if (this._nreService.project) {
-            this.project = this._nreService.project;
-            this.form.get('project').setValue(this.project.name);
-            this.form.get('power_ratio').setValue(this.project.power_ratio);
-            this.form.get('customer').setValue(this.project.customer);
-            this.search()
+            this.page.project = this._nreService.project;
+
+            this.form.get('project').setValue(this.page.project.name);
+            this.form.get('power_ratio').setValue(this.page.project.power_ratio);
+            this.form.get('customer').setValue(this.page.project.customer);
+            this.search();
         }
-        
+
         console.log(this._nreService.project);
 
     }
@@ -92,14 +86,9 @@ export class NreComponent implements OnInit {
 
         if (this.form.invalid) return;
 
-        if (this.status.change) {
+        if (this.page.status.change) {
             let dialogRef = this._fuseConfirmationService.open({
-                // title: e.statusText,
-                // title: 'Hint',
-                message: `The project has been modified and has not been archived yet. Are you sure to discard it?`,
-                // message: e.error.detail ? e.error.detail : e.message,
-
-                actions: { confirm: {}, cancel: {} }
+                message: `The project has been modified and has not been archived yet. Are you sure to discard it?`
             });
 
             dialogRef.afterClosed().subscribe(result => {
@@ -108,7 +97,6 @@ export class NreComponent implements OnInit {
                     this._changeDetectorRef.markForCheck();
                 }
             });
-
         }
         else {
             this.search();
@@ -117,35 +105,38 @@ export class NreComponent implements OnInit {
 
     search(): void {
 
-        this.status.label = undefined;
-
-        this.data = JSON.parse(JSON.stringify(this.customers[this.form.value.customer]));
-        const power_ratio = this.form.get('power_ratio');
+        this.page.status.label = undefined;
+        this.page.data = JSON.parse(JSON.stringify(this.customers[this.form.value.customer]));
 
         this._nreService.getProject(this.form.value.project).subscribe({
             next: (res) => {
                 if (res) {
 
-                    for (let i in this.data.functions) {
-                        let fun = this.data.functions[i]
+                    for (let i in this.page.data.functions) {
+                        let fun = this.page.data.functions[i]
                         for (let j in fun.test_items) {
                             let item = fun.test_items[j];
                             let record = res.records.find(e => e.test_item === item.id)
                             if (record) {
-                                this.data.functions[i].test_items[j].record = record;
+                                console.log('-->',record)
+                                this.page.data.functions[i].test_items[j].record = record;
                             }
                         }
                     }
-                    power_ratio.setValue(+res.power_ratio);
-                    this.project = {
+
+                    this.page.project = {
                         id: res.id,
                         name: res.name,
-                        power_ratio: res.power_ratio,
+                        power_ratio: +res.power_ratio,
                         customer: this.form.value.customer
                     }
-                    this._nreService.project = this.project;
 
-                    this.status = {
+                    this.form.get('power_ratio').setValue(this.page.project.power_ratio);
+
+                    // keep page data
+                    this._nreService.project = this.page.project;
+
+                    this.page.status = {
                         label: 'Archived',
                         change: false,
                         color: 'green'
@@ -158,30 +149,21 @@ export class NreComponent implements OnInit {
                 if (e.status === 404) {
                     // console.log(e.error.detail ? e.error.detail : e.message)
 
-                    this.project = {
+                    this.page.project = {
                         id: null,
                         name: this.form.value.project,
                         power_ratio: null,
                         customer: this.form.value.customer
                     }
-                    this._nreService.project = this.project;
+                    this._nreService.project = this.page.project;
 
-                    this.status = {
+                    this.page.status = {
                         label: 'New',
                         change: false,
                         color: 'blue'
                     }
 
-                    power_ratio.setValue(null);
-
-                    // const dialogRef = this._fuseConfirmationService.open({
-                    //     // title: e.statusText,
-                    //     title: 'Hint',
-                    //     message: `This project does not exist and the template has been automatically loaded.`,
-                    //     // message: e.error.detail ? e.error.detail : e.message,
-                    //     icon: { color: 'info' },
-                    //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                    // });
+                    this.form.get('power_ratio').setValue(null);
 
                     this._changeDetectorRef.markForCheck();
                 }
@@ -190,35 +172,46 @@ export class NreComponent implements OnInit {
     }
 
     save(): void {
-        console.log(this.data)
-        this.tab.index = 1;
-        // Update
-        if (this.project.id) {
 
+        this.page.tab.index = 1;
+
+        let request = {
+            'id': null,
+            'name': this.page.project.name,
+            'power_ratio': this.form.value.power_ratio,
+            'records': []
+        }
+        for (let func of this.page.data.functions) {
+            for (let item of func.test_items) {
+                item.record.test_item = item.id;
+                request.records.push(item.record)
+            }
+        }
+        console.log(request)
+        // Update
+        if (this.page.project.id) {
+            request.id = this.page.project.id
+            
+            this._nreService.updateProject(this.page.project.name, request).subscribe({
+                next: (res) => {
+                    // console.log(res)
+                },
+                error: e => { }
+            })
         }
         // Crate
         else {
-            let request = {
-                'name': this.project.name,
-                'power_ratio': this.form.value.power_ratio,
-                'records': []
-            }
-            for (let func of this.data.functions) {
-                for (let item of func.test_items) {
-                    item.record.test_item = item.id;
-                    request.records.push(item.record)
-                }
-            }
+
             console.log('request-->', request)
             this._nreService.createProject(request).subscribe({
                 next: (res) => {
-                    this.status = {
+                    this.page.status = {
                         change: false,
                         color: 'green',
                         label: 'Archived'
                     }
 
-                    this.project = {
+                    this.page.project = {
                         id: res.id,
                         name: res.name,
                         power_ratio: res.power_ratio,
@@ -242,10 +235,11 @@ export class NreComponent implements OnInit {
     }
 
     change(): void {
-        this.status.change = true;
-        this.status.label = 'Modified';
-        this.status.color = 'red';
-        console.log('change', this.status.change)
+        this.page.status = {
+            label: 'Modified',
+            color: 'red',
+            change: false
+        }
     }
 
     private concatData(data) {

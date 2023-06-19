@@ -41,8 +41,16 @@ export class NreService {
         );
     }
 
-    createProject(request): Observable<any> {
+    createProject(request: any): Observable<any> {
         return this._appService.post('project', request).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            })
+        );
+    }
+
+    updateProject(slug: string, request: any): Observable<any> {
+        return this._appService.put('project', slug, request).pipe(
             switchMap((response: any) => {
                 return of(response);
             })

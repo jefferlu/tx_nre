@@ -35,7 +35,7 @@
             <!-- Power Ratio -->
             <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-auto fuse-mat-dense">
                 <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
-                <input type="number" min="0" matInput [formControlName]="'power_ratio'" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
+                <input numeric-two-digit matInput [formControlName]="'power_ratio'" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
                 <span matSuffix class="ml-2">W</span>
             </mat-form-field>
 
@@ -50,33 +50,33 @@
     <div class="flex flex-auto">
         <div class="flex flex-col flex-auto w-full mx-auto">
 
-            <ng-container *ngIf="data">
+            <ng-container *ngIf="page.data">
 
                 <!-- Project and Status -->
                 <div class="flex flex-col sm:flex-row sm:items-center min-w-0 px-6 pb-3 sm:px-8">
                     <div class="flex">
                         <mat-icon class="icon-size-8" fontSet="material-icons-outlined">business_center</mat-icon>
-                        <div class="text-2xl font-semibold tracking-tight leading-7 md:leading-snug ml-2 sm:mt-1">{{project.name}}</div>
+                        <div class="text-2xl font-semibold tracking-tight leading-7 md:leading-snug ml-2 sm:mt-1">{{page.project.name}}</div>
                     </div>
 
 
-                    <ng-container *ngIf="project.power_ratio">
+                    <ng-container *ngIf="page.project.power_ratio">
                         <div class="flex sm:ml-5">
                             <mat-icon class="icon-size-8" fontSet="material-icons-outlined">bolt</mat-icon>
-                            <div class="text-2xl font-semibold tracking-tight leading-7 md:leading-snug sm:mt-1">{{project.power_ratio}} (W)</div>
+                            <div class="text-2xl font-semibold tracking-tight leading-7 md:leading-snug sm:mt-1">{{page.project.power_ratio}} (W)</div>
                         </div>
 
                     </ng-container>
 
                     <div class="flex min-w-0 sm:ml-2">
-                        <div *ngIf="status.label" class="flex items-end ml-4 py-1 px-3 rounded-full leading-normal sm:mt-1"
-                            [ngClass]="'text-'+status.color+'-600 bg-'+status.color+'-100'">
-                            <span class="text-sm font-medium whitespace-nowrap">{{status.label}}</span>
+                        <div *ngIf="page.status.label" class="flex items-end ml-4 py-1 px-3 rounded-full leading-normal sm:mt-1"
+                            [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'">
+                            <span class="text-sm font-medium whitespace-nowrap">{{page.status.label}}</span>
                         </div>
                     </div>
 
                     <div class="ml-auto">
-                        <button *ngIf="tab.index==1" class="ml-auto sm:ml-4 mt-4 sm:-mt-5 text-green-600" mat-flat-button (click)="onExport()">
+                        <button *ngIf="page.tab.index==1" class="ml-auto sm:ml-4 mt-4 sm:-mt-5 text-green-600" mat-flat-button (click)="onExport()">
                             <mat-icon [svgIcon]="'heroicons_solid:arrow-down-tray'"></mat-icon>
                             <span class="ml-2 mr-1">Export</span>
                         </button>
@@ -84,7 +84,7 @@
 
                 </div>
 
-                <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="tab.index">
+                <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index">
 
                     <mat-tab label="User Input">
                         <ng-template matTabContent>
@@ -130,7 +130,7 @@
 
                                     </thead>
                                     <tbody>
-                                        <ng-container *ngFor="let func of data?.functions">
+                                        <ng-container *ngFor="let func of page.data?.functions">
                                             <ng-container *ngFor="let item of func.test_items;let idx=index">
 
                                                 <tr *ngIf="idx==0">
@@ -266,7 +266,7 @@
                                             <td>7</td>
                                         </tr> -->
 
-                                        <ng-container *ngFor="let func of data?.functions">
+                                        <ng-container *ngFor="let func of page.data?.functions">
                                             <ng-container *ngFor="let item of func.test_items;let idx=index">
                                                 <tr *ngIf="idx==0">
                                                     <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
@@ -305,7 +305,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <ng-container *ngFor="let func of data?.functions">
+                                        <ng-container *ngFor="let func of page.data?.functions">
                                             <tr>
                                                 <td class="view">{{func.name}}</td>
                                                 <td class="view"></td>
@@ -324,7 +324,7 @@
                 </mat-tab-group>
             </ng-container>
 
-            <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent" *ngIf="!data">
+            <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent" *ngIf="!page.data">
                 <!-- <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:document-search'"></mat-icon> -->
                 <mat-icon matPrefix fontSet="material-icons-outlined" class="text-slate-500 icon-size-24">content_paste_search</mat-icon>
                 <div class="mt-6 text-2xl font-semibold tracking-tight text-slate-500"></div>

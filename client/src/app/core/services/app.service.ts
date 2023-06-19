@@ -18,7 +18,7 @@ export class AppService {
     ) { }
 
     get(method, slug?): Observable<any> {
-        
+
         let url = slug ? `${endpoint}/${method}/${slug}` : `${endpoint}/${method}`;
 
         return this._httpClient.get(url).pipe(
@@ -63,5 +63,26 @@ export class AppService {
         );
     }
 
+    put(method: string, slug: string, request: any): Observable<any> {
+
+        return this._httpClient.put(`${endpoint}/${method}/${slug}`, request).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            }),
+            catchError((e) => {
+                console.log(e)
+                console.log(e.error.detail ? e.error.detail : e.message)
+                const dialogRef = this._fuseConfirmationService.open({
+                    // title: e.statusText,
+                    title: `API Error: post()`,
+                    message: e.error.detail ? e.error.detail : e.message,
+                    actions: { cancel: { show: false } }
+                });
+
+                // Return false
+                return of(false)
+            })
+        );
+    }
 
 }

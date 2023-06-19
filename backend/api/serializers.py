@@ -33,6 +33,7 @@ class RecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Record
         fields = '__all__'
+        extra_kwargs = {'id': {'read_only': False, 'required': False}}
 
 
 class TestItemSerializer(serializers.ModelSerializer):
@@ -88,10 +89,59 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = models.Project
         fields = '__all__'
 
+    def validate(self, attrs):
+        return attrs
+
     def create(self, validated_data):
-        print('create', validated_data)
-        records = validated_data.pop('records')        
+
+        records_data = validated_data.pop('records', None)
         project_instance = models.Project.objects.create(**validated_data)
-        for r in records:
-            models.Record.objects.create(project=project_instance, **r)
+
+        if records_data is not None:
+            for r in records_data:
+                r['test_item'] = r['test_item'].id
+                serializer = RecordSerializer(data=r)
+
+                if serializer.is_valid():
+                    print('check')
+                    serializer.save(project=project_instance)
+
         return project_instance
+
+    # def create(self, validated_data):
+    #     print('create', validated_data)
+    #     records = validated_data.pop('records')
+
+    #     project_instance = models.Project.objects.create(**validated_data)
+    #     for r in records:
+    #         print(r)
+    #         models.Record.objects.create(project=project_instance, **r)
+    #     return project_instance
+
+    def update(self, instance, validated_data):
+
+        records_data = validated_data.pop('records', None)
+        # print(records_data)
+        if records_data is not None:
+            for r in records_data:
+                r['project'] = r.get('project').id
+                r['test_item'] = r.get('test_item').id
+                
+                record_id = r.get('id', None)
+                print(record_id)
+                if record_id:
+                    record_instance = models.Record.objects.get(id=record_id, project=instance)
+                    serializer = RecordSerializer(record_instance, data=r)
+                    if serializer.is_valid():
+                        print('save', record_id)
+                        serializer.save()
+                    print(serializer.errors,)
+                else:
+                    serializer = RecordSerializer(data=r)
+
+                    if serializer.is_valid():
+                        serializer.save(project=instance)
+                    
+
+        # return super().update(instance, validated_data)
+        return instance
