@@ -124,24 +124,22 @@ class ProjectSerializer(serializers.ModelSerializer):
         # print(records_data)
         if records_data is not None:
             for r in records_data:
-                r['project'] = r.get('project').id
+                if r.get('project', None) is not None:
+                    r['project'] = r.get('project', None).id
+
                 r['test_item'] = r.get('test_item').id
-                
+
                 record_id = r.get('id', None)
-                print(record_id)
                 if record_id:
                     record_instance = models.Record.objects.get(id=record_id, project=instance)
                     serializer = RecordSerializer(record_instance, data=r)
                     if serializer.is_valid():
-                        print('save', record_id)
                         serializer.save()
-                    print(serializer.errors,)
                 else:
                     serializer = RecordSerializer(data=r)
 
                     if serializer.is_valid():
                         serializer.save(project=instance)
-                    
 
-        # return super().update(instance, validated_data)
-        return instance
+        return super().update(instance, validated_data)
+        # return instance

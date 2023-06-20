@@ -1,175 +1,198 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto" cdkScrollable>
 
-    <div class="flex flex-col w-full py-2 sm:pt-10 max-w-xs sm:max-w-6xl mx-auto">
-        <form [formGroup]="form" class="flex flex-col sm:flex-row items-center justify-between w-full max-w-xs sm:max-w-none">
-
-            <!-- Customer -->
-            <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
-                <mat-select [placeholder]="'Customer'" [formControlName]="'customer'">
-                    <ng-container *ngFor="let cust of customers;let idx=index">
-                        <mat-option [value]="idx">{{cust.name}}</mat-option>
-                    </ng-container>
-                </mat-select>
-                <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon>
-            </mat-form-field>
-
-            <!-- Project -->
-            <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">
-                <mat-icon matPrefix fontSet="material-icons-outlined">business_center</mat-icon>
-                <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'">
-                <mat-error *ngIf="form.get('project').hasError('required')">
-                    Project is required
-                </mat-error>
-                <mat-error *ngIf="form.get('project').hasError('invalidName')">
-                    Special characters are not allowed!
-                </mat-error>
-            </mat-form-field>
-
-
-            <!-- Search button -->
-            <button class="ml-auto sm:ml-4 mt-4 sm:-mt-5 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
-                <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                <span class="ml-2 mr-1">Search</span>
-            </button>
-
-            <!-- Power Ratio -->
-            <mat-form-field class="w-full sm:w-48 mt-4 sm:mt-0 sm:ml-auto fuse-mat-dense">
-                <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
-                <input numeric-two-digit matInput [formControlName]="'power_ratio'" [autocomplete]="'off'" [placeholder]="'Power Ratio'">
-                <span matSuffix class="ml-2">W</span>
-            </mat-form-field>
-
-            <!-- Save button-->
-            <button class="ml-auto sm:ml-4 mt-4 sm:-mt-5" mat-flat-button [color]="'primary'" (click)="save()">
-                <mat-icon fontIcon="save"></mat-icon>
-                <span class="ml-2 mr-1">Save</span>
-            </button>
-        </form>
-    </div>
+    <!-- <div class="flex flex-col w-full py-2 sm:pt-10 max-w-xs sm:max-w-6xl mx-auto">
+       
+    </div> -->
 
     <div class="flex flex-auto">
         <div class="flex flex-col flex-auto w-full mx-auto">
 
-            <ng-container *ngIf="page.data">
-
+            <div class="flex flex-col sm:flex-row sm:items-center min-w-0 px-4 sm:px-8">
                 <!-- Project and Status -->
-                <div class="flex flex-col sm:flex-row sm:items-center min-w-0 px-6 pb-3 sm:px-8">
-                    <div class="flex">
-                        <mat-icon class="icon-size-8" fontSet="material-icons-outlined">business_center</mat-icon>
-                        <div class="text-2xl font-semibold tracking-tight leading-7 md:leading-snug ml-2 sm:mt-1">{{page.project.name}}</div>
-                    </div>
-
-
-                    <ng-container *ngIf="page.project.power_ratio">
-                        <div class="flex sm:ml-5">
-                            <mat-icon class="icon-size-8" fontSet="material-icons-outlined">bolt</mat-icon>
-                            <div class="text-2xl font-semibold tracking-tight leading-7 md:leading-snug sm:mt-1">{{page.project.power_ratio}} (W)</div>
+                <ng-container *ngIf="page.data">
+                    <div class="flex flex-row flex-wrap sm:w-1/2">
+                        <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Customer</div>
+                            <div class="mt-2 text-xl leading-none">A26</div>
                         </div>
-
-                    </ng-container>
-
-                    <div class="flex min-w-0 sm:ml-2">
-                        <div *ngIf="page.status.label" class="flex items-end ml-4 py-1 px-3 rounded-full leading-normal sm:mt-1"
-                            [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'">
-                            <span class="text-sm font-medium whitespace-nowrap">{{page.status.label}}</span>
+                        <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Project</div>
+                            <div class="mt-2 text-xl leading-none">{{page.project.name}}</div>
+                        </div>
+                        <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
+                            <div class="mt-2 text-xl leading-none">{{page.project.power_ratio}}W</div>
+                        </div>
+                        <div class="flex flex-col mx-6 my-3">
+                            <div *ngIf="page.status.label" class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1"
+                                [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'">
+                                <span class="text-sm font-medium whitespace-nowrap">{{page.status.label}}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col mx-6 my-3">
+                            <!-- <button *ngIf="page.tab.index==1"
+                                class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1 text-indigo-600 bg-indigo-100"
+                                [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'" (click)="onExport()">
+                                <span class="text-sm font-medium whitespace-nowrap">Export</span>
+                            </button> -->
+                            <button *ngIf="page.tab.index==1" class="sm:w-auto -ml-6 -mt-2 sm:-mt-1" mat-flat-button (click)="save()">
+                                <mat-icon fontIcon="save"></mat-icon>
+                                <span class="ml-2 mr-1">Export</span>
+                            </button>
                         </div>
                     </div>
+                </ng-container>
 
-                    <div class="ml-auto">
-                        <button *ngIf="page.tab.index==1" class="ml-auto sm:ml-4 mt-4 sm:-mt-5 text-green-600" mat-flat-button (click)="onExport()">
-                            <mat-icon [svgIcon]="'heroicons_solid:arrow-down-tray'"></mat-icon>
-                            <span class="ml-2 mr-1">Export</span>
+                <div class="flex flex-row sm:mt-8 sm:ml-auto">
+                    <form [formGroup]="formSave">
+                        <!-- Search open -->
+                        <button mat-icon-button class="mr-2 sm:mr-4" (click)="onSearchOpen()">
+                            <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                        </button>
+
+                        <!-- Power Ratio -->
+                        <mat-form-field class="w-auto mt-4 sm:mt-0  fuse-mat-dense">
+                            <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
+                            <input numeric-two-digit matInput [autocomplete]="'off'" [placeholder]="'Power Ratio'" [formControlName]="'power_ratio'">
+                            <span matSuffix class="ml-2">W</span>
+                        </mat-form-field>
+
+                        <!-- Save button-->
+                        <button class="ml-3 -mt-4" mat-flat-button [color]="'primary'" (click)="save()">
+                            <mat-icon fontIcon="save"></mat-icon>
+                            <span class="ml-2 mr-1">Save</span>
+                        </button>
+                    </form>
+
+                    <!-- Search panel -->
+                    <div class="absolute inset-0 flex items-center shrink-0 z-99 bg-card h-52 sm:h-24 border-b sm:border-0 pb-6 sm:pb-0" @slideInTop
+                        *ngIf="page.search.opened">
+                        <form [formGroup]="form" class="mt-2 pl-10 pr-16 sm:mt-6 sm:px-10">
+                            <!-- Customer -->
+                            <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
+                                <mat-select [placeholder]="'Customer'" [formControlName]="'customer'">
+                                    <ng-container *ngFor="let cust of customers;let idx=index">
+                                        <mat-option [value]="idx">{{cust.name}}</mat-option>
+                                    </ng-container>
+                                </mat-select>
+                                <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon>
+                            </mat-form-field>
+
+                            <!-- Project -->
+                            <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">
+                                <mat-icon matPrefix fontSet="material-icons-outlined">business_center</mat-icon>
+                                <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'">
+                                <mat-error *ngIf="form.get('project').hasError('required')">
+                                    Project is required
+                                </mat-error>
+                                <mat-error *ngIf="form.get('project').hasError('invalidName')">
+                                    Special characters are not allowed!
+                                </mat-error>
+                            </mat-form-field>
+
+                            <!-- Search button -->
+                            <button class="w-full sm:w-auto sm:ml-4 mt-0 sm:-mt-4 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
+                                <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                                <span class="ml-2 mr-1">Search</span>
+                            </button>
+
+                        </form>
+                        <button class="absolute top-1/2 right-5 sm:right-7 shrink-0 w-10 h-10 -mt-4" mat-icon-button (click)="onSearchClose()">
+                            <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
                         </button>
                     </div>
 
+
                 </div>
 
-                <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index">
+            </div>
 
-                    <mat-tab label="User Input">
-                        <ng-template matTabContent>
-                            <div class="relative overflow-x-auto">
+            <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index">
 
-                                <table class="table-auto w-full border-2 border-slate-500 cust-table">
+                <mat-tab label="User Input">
+                    <ng-template matTabContent>
+                        <div class="relative overflow-x-auto">
 
-                                    <thead>
-                                        <tr>
-                                            <th colspan="17">Reliability/S&V Test</th>
-                                        </tr>
-                                        <tr>
-                                            <th rowspan="2">Function</th>
-                                            <th rowspan="2">Test Item</th>
-                                            <th colspan="3">Concept</th>
-                                            <th colspan="3">BU</th>
-                                            <th colspan="3">CT</th>
-                                            <th colspan="3">NT</th>
-                                            <th colspan="3">OT</th>
-                                        </tr>
+                            <table class="table-auto w-full border-2 border-slate-500 cust-table">
 
-                                        <tr>
-                                            <th>Test UUT</th>
-                                            <th>Need Test</th>
-                                            <th>Regression Rate</th>
+                                <thead>
+                                    <tr>
+                                        <th colspan="17">Reliability/S&V Test</th>
+                                    </tr>
+                                    <tr>
+                                        <th rowspan="2">Function</th>
+                                        <th rowspan="2">Test Item</th>
+                                        <th colspan="3">Concept</th>
+                                        <th colspan="3">BU</th>
+                                        <th colspan="3">CT</th>
+                                        <th colspan="3">NT</th>
+                                        <th colspan="3">OT</th>
+                                    </tr>
 
-                                            <th>Test UUT</th>
-                                            <th>Need Test</th>
-                                            <th>Regression Rate</th>
+                                    <tr>
+                                        <th>Test UUT</th>
+                                        <th>Need Test</th>
+                                        <th>Regression Rate</th>
 
-                                            <th>Test UUT</th>
-                                            <th>Need Test</th>
-                                            <th>Regression Rate</th>
+                                        <th>Test UUT</th>
+                                        <th>Need Test</th>
+                                        <th>Regression Rate</th>
 
-                                            <th>Test UUT</th>
-                                            <th>Need Test</th>
-                                            <th>Regression Rate</th>
+                                        <th>Test UUT</th>
+                                        <th>Need Test</th>
+                                        <th>Regression Rate</th>
 
-                                            <th>Test UUT</th>
-                                            <th>Need Test</th>
-                                            <th>Regression Rate</th>
-                                        </tr>
+                                        <th>Test UUT</th>
+                                        <th>Need Test</th>
+                                        <th>Regression Rate</th>
 
-                                    </thead>
-                                    <tbody>
-                                        <ng-container *ngFor="let func of page.data?.functions">
-                                            <ng-container *ngFor="let item of func.test_items;let idx=index">
+                                        <th>Test UUT</th>
+                                        <th>Need Test</th>
+                                        <th>Regression Rate</th>
+                                    </tr>
 
-                                                <tr *ngIf="idx==0">
-                                                    <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                                    <td>{{item.name}}</td>
-                                                    <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']"
-                                                                (change)="change()" numeric-only>
-                                                        </td>
-                                                        <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
-                                                                [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
-                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']"
-                                                                (change)="change()" numeric-two-digit></td>
-                                                    </ng-container>
-                                                </tr>
+                                </thead>
+                                <tbody *ngIf="page.data">
+                                    <ng-container *ngFor="let func of page.data?.functions">
+                                        <ng-container *ngFor="let item of func.test_items;let idx=index">
 
-                                                <tr *ngIf="idx>0">
-                                                    <td>{{item.name}}</td>
-                                                    <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']"
-                                                                (change)="change()" numeric-only>
-                                                        </td>
-                                                        <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
-                                                                [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
-                                                        <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']"
-                                                                (change)="change()" numeric-two-digit></td>
-                                                    </ng-container>
-                                                </tr>
-
-                                            </ng-container>
-                                            <tr>
-
+                                            <tr *ngIf="idx==0">
+                                                <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                                                <td>{{item.name}}</td>
+                                                <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                                    <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']" (change)="change()"
+                                                            numeric-only>
+                                                    </td>
+                                                    <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
+                                                            [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
+                                                    <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()"
+                                                            numeric-two-digit></td>
+                                                </ng-container>
                                             </tr>
+
+                                            <tr *ngIf="idx>0">
+                                                <td>{{item.name}}</td>
+                                                <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                                    <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']" (change)="change()"
+                                                            numeric-only>
+                                                    </td>
+                                                    <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
+                                                            [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
+                                                    <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()"
+                                                            numeric-two-digit></td>
+                                                </ng-container>
+                                            </tr>
+
                                         </ng-container>
+                                        <tr>
+
+                                        </tr>
+                                    </ng-container>
 
 
 
 
-                                        <!-- <tr>
+                                    <!-- <tr>
                                     <td class="text-center" rowspan="3">Reliability</td>
                                     <td>REL0973 Baseline</td>
                                     <td class="edit">
@@ -211,40 +234,40 @@
                                     <td>SV0106 Enterprise Non-Operational Half Sine Shock Test Procedure</td>
                                 </tr> -->
 
-                                    </tbody>
+                                </tbody>
 
-                                </table>
-                            </div>
-                        </ng-template>
+                            </table>
+                        </div>
+                    </ng-template>
 
 
 
-                    </mat-tab>
+                </mat-tab>
 
-                    <mat-tab label="Equipment">
-                        <ng-template matTabContent>
+                <mat-tab label="Equipment">
+                    <ng-template matTabContent>
 
-                            <div class="relative overflow-x-auto">
-                                <table class="table-auto w-full border-2 border-slate-500 cust-table">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="10">Reliability/S&V Test</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Function</th>
-                                            <th>Test Item</th>
-                                            <th>Lab Location</th>
-                                            <th>Lab Rate</th>
-                                            <th>Concept</th>
-                                            <th>BU</th>
-                                            <th>CT</th>
-                                            <th>NT</th>
-                                            <th>OT</th>
-                                        </tr>
-                                    </thead>
+                        <div class="relative overflow-x-auto">
+                            <table class="table-auto w-full border-2 border-slate-500 cust-table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="10">Reliability/S&V Test</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Function</th>
+                                        <th>Test Item</th>
+                                        <th>Lab Location</th>
+                                        <th>Lab Rate</th>
+                                        <th>Concept</th>
+                                        <th>BU</th>
+                                        <th>CT</th>
+                                        <th>NT</th>
+                                        <th>OT</th>
+                                    </tr>
+                                </thead>
 
-                                    <tbody>
-                                        <!-- <tr>
+                                <tbody *ngIf="page.data">
+                                    <!-- <tr>
                                             <td class="text-center" rowspan="2">Reliability</td>
                                             <td>REL0973 Baseline</td>
                                             <td>1</td>
@@ -266,69 +289,62 @@
                                             <td>7</td>
                                         </tr> -->
 
-                                        <ng-container *ngFor="let func of page.data?.functions">
-                                            <ng-container *ngFor="let item of func.test_items;let idx=index">
-                                                <tr *ngIf="idx==0">
-                                                    <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                                    <td>{{item.name}}</td>
-                                                    <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
-                                                        <td class="view"></td>
-                                                    </ng-container>
-                                                </tr>
-                                                <tr *ngIf="idx>0">
-                                                    <td>{{item.name}}</td>
-                                                    <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
-                                                        <td class="view"></td>
-                                                    </ng-container>
-                                                </tr>
-                                            </ng-container>
-                                        </ng-container>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </ng-template>
-                    </mat-tab>
-
-                    <mat-tab label="Man Power">
-                        <ng-template matTabContent>
-                            <div class="relative flex flex-col w-full max-w-xs sm:max-w-3xl mx-auto overflow-x-auto">
-                                <table class="table-auto w-full border-2 border-slate-500 cust-table">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Concept</th>
-                                            <th>BU (hrs)</th>
-                                            <th>CT (hrs)</th>
-                                            <th>NT (hrs)</th>
-                                            <th>OT (hrs)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ng-container *ngFor="let func of page.data?.functions">
-                                            <tr>
-                                                <td class="view">{{func.name}}</td>
-                                                <td class="view"></td>
-                                                <td class="view"></td>
-                                                <td class="view"></td>
-                                                <td class="view"></td>
-                                                <td class="view"></td>
+                                    <ng-container *ngFor="let func of page.data?.functions">
+                                        <ng-container *ngFor="let item of func.test_items;let idx=index">
+                                            <tr *ngIf="idx==0">
+                                                <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                                                <td>{{item.name}}</td>
+                                                <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
+                                                    <td class="view"></td>
+                                                </ng-container>
+                                            </tr>
+                                            <tr *ngIf="idx>0">
+                                                <td>{{item.name}}</td>
+                                                <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
+                                                    <td class="view"></td>
+                                                </ng-container>
                                             </tr>
                                         </ng-container>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </ng-template>
-                    </mat-tab>
+                                    </ng-container>
+                                </tbody>
+                            </table>
+                        </div>
 
-                </mat-tab-group>
-            </ng-container>
+                    </ng-template>
+                </mat-tab>
 
-            <div class="flex flex-auto flex-col items-center justify-center dark:bg-transparent" *ngIf="!page.data">
-                <!-- <mat-icon class="icon-size-24" [svgIcon]="'heroicons_outline:document-search'"></mat-icon> -->
-                <mat-icon matPrefix fontSet="material-icons-outlined" class="text-slate-500 icon-size-24">content_paste_search</mat-icon>
-                <div class="mt-6 text-2xl font-semibold tracking-tight text-slate-500"></div>
-            </div>
+                <mat-tab label="Man Power">
+                    <ng-template matTabContent>
+                        <div class="relative flex flex-col w-full max-w-xs sm:max-w-3xl mx-auto overflow-x-auto">
+                            <table class="table-auto w-full border-2 border-slate-500 cust-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Concept</th>
+                                        <th>BU (hrs)</th>
+                                        <th>CT (hrs)</th>
+                                        <th>NT (hrs)</th>
+                                        <th>OT (hrs)</th>
+                                    </tr>
+                                </thead>
+                                <tbody *ngIf="page.data">
+                                    <ng-container *ngFor="let func of page.data?.functions">
+                                        <tr>
+                                            <td class="view">{{func.name}}</td>
+                                            <td class="view"></td>
+                                            <td class="view"></td>
+                                            <td class="view"></td>
+                                            <td class="view"></td>
+                                            <td class="view"></td>
+                                        </tr>
+                                    </ng-container>
+                                </tbody>
+                            </table>
+                        </div>
+                    </ng-template>
+                </mat-tab>
+
+            </mat-tab-group>
         </div>
     </div>
 </div>
