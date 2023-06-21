@@ -21,7 +21,7 @@
                         </div>
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
-                            <div class="mt-2 text-xl leading-none">{{page.project.power_ratio}}W</div>
+                            <div class="mt-2 text-xl leading-none" *ngIf="page.project.power_ratio">{{page.project.power_ratio}}W</div>
                         </div>
                         <div class="flex flex-col mx-6 my-3">
                             <div *ngIf="page.status.label" class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1"
@@ -35,8 +35,14 @@
                                 [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'" (click)="onExport()">
                                 <span class="text-sm font-medium whitespace-nowrap">Export</span>
                             </button> -->
-                            <button *ngIf="page.tab.index==1" class="sm:w-auto -ml-6 -mt-2 sm:-mt-1" mat-flat-button (click)="save()">
-                                <mat-icon fontIcon="save"></mat-icon>
+                            <button *ngIf="page.tab.index==1" class="sm:w-auto -ml-6 -mt-2 sm:-mt-1 text-indigo-500" mat-flat-button
+                                (click)="export(0)">
+                                <mat-icon fontSet="material-icons-outlined">cloud_download</mat-icon>
+                                <span class="ml-2 mr-1">Export</span>
+                            </button>
+                            <button *ngIf="page.tab.index==2" class="sm:w-auto -ml-6 -mt-2 sm:-mt-1 text-indigo-500" mat-flat-button
+                                (click)="export(1)">
+                                <mat-icon fontSet="material-icons-outlined">cloud_download</mat-icon>
                                 <span class="ml-2 mr-1">Export</span>
                             </button>
                         </div>
@@ -44,17 +50,21 @@
                 </ng-container>
 
                 <div class="flex flex-row sm:mt-8 sm:ml-auto">
+                    <!-- Search open -->
+                    <button mat-icon-button class="mr-2 sm:mr-4" (click)="onSearchOpen()">
+                        <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                    </button>
+
                     <form [formGroup]="formSave">
-                        <!-- Search open -->
-                        <button mat-icon-button class="mr-2 sm:mr-4" (click)="onSearchOpen()">
-                            <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
-                        </button>
 
                         <!-- Power Ratio -->
                         <mat-form-field class="w-auto mt-4 sm:mt-0  fuse-mat-dense">
                             <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
                             <input numeric-two-digit matInput [autocomplete]="'off'" [placeholder]="'Power Ratio'" [formControlName]="'power_ratio'">
                             <span matSuffix class="ml-2">W</span>
+                            <mat-error *ngIf="formSave.get('power_ratio').hasError('required')">
+                                Rower Ratio is required.
+                            </mat-error>
                         </mat-form-field>
 
                         <!-- Save button-->
@@ -83,10 +93,10 @@
                                 <mat-icon matPrefix fontSet="material-icons-outlined">business_center</mat-icon>
                                 <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'">
                                 <mat-error *ngIf="form.get('project').hasError('required')">
-                                    Project is required
+                                    Project is required.
                                 </mat-error>
                                 <mat-error *ngIf="form.get('project').hasError('invalidName')">
-                                    Special characters are not allowed!
+                                    Special characters are not allowed.
                                 </mat-error>
                             </mat-form-field>
 

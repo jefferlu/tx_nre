@@ -62,11 +62,11 @@ export class NreComponent implements OnInit {
 
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
-            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]]            
+            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]]
         });
 
-        this.formSave=this._formBuilder.group({
-            power_ratio: []
+        this.formSave = this._formBuilder.group({
+            power_ratio: [null, [Validators.required]]
         })
 
         // Get the categories
@@ -82,7 +82,7 @@ export class NreComponent implements OnInit {
         if (this._nreService.project) {
             this.page.project = this._nreService.project;
 
-            this.form.get('project').setValue(this.page.project.name);            
+            this.form.get('project').setValue(this.page.project.name);
             this.form.get('customer').setValue(this.page.project.customer);
             this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
             this.search();
@@ -118,7 +118,7 @@ export class NreComponent implements OnInit {
     onSearch(): void {
 
         if (this.form.invalid) return;
-        console.log(this.page.status.change)
+
         if (this.page.status.change) {
             let dialogRef = this._fuseConfirmationService.open({
                 message: `The project has been modified and has not been saved yet. Are you sure to discard it?`
@@ -139,6 +139,7 @@ export class NreComponent implements OnInit {
     }
 
     search(): void {
+
 
         this.page.status.label = undefined;
         this.page.data = JSON.parse(JSON.stringify(this.customers[this.form.value.customer]));
@@ -207,7 +208,26 @@ export class NreComponent implements OnInit {
 
     save(): void {
 
+        if (this.formSave.invalid) return;
+
+        if (!this.page.data) {
+            let dialogRef = this._fuseConfirmationService.open({
+                title: 'Invalid action',
+                message: `Project has not been loaded.`,
+                actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+            });
+
+            dialogRef.afterClosed().subscribe(result => {
+                if (result === 'confirmed') {
+                    this.onSearchOpen();
+                    this._changeDetectorRef.markForCheck();
+                }
+            });
+            return;
+        }
+
         // this.page.tab.index = 1;
+        console.log(this.page.data)
 
         let request = {
             'id': null,
@@ -221,14 +241,20 @@ export class NreComponent implements OnInit {
                 request.records.push(item.record)
             }
         }
-        console.log(request)
+
         // Update
         if (this.page.project.id) {
             request.id = this.page.project.id
 
             this._nreService.updateProject(this.page.project.name, request).subscribe({
                 next: (res) => {
-                    this.search()
+                    let dialogRef = this._fuseConfirmationService.open({
+                        message: `The project has been saved.`,
+                        icon: { color: 'primary' },
+                        actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                    });
+
+                    this.search();
                 },
                 error: e => { }
             })
@@ -239,7 +265,13 @@ export class NreComponent implements OnInit {
             console.log('request-->', request)
             this._nreService.createProject(request).subscribe({
                 next: (res) => {
-                    this.search()
+                    let dialogRef = this._fuseConfirmationService.open({
+                        message: `The project has been saved.`,
+                        icon: { color: 'primary' },
+                        actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                    });
+
+                    this.search();
 
                     // let dialogRef = this._fuseConfirmationService.open({
                     //     title: 'Hint',
@@ -265,8 +297,16 @@ export class NreComponent implements OnInit {
         }
     }
 
-    private concatData(data) {
-
-        return data;
+    export(type: number): void {
+        switch (type) {
+            // Equipment
+            case 0:
+                console.log('equipment');
+                break;
+            // Man Power
+            case 1:
+                console.log('man power')
+                break;
+        }
     }
 }
