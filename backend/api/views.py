@@ -18,6 +18,26 @@ class TokenObtainView(TokenObtainPairView):
     serializer_class = serializers.TokenObtainSerializer
 
 
+class ChoicesViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
+    if (not settings.DEBUG):
+        permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.ChoicesSerializer
+
+    def list(self, request):
+        instance = {
+            'lab_location': self.Convert(models.TestItem.LAB_LOCATION),
+        }
+
+        serializer = serializers.ChoicesSerializer(instance=instance)
+        return Response({'results': serializer.data})
+
+    def Convert(self, tup):
+        di = []
+        for t in tup:
+            di.append({'id': t[0], 'name': t[1]})
+        return di
+
+
 class CustomerViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     if (not settings.DEBUG):
         permission_classes = (IsAuthenticated, )
@@ -32,4 +52,3 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     serializer_class = serializers.ProjectSerializer
     queryset = models.Project.objects.all()
     lookup_field = 'name'
-

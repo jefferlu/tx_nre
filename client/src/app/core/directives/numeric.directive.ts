@@ -1,7 +1,8 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
+import { NgControl } from '@angular/forms';
 
 @Directive({
-    selector: '[numeric-only]'
+    selector: 'input[numeric-only]'
 })
 export class NumericOnlyDirective {
 
@@ -11,7 +12,12 @@ export class NumericOnlyDirective {
     // Backspace, tab, end, home
     private specialKeys: Array<string> = ['Backspace', 'Tab', 'End', 'Home', 'ArrowLeft', 'ArrowRight', 'Del', 'Delete'];
 
-    constructor(private el: ElementRef) { }
+    constructor(private el: ElementRef, private control: NgControl) { }
+
+    @HostListener('input', ['$event.target'])
+    onEvent(target: HTMLInputElement) {
+        this.control.viewToModelUpdate((target.value === '') ? null : target.value);
+    }
 
     @HostListener('keydown', ['$event'])
     onKeyDown(event: KeyboardEvent) {
@@ -30,18 +36,23 @@ export class NumericOnlyDirective {
 }
 
 @Directive({
-    selector: '[numeric-two-digit]'
+    selector: 'input[numeric-two-digit]'
 })
 export class NumericTwoDigitDirective {
 
     private regex: RegExp = new RegExp(/^\d*\.?\d{0,2}$/g);
     private specialKeys: Array<string> = ['Backspace', 'Tab', 'End', 'Home', 'ArrowLeft', 'ArrowRight', 'Del', 'Delete'];
 
-    constructor(private el: ElementRef) { }
+    constructor(private el: ElementRef, private control: NgControl) { }
+
+    @HostListener('input', ['$event.target'])
+    onEvent(target: HTMLInputElement) {
+        this.control.viewToModelUpdate((target.value === '') ? null : target.value);
+    }
 
     @HostListener('keydown', ['$event'])
     onKeyDown(event: KeyboardEvent) {
-        
+
         if (this.specialKeys.indexOf(event.key) !== -1) {
             return;
         }

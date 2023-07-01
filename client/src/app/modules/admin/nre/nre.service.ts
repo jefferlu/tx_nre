@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
-import { AppService } from 'app/core/services/app.service';
 import { BehaviorSubject, Observable, tap, switchMap, of } from 'rxjs';
+
+import { AppService } from 'app/core/services/app.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class NreService {
 
+    private _choices: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _customers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _project: any;
 
     constructor(private _appService: AppService) { }
+
+    get choices$(): Observable<any[]> {
+        return this._choices.asObservable();
+    }
 
     get customers$(): Observable<any[]> {
         return this._customers.asObservable();
@@ -23,6 +29,14 @@ export class NreService {
 
     get project() {
         return this._project;
+    }
+
+    getChoices(): Observable<any> {
+        return this._appService.get('choices').pipe(
+            tap((response: any) => {
+                this._choices.next(response);
+            })
+        );
     }
 
     getCustomers(): Observable<any> {

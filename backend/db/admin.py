@@ -8,6 +8,11 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'power_ratio',)
 
 
+@admin.register(models.Item)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('no', 'name', )
+
+
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', )
@@ -20,7 +25,7 @@ class FunctionAdmin(admin.ModelAdmin):
 
 @admin.register(models.TestItem)
 class TestItemAdmin(admin.ModelAdmin):
-    list_display = ('function', 'name', )
+    list_display = ('function', 'item', 'lab_location',)
 
 
 @admin.register(models.Record)

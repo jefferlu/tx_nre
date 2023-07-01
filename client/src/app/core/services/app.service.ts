@@ -74,7 +74,7 @@ export class AppService {
                 console.log(e.error.detail ? e.error.detail : e.message)
                 const dialogRef = this._fuseConfirmationService.open({
                     // title: e.statusText,
-                    title: `API Error: post()`,
+                    title: `API put() Error: ${method} `,
                     message: e.error.detail ? e.error.detail : e.message,
                     actions: { cancel: { show: false } }
                 });

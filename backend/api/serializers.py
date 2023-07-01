@@ -1,3 +1,4 @@
+import datetime
 
 from django.conf import settings
 
@@ -28,6 +29,16 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
         return data
 
 
+class ChoicesSerializer(serializers.Serializer):
+    lab_location = serializers.ReadOnlyField()
+
+
+# class ItemSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Item
+#         fields = '__all__'
+
+
 class RecordSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -44,29 +55,34 @@ class TestItemSerializer(serializers.ModelSerializer):
         'nt_test_uut': None, 'nt_need_test': False, 'nt_regression_rate': None,
         'ot_test_uut': None, 'ot_need_test': False, 'ot_regression_rate': None,
     })
+    item_name = serializers.ReadOnlyField(source='test_item.name')
+
+    # fee = serializers.SerializerMethodField()
 
     class Meta:
         model = models.TestItem
         fields = '__all__'
 
-    # def get_records(self, test_item):
-    #     qs = models.Record.objects.filter(test_item=test_item)
-    #     serializer = RecordSerializer(instance=qs, many=True, read_only=True)
+    # def get_fee(self, test_item):
+    #     year = datetime.date.today().year
+    #     qs = models.TestItem.objects.filter(test_item=test_item, year=year)
+    #     serializer = TestItemSerializer(instance=qs, many=True, read_only=True)
     #     return serializer.data
 
 
 class FunctionSerializer(serializers.ModelSerializer):
 
-    test_items = serializers.SerializerMethodField()
+    # test_items = serializers.SerializerMethodField()
+    test_items = TestItemSerializer(many=True)
 
     class Meta:
         model = models.Function
         fields = '__all__'
 
-    def get_test_items(self, function):
-        qs = models.TestItem.objects.filter(function=function)
-        serializer = TestItemSerializer(instance=qs, many=True, read_only=True)
-        return serializer.data
+    # def get_test_items(self, function):
+    #     qs = models.TestItem.objects.filter(function=function)
+    #     serializer = TestItemSerializer(instance=qs, many=True, read_only=True)
+    #     return serializer.data
 
 
 class CustomerSerializer(serializers.ModelSerializer):

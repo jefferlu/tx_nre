@@ -13,6 +13,7 @@ class OptionalSlashRouter(DefaultRouter):
 
 
 router = OptionalSlashRouter()
+router.register(r'choices', views.ChoicesViewSet, basename='choices')
 router.register(r'customer', views.CustomerViewSet)
 router.register(r'project', views.ProjectViewSet)
 

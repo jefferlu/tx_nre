@@ -1,16 +1,6 @@
 from django.db import models
 
 
-class Customer(models.Model):
-    name = models.CharField(max_length=120, verbose_name='name')
-
-    class Meta:
-        db_table = 'nre_customer'
-
-    def __str__(self):
-        return '%s' % self.name
-
-
 class Project(models.Model):
     name = models.CharField(max_length=120, verbose_name='name')
     power_ratio = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,  verbose_name='power ratio')
@@ -20,6 +10,28 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Item(models.Model):
+    no = models.CharField(max_length=120, verbose_name='no')
+    name = models.CharField(max_length=120, verbose_name='name')
+    equip_working_hour = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='equip_hour')
+
+    class Meta:
+        db_table = 'nre_item'
+
+    def __str__(self):
+        return self.name
+
+
+class Customer(models.Model):
+    name = models.CharField(max_length=120, verbose_name='name')
+
+    class Meta:
+        db_table = 'nre_customer'
+
+    def __str__(self):
+        return '%s' % self.name
 
 
 class Function(models.Model):
@@ -35,14 +47,30 @@ class Function(models.Model):
 
 
 class TestItem(models.Model):
-    function = models.ForeignKey(Function, on_delete=models.CASCADE, verbose_name='function')
-    name = models.CharField(max_length=120, verbose_name='name')
+    LAB_LOCATION = [
+        (0, 'Compal PCP'),
+        (1, 'Outsourcing')
+    ]
+
+    function = models.ForeignKey(Function, on_delete=models.CASCADE, related_name='test_items', verbose_name='function')
+    item = models.OneToOneField(Item, on_delete=models.CASCADE, verbose_name='item')
+    lab_location = models.IntegerField(default=1, choices=LAB_LOCATION, verbose_name='lab_location')
 
     class Meta:
         db_table = 'nre_test_item'
+        # unique_together = ('test_item', 'lab_location', 'year')
 
     def __str__(self):
-        return '%s-%s-%s' % (self.function.customer.name, self.function.name, self.name)
+        return '%s-%s-%s' % (self.function.customer.name, self.function.name, self.item.name)
+
+
+class Fee(models.Model):
+    test_item = models.ForeignKey(TestItem, on_delete=models.CASCADE, related_name='quotations', verbose_name='test_item')
+    year = models.IntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'nre_fee'
 
 
 class Record(models.Model):
@@ -74,4 +102,17 @@ class Record(models.Model):
         # unique_together = ('project', 'test_item',)
 
     def __str__(self):
-        return '%s-%s-%s' % (self.test_item.function.customer.name, self.test_item.function.name, self.test_item.name)
+        return '%s-%s-%s' % (self.test_item.function.customer.name, self.test_item.function.name, self.test_item.item.name)
+
+
+# class ManPower(models.Model):
+#     code = models.CharField(max_length=120, verbose_name='code')
+#     name = models.CharField(max_length=120, verbose_name='name')
+#     man_hour = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='man_hour')
+#     equip_hour = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='equip_hour')
+
+#     class Meta:
+#         db_table = 'nre_man_power'
+
+#     def __str__(self):
+#         return '%s-%s-%s' % (self.function.customer.name, self.function.name, self.name)

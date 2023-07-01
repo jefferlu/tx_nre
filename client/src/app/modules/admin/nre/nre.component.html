@@ -81,7 +81,7 @@
                             <!-- Customer -->
                             <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
                                 <mat-select [placeholder]="'Customer'" [formControlName]="'customer'">
-                                    <ng-container *ngFor="let cust of customers;let idx=index">
+                                    <ng-container *ngFor="let cust of page.customers;let idx=index">
                                         <mat-option [value]="idx">{{cust.name}}</mat-option>
                                     </ng-container>
                                 </mat-select>
@@ -249,9 +249,6 @@
                             </table>
                         </div>
                     </ng-template>
-
-
-
                 </mat-tab>
 
                 <mat-tab label="Equipment">

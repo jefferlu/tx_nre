@@ -53,11 +53,11 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 15,
-    'DATE_FORMAT': '%Y/%m/%d',
-    'DATETIME_FORMAT': '%Y/%m/%d %H:%M:%S',
-    'DATE_INPUT_FORMATS': ['%Y/%m/%d', '%Y/%m/%d %H:%M:%S', ],
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 15,
+    # 'DATE_FORMAT': '%Y/%m/%d',
+    # 'DATETIME_FORMAT': '%Y/%m/%d %H:%M:%S',
+    # 'DATE_INPUT_FORMATS': ['%Y/%m/%d', '%Y/%m/%d %H:%M:%S', ],
 }
 
 INSTALLED_APPS = [

@@ -24,11 +24,12 @@ export class NreComponent implements OnInit {
     form: UntypedFormGroup;
     formSave: UntypedFormGroup;
 
-    customers: any;
     records: any;
     selectedCustomer: any;
 
     page = {
+        choices: null,
+        customers: null,
         search: {
             opened: false,
         },
@@ -69,12 +70,21 @@ export class NreComponent implements OnInit {
             power_ratio: [null, [Validators.required]]
         })
 
+        // Get the choices
+        this._nreService.choices$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                this.page.choices = res.results;
+                console.log(res)
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
+
         // Get the categories
         this._nreService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                this.customers = res.results;
-
+                this.page.customers = res.results;
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -142,7 +152,7 @@ export class NreComponent implements OnInit {
 
 
         this.page.status.label = undefined;
-        this.page.data = JSON.parse(JSON.stringify(this.customers[this.form.value.customer]));
+        this.page.data = JSON.parse(JSON.stringify(this.page.customers[this.form.value.customer]));
 
         this._nreService.getProject(this.form.value.project).subscribe({
             next: (res) => {
@@ -227,7 +237,6 @@ export class NreComponent implements OnInit {
         }
 
         // this.page.tab.index = 1;
-        console.log(this.page.data)
 
         let request = {
             'id': null,
@@ -248,13 +257,16 @@ export class NreComponent implements OnInit {
 
             this._nreService.updateProject(this.page.project.name, request).subscribe({
                 next: (res) => {
-                    let dialogRef = this._fuseConfirmationService.open({
-                        message: `The project has been saved.`,
-                        icon: { color: 'primary' },
-                        actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                    });
+                    if (res) {
+                        let dialogRef = this._fuseConfirmationService.open({
+                            message: `The project has been saved.`,
+                            icon: { color: 'primary' },
+                            actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                        });
 
-                    this.search();
+                        this.calculate();
+                        this.search();
+                    }
                 },
                 error: e => { }
             })
@@ -271,6 +283,7 @@ export class NreComponent implements OnInit {
                         actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
                     });
 
+                    this.calculate();
                     this.search();
 
                     // let dialogRef = this._fuseConfirmationService.open({
@@ -287,6 +300,20 @@ export class NreComponent implements OnInit {
             });
         }
 
+    }
+
+    calculate(): void {
+        console.log(this.page.data)
+        for (let i in this.page.data.functions) {
+            let fun = this.page.data.functions[i]
+            for (let j in fun.test_items) {
+                let item = fun.test_items[j];
+
+                if (fun.name === 'Reliability') {
+                    console.log(item)
+                }
+            }
+        }
     }
 
     change(): void {
@@ -308,5 +335,11 @@ export class NreComponent implements OnInit {
                 console.log('man power')
                 break;
         }
+    }
+
+    ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
     }
 }
