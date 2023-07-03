@@ -61,7 +61,16 @@ class TestItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.TestItem
-        fields = '__all__'
+        fields = ['item_name','record', ]
+        extra_fields=['item_name']
+
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super(TestItemSerializer, self).get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
 
     # def get_fee(self, test_item):
     #     year = datetime.date.today().year

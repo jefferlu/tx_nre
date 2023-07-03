@@ -10,7 +10,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(models.Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('no', 'name', )
+    list_display = ('id','no', 'name', )
 
 
 @admin.register(models.Customer)

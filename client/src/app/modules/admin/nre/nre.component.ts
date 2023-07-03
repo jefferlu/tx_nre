@@ -75,7 +75,7 @@ export class NreComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 this.page.choices = res.results;
-                console.log(res)
+
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -84,7 +84,8 @@ export class NreComponent implements OnInit {
         this._nreService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                this.page.customers = res.results;
+                this.page.customers = res;
+                console.log(res)
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
@@ -98,7 +99,7 @@ export class NreComponent implements OnInit {
             this.search();
         }
 
-        console.log(this._nreService.project);
+        // console.log(this._nreService.project);
 
     }
 
@@ -274,7 +275,7 @@ export class NreComponent implements OnInit {
         // Crate
         else {
 
-            console.log('request-->', request)
+            // console.log('request-->', request)
             this._nreService.createProject(request).subscribe({
                 next: (res) => {
                     let dialogRef = this._fuseConfirmationService.open({
@@ -303,14 +304,14 @@ export class NreComponent implements OnInit {
     }
 
     calculate(): void {
-        console.log(this.page.data)
+        // console.log(this.page.data)
         for (let i in this.page.data.functions) {
             let fun = this.page.data.functions[i]
             for (let j in fun.test_items) {
                 let item = fun.test_items[j];
 
                 if (fun.name === 'Reliability') {
-                    console.log(item)
+                    // console.log(item)
                 }
             }
         }
