@@ -38,31 +38,17 @@ export class SettingsComponent implements OnInit, OnDestroy {
         this.panels = [
             {
                 id: 'default-items',
+                icon: '',
                 title: 'Default Test Item',
-            },
-            {
-                id: 'account',
-                icon: 'heroicons_outline:user-circle',
-                title: '人力設備工時',
                 description: ''
             },
             {
-                id: 'security',
-                icon: 'heroicons_outline:lock-closed',
-                title: 'Equipment',
-                description: 'Manage Equipment'
-            },
+                id: 'test-fee',
+                title: '3rd party Test fee'
+            },           
             {
-                id: 'plan-billing',
-                icon: 'heroicons_outline:credit-card',
-                title: '3rd party Test fee',
-                description: 'Manage 3rd party Test fee'
-            },            
-            {
-                id: 'team',
-                icon: 'heroicons_outline:user-group',
+                id: 'account',
                 title: 'Account',
-                description: 'Manage your existing team and change roles/permissions'
             }
         ];
 

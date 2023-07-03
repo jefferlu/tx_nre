@@ -12,19 +12,15 @@ import { FuseAlertModule } from '@fuse/components/alert';
 import { SharedModule } from 'app/shared/shared.module';
 import { SettingsComponent } from './settings.component';
 import { SettingsAccountComponent } from './account/account.component';
-import { SettingsSecurityComponent } from './security/security.component';
-import { SettingsPlanBillingComponent } from './plan-billing/plan-billing.component';
-import { SettingsTeamComponent } from './team/team.component';
 import { settingsRoutes } from './settings.routing';
 import { DefaultItemsComponent } from './default-items/default-items.component';
+import { TestFeeComponent } from './test-fee/test-fee.component';
 
 @NgModule({
     declarations: [
         SettingsComponent,
         SettingsAccountComponent,
-        SettingsSecurityComponent,
-        SettingsPlanBillingComponent,
-        SettingsTeamComponent,
+        TestFeeComponent,
         DefaultItemsComponent
     ],
     imports: [

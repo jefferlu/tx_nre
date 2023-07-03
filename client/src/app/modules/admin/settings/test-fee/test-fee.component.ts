@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
-    selector       : 'settings-plan-billing',
-    templateUrl    : './plan-billing.component.html',
+    selector       : 'test-fee',
+    templateUrl    : './test-fee.component.html',
     encapsulation  : ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SettingsPlanBillingComponent implements OnInit
+export class TestFeeComponent implements OnInit
 {
     planBillingForm: UntypedFormGroup;
     plans: any[];
