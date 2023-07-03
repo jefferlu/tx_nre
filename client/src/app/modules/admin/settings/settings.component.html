@@ -7,7 +7,7 @@
             <!-- Header -->
             <div class="flex items-center justify-between m-8 mr-6 sm:my-10">
                 <!-- Title -->
-                <div class="text-4xl font-extrabold tracking-tight leading-none">Raw Data</div>
+                <div class="text-4xl font-extrabold tracking-tight leading-none">Settings</div>
                 <!-- Close button -->
                 <div class="lg:hidden">
                     <button mat-icon-button (click)="drawer.close()">
@@ -62,7 +62,7 @@
                     <ng-container [ngSwitch]="selectedPanel">
                         <!-- Account -->
                         <ng-container *ngSwitchCase="'account'">
-                            <settings-account></settings-account>
+                            <default-items></default-items>
                         </ng-container>
                         <!-- Security -->
                         <ng-container *ngSwitchCase="'security'">

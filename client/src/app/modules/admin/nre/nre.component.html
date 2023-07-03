@@ -168,7 +168,7 @@
 
                                             <tr *ngIf="idx==0">
                                                 <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                                <td>{{item.name}}</td>
+                                                <td>{{item.item_name}}</td>
                                                 <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
                                                     <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']" (change)="change()"
                                                             numeric-only>
@@ -181,7 +181,7 @@
                                             </tr>
 
                                             <tr *ngIf="idx>0">
-                                                <td>{{item.name}}</td>
+                                                <td>{{item.item_name}}</td>
                                                 <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
                                                     <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']" (change)="change()"
                                                             numeric-only>
@@ -300,13 +300,13 @@
                                         <ng-container *ngFor="let item of func.test_items;let idx=index">
                                             <tr *ngIf="idx==0">
                                                 <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                                <td>{{item.name}}</td>
+                                                <td>{{item.item_name}}</td>
                                                 <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
                                                     <td class="view"></td>
                                                 </ng-container>
                                             </tr>
                                             <tr *ngIf="idx>0">
-                                                <td>{{item.name}}</td>
+                                                <td>{{item.item_name}}</td>
                                                 <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
                                                     <td class="view"></td>
                                                 </ng-container>

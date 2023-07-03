@@ -14,9 +14,9 @@ import { SettingsComponent } from './settings.component';
 import { SettingsAccountComponent } from './account/account.component';
 import { SettingsSecurityComponent } from './security/security.component';
 import { SettingsPlanBillingComponent } from './plan-billing/plan-billing.component';
-import { SettingsNotificationsComponent } from './notifications/notifications.component';
 import { SettingsTeamComponent } from './team/team.component';
 import { settingsRoutes } from './settings.routing';
+import { DefaultItemsComponent } from './default-items/default-items.component';
 
 @NgModule({
     declarations: [
@@ -24,8 +24,8 @@ import { settingsRoutes } from './settings.routing';
         SettingsAccountComponent,
         SettingsSecurityComponent,
         SettingsPlanBillingComponent,
-        SettingsNotificationsComponent,
-        SettingsTeamComponent
+        SettingsTeamComponent,
+        DefaultItemsComponent
     ],
     imports: [
         RouterModule.forChild(settingsRoutes),

@@ -15,7 +15,8 @@ class Project(models.Model):
 class Item(models.Model):
     no = models.CharField(max_length=120, verbose_name='no')
     name = models.CharField(max_length=120, verbose_name='name')
-    equip_working_hour = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='equip_hour')
+    equip_working_hours = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='equip_working_hours')
+    man_working_hours = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='man_working_hours')
 
     class Meta:
         db_table = 'nre_item'

@@ -37,10 +37,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
         // Setup available panels
         this.panels = [
             {
+                id: 'default-items',
+                title: 'Default Test Item',
+            },
+            {
                 id: 'account',
                 icon: 'heroicons_outline:user-circle',
                 title: '人力設備工時',
-                description: 'Manage your 人力設備工時'
+                description: ''
             },
             {
                 id: 'security',
@@ -53,13 +57,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
                 icon: 'heroicons_outline:credit-card',
                 title: '3rd party Test fee',
                 description: 'Manage 3rd party Test fee'
-            },
-            {
-                id: 'notifications',
-                icon: 'heroicons_outline:bell',
-                title: 'Notifications',
-                description: 'Manage when you\'ll be notified on which channels'
-            },
+            },            
             {
                 id: 'team',
                 icon: 'heroicons_outline:user-group',

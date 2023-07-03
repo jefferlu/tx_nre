@@ -2,13 +2,12 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
-    selector       : 'settings-notifications',
-    templateUrl    : './notifications.component.html',
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'default-items',
+    templateUrl: './default-items.component.html',
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SettingsNotificationsComponent implements OnInit
-{
+export class DefaultItemsComponent implements OnInit {
     notificationsForm: UntypedFormGroup;
 
     /**
@@ -16,8 +15,7 @@ export class SettingsNotificationsComponent implements OnInit
      */
     constructor(
         private _formBuilder: UntypedFormBuilder
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -27,17 +25,16 @@ export class SettingsNotificationsComponent implements OnInit
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // Create the form
         this.notificationsForm = this._formBuilder.group({
             communication: [true],
-            security     : [true],
-            meetups      : [false],
-            comments     : [false],
-            mention      : [true],
-            follow       : [true],
-            inquiry      : [true]
+            security: [true],
+            meetups: [false],
+            comments: [false],
+            mention: [true],
+            follow: [true],
+            inquiry: [true]
         });
     }
 }

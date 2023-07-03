@@ -30,7 +30,7 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
 
 
 class ChoicesSerializer(serializers.Serializer):
-    lab_location = serializers.ReadOnlyField()
+    lab_locations = serializers.ReadOnlyField()
 
 
 # class ItemSerializer(serializers.ModelSerializer):
@@ -55,23 +55,19 @@ class TestItemSerializer(serializers.ModelSerializer):
         'nt_test_uut': None, 'nt_need_test': False, 'nt_regression_rate': None,
         'ot_test_uut': None, 'ot_need_test': False, 'ot_regression_rate': None,
     })
-    item_name = serializers.ReadOnlyField(source='test_item.name')
 
-    # fee = serializers.SerializerMethodField()
+    item_name = serializers.ReadOnlyField(source='item.name')
+    equip_working_hour=serializers.ReadOnlyField(source='item.equip_working_hour')
+    lab_location = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = models.TestItem
-        fields = ['item_name','record', ]
-        extra_fields=['item_name']
+        fields = '__all__'
 
-    def get_field_names(self, declared_fields, info):
-        expanded_fields = super(TestItemSerializer, self).get_field_names(declared_fields, info)
-
-        if getattr(self.Meta, 'extra_fields', None):
-            return expanded_fields + self.Meta.extra_fields
-        else:
-            return expanded_fields
-
+    def get_lab_location(self, obj):
+        return dict(models.TestItem.LAB_LOCATION).get(obj.lab_location)
+    
     # def get_fee(self, test_item):
     #     year = datetime.date.today().year
     #     qs = models.TestItem.objects.filter(test_item=test_item, year=year)

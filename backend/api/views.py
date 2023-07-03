@@ -25,7 +25,7 @@ class ChoicesViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
 
     def list(self, request):
         instance = {
-            'lab_location': self.Convert(models.TestItem.LAB_LOCATION),
+            'lab_locations': self.Convert(models.TestItem.LAB_LOCATION),
         }
 
         serializer = serializers.ChoicesSerializer(instance=instance)
