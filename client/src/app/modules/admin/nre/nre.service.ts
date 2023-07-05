@@ -10,7 +10,7 @@ export class NreService {
 
     private _choices: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _customers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
-    private _project: any;
+    private _page: any;
 
     constructor(private _appService: AppService) { }
 
@@ -23,12 +23,12 @@ export class NreService {
     }
 
 
-    set project(data: any) {
-        this._project = data;
+    set page(data: any) {
+        this._page = data;
     }
 
-    get project() {
-        return this._project;
+    get page() {
+        return this._page;
     }
 
     getChoices(): Observable<any> {

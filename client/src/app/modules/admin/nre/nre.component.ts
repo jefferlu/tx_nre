@@ -97,9 +97,9 @@ export class NreComponent implements OnInit {
                 }
             });
 
-        if (this._nreService.project) {
-            this.page.project = this._nreService.project;
-
+        if (this._nreService.page) {
+            this.page = this._nreService.page;
+            console.log(this._nreService.page)
             this.form.get('project').setValue(this.page.project.name);
             this.form.get('customer').setValue(this.page.customer.id);
             this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
@@ -193,7 +193,7 @@ export class NreComponent implements OnInit {
                     this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
 
                     // keep page data
-                    this._nreService.project = this.page.project;
+                    this._nreService.page = this.page;
 
                     this.page.status = {
                         label: 'Saved',
@@ -213,10 +213,10 @@ export class NreComponent implements OnInit {
                         name: this.form.value.project,
                         power_ratio: null,
                     }
-                    
+
                     this.page.customer.id = this.form.value.customer;
 
-                    this._nreService.project = this.page.project;
+                    this._nreService.page = this.page;
 
                     this.page.status = {
                         label: 'New',
@@ -300,7 +300,16 @@ export class NreComponent implements OnInit {
                         this.search();
                     }
                 },
-                error: e => { }
+                error: e => {
+                    console.log(e)
+                    console.log(e.error.detail ? e.error.detail : e.message)
+                    const dialogRef = this._fuseConfirmationService.open({
+                        // title: e.statusText,
+                        title: `createProject() error`,
+                        message: e.error.detail ? e.error.detail : e.message,
+                        actions: { cancel: { show: false } }
+                    });
+                }
             })
         }
         // Crate
