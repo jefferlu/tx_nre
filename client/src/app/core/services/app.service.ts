@@ -17,9 +17,18 @@ export class AppService {
         private _fuseConfirmationService: FuseConfirmationService
     ) { }
 
-    get(method, slug?): Observable<any> {
+    get(method, kwargs?): Observable<any> {
 
-        let url = slug ? `${endpoint}/${method}/${slug}` : `${endpoint}/${method}`;
+        let queryString = '';
+        for (let key in kwargs) {
+            if (queryString === '')
+                queryString = `?${key}=${kwargs[key]}`
+            else
+                queryString += `&${key}=${kwargs[key]}`
+
+        }
+
+        let url = `${endpoint}/${method}/${queryString}`;
 
         return this._httpClient.get(url).pipe(
             switchMap((response: any) => {
@@ -47,41 +56,52 @@ export class AppService {
             switchMap((response: any) => {
                 return of(response);
             }),
-            catchError((e) => {
-                console.log(e)
-                console.log(e.error.detail ? e.error.detail : e.message)
-                const dialogRef = this._fuseConfirmationService.open({
-                    // title: e.statusText,
-                    title: `API Error: post()`,
-                    message: e.error.detail ? e.error.detail : e.message,
-                    actions: { cancel: { show: false } }
-                });
+            // catchError((e) => {
+            //     console.log(e)
+            //     console.log(e.error.detail ? e.error.detail : e.message)
+            //     const dialogRef = this._fuseConfirmationService.open({
+            //         // title: e.statusText,
+            //         title: `API post() Error: ${method} `,
+            //         message: e.error.detail ? e.error.detail : e.message,
+            //         actions: { cancel: { show: false } }
+            //     });
 
-                // Return false
-                return of(false)
-            })
+            //     // Return false
+            //     return of(false)
+            // })
         );
     }
 
-    put(method: string, slug: string, request: any): Observable<any> {
+    put(method: string, kwargs: any, request: any): Observable<any> {
 
-        return this._httpClient.put(`${endpoint}/${method}/${slug}`, request).pipe(
+        let queryString = '';
+        for (let key in kwargs) {
+            if (queryString === '')
+                queryString = `?${key}=${kwargs[key]}`
+            else
+                queryString += `&${key}=${kwargs[key]}`
+
+        }
+
+        let url = `${endpoint}/${method}/${queryString}`;
+
+        return this._httpClient.put(url, request).pipe(
             switchMap((response: any) => {
                 return of(response);
             }),
-            catchError((e) => {
-                console.log(e)
-                console.log(e.error.detail ? e.error.detail : e.message)
-                const dialogRef = this._fuseConfirmationService.open({
-                    // title: e.statusText,
-                    title: `API put() Error: ${method} `,
-                    message: e.error.detail ? e.error.detail : e.message,
-                    actions: { cancel: { show: false } }
-                });
+            // catchError((e) => {
+            //     console.log(e)
+            //     console.log(e.error.detail ? e.error.detail : e.message)
+            //     const dialogRef = this._fuseConfirmationService.open({
+            //         // title: e.statusText,
+            //         title: `API put() Error: ${method} `,
+            //         message: e.error.detail ? e.error.detail : e.message,
+            //         actions: { cancel: { show: false } }
+            //     });
 
-                // Return false
-                return of(false)
-            })
+            //     // Return false
+            //     return of(false)
+            // })
         );
     }
 

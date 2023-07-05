@@ -13,7 +13,7 @@
                     <div class="flex flex-row flex-wrap sm:w-1/2">
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Customer</div>
-                            <div class="mt-2 text-xl leading-none">{{page.project.customer}}</div>
+                            <div class="mt-2 text-xl leading-none">{{page.customer.name}}</div>
                         </div>
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Project</div>
@@ -80,8 +80,8 @@
                         <form [formGroup]="form" class="mt-2 pl-10 pr-16 sm:mt-6 sm:px-10">
                             <!-- Customer -->
                             <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
-                                <mat-select [placeholder]="'Customer'" [formControlName]="'customer'" >
-                                    <ng-container *ngFor="let cust of page.customers">
+                                <mat-select [placeholder]="'Customer'" [formControlName]="'customer'">
+                                    <ng-container *ngFor="let cust of page.customers;">
                                         <mat-option [value]="cust.id">{{cust.name}}</mat-option>
                                     </ng-container>
                                 </mat-select>

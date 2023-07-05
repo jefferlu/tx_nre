@@ -40,15 +40,15 @@ export class NreService {
     }
 
     getCustomers(): Observable<any> {
-        return this._appService.get('customer').pipe(
+        return this._appService.get('customers').pipe(
             tap((response: any) => {
                 this._customers.next(response);
             })
         );
     }
 
-    getProject(name: string): Observable<any> {
-        return this._appService.get('project', name).pipe(
+    getProject(name: string, kwargs?: any): Observable<any> {
+        return this._appService.get(`projects/${name}`, kwargs).pipe(
             switchMap((response: any) => {
                 return of(response);
             })
@@ -56,15 +56,15 @@ export class NreService {
     }
 
     createProject(request: any): Observable<any> {
-        return this._appService.post('project', request).pipe(
+        return this._appService.post('projects', request).pipe(
             switchMap((response: any) => {
                 return of(response);
             })
         );
     }
 
-    updateProject(slug: string, request: any): Observable<any> {
-        return this._appService.put('project', slug, request).pipe(
+    updateProject(name: string, kwargs: any, request: any): Observable<any> {
+        return this._appService.put(`projects/${name}`, kwargs, request).pipe(
             switchMap((response: any) => {
                 return of(response);
             })

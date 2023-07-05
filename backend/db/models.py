@@ -5,9 +5,9 @@ class Item(models.Model):
     no = models.CharField(max_length=120, verbose_name='no')
     name = models.CharField(max_length=120, verbose_name='name')
     equip_working_hours = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name='equip_working_hours')
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_working_hours')
     man_working_hours = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name='man_working_hours')
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_working_hours')
 
     class Meta:
         db_table = 'nre_item'
@@ -47,7 +47,7 @@ class TestItem(models.Model):
 
     function = models.ForeignKey(
         Function, on_delete=models.CASCADE, related_name='test_items', verbose_name='function')
-    item = models.OneToOneField(
+    item = models.ForeignKey(
         Item, on_delete=models.CASCADE, verbose_name='item')
     lab_location = models.IntegerField(
         default=1, choices=LAB_LOCATION, verbose_name='lab_location')
@@ -81,7 +81,7 @@ class Project(models.Model):
         db_table = 'nre_project'
 
     def __str__(self):
-        return self.name
+        return '%s-%s' % (self.customer.name, self.name)
 
 
 class Record(models.Model):

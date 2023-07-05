@@ -14,8 +14,9 @@ class OptionalSlashRouter(DefaultRouter):
 
 router = OptionalSlashRouter()
 router.register(r'choices', views.ChoicesViewSet, basename='choices')
-router.register(r'customer', views.CustomerViewSet)
-router.register(r'project', views.ProjectViewSet)
+router.register(r'customers', views.CustomerViewSet)
+router.register(r'projects', views.ProjectViewSet)
+# router.register(r'projects/(?P<project>\w+)/(?P<customer>\d+)/', views.ProjectViewSet)
 
 urlpatterns = [
     path('login', views.TokenObtainView.as_view(), name='token_obtain_pair'),

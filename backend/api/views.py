@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
 from django.shortcuts import get_object_or_404
@@ -52,3 +53,9 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     serializer_class = serializers.ProjectSerializer
     queryset = models.Project.objects.all()
     lookup_field = 'name'
+
+    def get_object(self):
+        customer = self.request.GET.get('customer', None)
+        name = self.kwargs['name']
+        return get_object_or_404(models.Project, name=name, customer=customer)
+

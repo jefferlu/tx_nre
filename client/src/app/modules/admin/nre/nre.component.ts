@@ -33,11 +33,15 @@ export class NreComponent implements OnInit {
         search: {
             opened: false,
         },
+        customer: {
+            id: null,
+            name: ''
+        },
         project: {
             id: null,
             name: '',
             power_ratio: null,
-            customer: null
+
         },
         status: {
             label: null,
@@ -80,21 +84,24 @@ export class NreComponent implements OnInit {
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get the categories
+        // Get the customers
         this._nreService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                this.page.customers = res;
-                console.log(res)
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+                if (res) {
+                    this.page.customers = res;
+                    this.form.get('customer').setValue(res[0].id)
+                    console.log(res)
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }
             });
 
         if (this._nreService.project) {
             this.page.project = this._nreService.project;
 
             this.form.get('project').setValue(this.page.project.name);
-            this.form.get('customer').setValue(this.page.project.customer);
+            this.form.get('customer').setValue(this.page.customer.id);
             this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
             this.search();
         }
@@ -153,9 +160,11 @@ export class NreComponent implements OnInit {
 
 
         this.page.status.label = undefined;
-        this.page.data = JSON.parse(JSON.stringify(this.page.customers[this.form.value.customer]));
+        this.page.customer.name = this.page.customers.find((e: any) => e.id == this.form.value.customer).name;
+        this.page.data = JSON.parse(JSON.stringify(this.page.customers.find((e: any) => e.id === this.form.value.customer)));
 
-        this._nreService.getProject(this.form.value.project).subscribe({
+
+        this._nreService.getProject(this.form.value.project, { 'customer': this.form.value.customer }).subscribe({
             next: (res) => {
                 if (res) {
 
@@ -173,8 +182,12 @@ export class NreComponent implements OnInit {
                     this.page.project = {
                         id: res.id,
                         name: res.name,
-                        power_ratio: +res.power_ratio,
-                        customer: this.form.value.customer
+                        power_ratio: +res.power_ratio
+                    }
+
+                    this.page.customer = {
+                        id: res.customer,
+                        name: res.customer_name
                     }
 
                     this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
@@ -199,8 +212,10 @@ export class NreComponent implements OnInit {
                         id: null,
                         name: this.form.value.project,
                         power_ratio: null,
-                        customer: this.form.value.customer
                     }
+                    
+                    this.page.customer.id = this.form.value.customer;
+
                     this._nreService.project = this.page.project;
 
                     this.page.status = {
@@ -209,9 +224,24 @@ export class NreComponent implements OnInit {
                         color: 'blue'
                     }
 
-                    this.formSave.get('power_ratio').setValue(null);
+                    // this.formSave.get('power_ratio').setValue(null);
 
                     this._changeDetectorRef.markForCheck();
+                }
+                else {
+                    let dialogRef = this._fuseConfirmationService.open({
+                        title: `Error ${e.status}`,
+                        message: `${e.statusText}.<br/>Please contact the administrator.`,
+                        actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                    });
+
+                    dialogRef.afterClosed().subscribe(result => {
+                        if (result === 'confirmed') {
+                            this.onSearchOpen();
+                            this._changeDetectorRef.markForCheck();
+                        }
+                    });
+                    console.log(e)
                 }
             }
         });
@@ -242,6 +272,7 @@ export class NreComponent implements OnInit {
         let request = {
             'id': null,
             'name': this.page.project.name,
+            'customer': this.page.customer.id,
             'power_ratio': this.formSave.value.power_ratio,
             'records': []
         }
@@ -254,9 +285,9 @@ export class NreComponent implements OnInit {
 
         // Update
         if (this.page.project.id) {
-            request.id = this.page.project.id
+            request.id = this.page.project.id;
 
-            this._nreService.updateProject(this.page.project.name, request).subscribe({
+            this._nreService.updateProject(this.page.project.name, { 'customer': this.page.customer.id }, request).subscribe({
                 next: (res) => {
                     if (res) {
                         let dialogRef = this._fuseConfirmationService.open({
@@ -274,7 +305,6 @@ export class NreComponent implements OnInit {
         }
         // Crate
         else {
-
             // console.log('request-->', request)
             this._nreService.createProject(request).subscribe({
                 next: (res) => {
@@ -297,7 +327,17 @@ export class NreComponent implements OnInit {
 
                     this._changeDetectorRef.markForCheck();
                 },
-                error: e => { }
+                error: e => {
+                    console.log(e)
+                    console.log(e.error.detail ? e.error.detail : e.message)
+                    const dialogRef = this._fuseConfirmationService.open({
+                        // title: e.statusText,
+                        title: `createProject() error`,
+                        message: e.error.detail ? e.error.detail : e.message,
+                        actions: { cancel: { show: false } }
+                    });
+
+                }
             });
         }
 

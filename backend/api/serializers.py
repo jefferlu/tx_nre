@@ -57,9 +57,8 @@ class TestItemSerializer(serializers.ModelSerializer):
     })
 
     item_name = serializers.ReadOnlyField(source='item.name')
-    equip_working_hour=serializers.ReadOnlyField(source='item.equip_working_hour')
+    equip_working_hour = serializers.ReadOnlyField(source='item.equip_working_hour')
     lab_location = serializers.SerializerMethodField()
-    
 
     class Meta:
         model = models.TestItem
@@ -67,7 +66,7 @@ class TestItemSerializer(serializers.ModelSerializer):
 
     def get_lab_location(self, obj):
         return dict(models.TestItem.LAB_LOCATION).get(obj.lab_location)
-    
+
     # def get_fee(self, test_item):
     #     year = datetime.date.today().year
     #     qs = models.TestItem.objects.filter(test_item=test_item, year=year)
@@ -104,6 +103,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    customer_name = serializers.ReadOnlyField(source='customer.name')
     records = RecordSerializer(many=True)
 
     class Meta:
@@ -140,9 +140,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     #     return project_instance
 
     def update(self, instance, validated_data):
-
+        print(validated_data)
         records_data = validated_data.pop('records', None)
-        # print(records_data)
+        
         if records_data is not None:
             for r in records_data:
                 if r.get('project', None) is not None:
