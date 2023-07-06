@@ -39,6 +39,13 @@ class ChoicesViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
         return di
 
 
+class ItemViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    if (not settings.DEBUG):
+        permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.ItemSerializer
+    queryset = models.Item.objects.all()
+
+
 class CustomerViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     if (not settings.DEBUG):
         permission_classes = (IsAuthenticated, )
@@ -58,4 +65,3 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         customer = self.request.GET.get('customer', None)
         name = self.kwargs['name']
         return get_object_or_404(models.Project, name=name, customer=customer)
-

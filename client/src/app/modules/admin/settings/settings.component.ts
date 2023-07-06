@@ -14,7 +14,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
     panels: any[] = [];
-    selectedPanel: string = 'account';
+    selectedPanel: string = 'default-items';
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -39,17 +39,17 @@ export class SettingsComponent implements OnInit, OnDestroy {
             {
                 id: 'default-items',
                 icon: '',
-                title: 'Default Test Item',
+                title: '人力設備工時',
                 description: ''
             },
             {
                 id: 'test-fee',
                 title: '3rd party Test fee'
-            },           
-            {
-                id: 'account',
-                title: 'Account',
-            }
+            },
+            // {
+            //     id: 'account',
+            //     title: 'Account',
+            // }
         ];
 
         // Subscribe to media changes

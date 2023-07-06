@@ -1,7 +1,8 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
+import { forkJoin } from 'rxjs';
+
 import { NreService } from './nre.service';
-import { Observable, forkJoin } from 'rxjs';
 
 export const nreResolver: ResolveFn<any> = (route, state) => {
 

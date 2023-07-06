@@ -12,7 +12,6 @@ import { FuseAlertModule } from '@fuse/components/alert';
 import { SharedModule } from 'app/shared/shared.module';
 import { SettingsComponent } from './settings.component';
 import { SettingsAccountComponent } from './account/account.component';
-import { settingsRoutes } from './settings.routing';
 import { DefaultItemsComponent } from './default-items/default-items.component';
 import { TestFeeComponent } from './test-fee/test-fee.component';
 
@@ -24,7 +23,7 @@ import { TestFeeComponent } from './test-fee/test-fee.component';
         DefaultItemsComponent
     ],
     imports: [
-        RouterModule.forChild(settingsRoutes),
+        RouterModule.forChild([{ path: '', component: SettingsComponent }]),
         MatButtonModule,
         MatFormFieldModule,
         MatIconModule,

@@ -2,9 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { NumericOnlyDirective, NumericTwoDigitDirective } from 'app/core/directives/numeric.directive';
 
 @NgModule({
-    declarations: [],
+    declarations: [
+        NumericOnlyDirective,
+        NumericTwoDigitDirective
+    ],
     imports: [
         CommonModule,
         FormsModule,
@@ -13,7 +17,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     exports: [
         CommonModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NumericOnlyDirective,
+        NumericTwoDigitDirective
     ]
 })
 export class SharedModule { }

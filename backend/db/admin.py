@@ -5,7 +5,7 @@ from . import models
 
 @admin.register(models.Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('no', 'name', 'man_working_hours', 'equip_working_hours', )
+    list_display = ('name', 'man_working_hours', 'equip_working_hours', )
 
 
 @admin.register(models.Customer)

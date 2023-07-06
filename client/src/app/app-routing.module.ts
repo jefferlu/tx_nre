@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
-
 import { authGuard } from './core/auth/guards/auth.guard';
 import { LayoutComponent } from './layout/layout.component';
 import { nreResolver } from './modules/admin/nre/nre.resolver';
+import { settingsResolver } from './modules/admin/settings/settings.resolver';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy: PreloadAllModules,
@@ -33,12 +33,12 @@ const routes: Routes = [
         canMatch: [authGuard],
         component: LayoutComponent,
         children: [
-            { path: 'nre', resolve: { initData: nreResolver }, loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
+            { path: 'nre', resolve: { data: nreResolver }, loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
             // Profile
             { path: 'profile', loadChildren: () => import('app/modules/admin/profile/profile.module').then(m => m.ProfileModule) },
 
             // Settings
-            { path: 'settings', loadChildren: () => import('app/modules/admin/settings/settings.module').then(m => m.SettingsModule) },
+            { path: 'settings', resolve: { data: settingsResolver }, loadChildren: () => import('app/modules/admin/settings/settings.module').then(m => m.SettingsModule) },
 
             // 404 & Catch all
             { path: '404', pathMatch: 'full', loadChildren: () => import('app/modules/auth/error-404/error-404.module').then(m => m.Error404Module) },

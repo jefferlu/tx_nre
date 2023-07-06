@@ -10,11 +10,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 import { SharedModule } from 'app/shared/shared.module';
 import { NreComponent } from './nre.component';
-import { NumericOnlyDirective, NumericTwoDigitDirective } from 'app/core/directives/numeric.directive';
-
 
 @NgModule({
-    declarations: [NreComponent, NumericOnlyDirective, NumericTwoDigitDirective],
+    declarations: [NreComponent],
     imports: [
         RouterModule.forChild([{ path: '', component: NreComponent }]),
         MatFormFieldModule,

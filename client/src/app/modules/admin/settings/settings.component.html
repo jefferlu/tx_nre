@@ -41,10 +41,11 @@
         <mat-drawer-content class="flex flex-col">
 
             <!-- Main -->
-            <div class="flex-auto px-6 pt-9 pb-12 md:p-8 md:pb-12 lg:p-12">
+            <!-- <div class="absolute inset-0 flex flex-auto px-6 pt-9 pb-12 md:p-8 md:pb-12 lg:p-12"> -->
+            <div class="absolute inset-0 flex flex-auto flex-col min-w-0">
 
                 <!-- Panel header -->
-                <div class="flex items-center">
+                <div class="flex items-center px-6 pt-9">
 
                     <!-- Drawer toggle -->
                     <button class="lg:hidden -ml-2" mat-icon-button (click)="drawer.toggle()">
@@ -58,7 +59,7 @@
                 </div>
 
                 <!-- Load settings panel -->
-                <div class="mt-8">
+                <div class="mt-8 px-6 pb-12 overflow-y-auto" cdkScrollable>
                     <ng-container [ngSwitch]="selectedPanel">
                         <!-- Account -->
                         <ng-container *ngSwitchCase="'default-items'">

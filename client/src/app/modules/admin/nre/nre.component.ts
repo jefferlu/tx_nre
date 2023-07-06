@@ -51,7 +51,9 @@ export class NreComponent implements OnInit {
         tab: {
             index: 0
         },
-        data: null
+        inputData: null,
+        equipData: null,
+        manPowerData: null
     }
 
     constructor(
@@ -103,7 +105,7 @@ export class NreComponent implements OnInit {
             this.form.get('project').setValue(this.page.project.name);
             this.form.get('customer').setValue(this.page.customer.id);
             this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
-            this.search();
+            // this.search();
         }
 
         // console.log(this._nreService.project);
@@ -161,20 +163,20 @@ export class NreComponent implements OnInit {
 
         this.page.status.label = undefined;
         this.page.customer.name = this.page.customers.find((e: any) => e.id == this.form.value.customer).name;
-        this.page.data = JSON.parse(JSON.stringify(this.page.customers.find((e: any) => e.id === this.form.value.customer)));
+        this.page.inputData = JSON.parse(JSON.stringify(this.page.customers.find((e: any) => e.id === this.form.value.customer)));
 
 
         this._nreService.getProject(this.form.value.project, { 'customer': this.form.value.customer }).subscribe({
             next: (res) => {
                 if (res) {
 
-                    for (let i in this.page.data.functions) {
-                        let fun = this.page.data.functions[i]
+                    for (let i in this.page.inputData.functions) {
+                        let fun = this.page.inputData.functions[i]
                         for (let j in fun.test_items) {
                             let item = fun.test_items[j];
                             let record = res.records.find(e => e.test_item === item.id)
                             if (record) {
-                                this.page.data.functions[i].test_items[j].record = record;
+                                this.page.inputData.functions[i].test_items[j].record = record;
                             }
                         }
                     }
@@ -251,7 +253,7 @@ export class NreComponent implements OnInit {
 
         if (this.formSave.invalid) return;
 
-        if (!this.page.data) {
+        if (!this.page.inputData) {
             let dialogRef = this._fuseConfirmationService.open({
                 title: 'Invalid action',
                 message: `Project has not been loaded.`,
@@ -276,7 +278,7 @@ export class NreComponent implements OnInit {
             'power_ratio': this.formSave.value.power_ratio,
             'records': []
         }
-        for (let func of this.page.data.functions) {
+        for (let func of this.page.inputData.functions) {
             for (let item of func.test_items) {
                 item.record.test_item = item.id;
                 request.records.push(item.record)
@@ -353,9 +355,9 @@ export class NreComponent implements OnInit {
     }
 
     calculate(): void {
-        // console.log(this.page.data)
-        for (let i in this.page.data.functions) {
-            let fun = this.page.data.functions[i]
+        console.log(this.page.inputData)
+        for (let i in this.page.inputData.functions) {
+            let fun = this.page.inputData.functions[i]
             for (let j in fun.test_items) {
                 let item = fun.test_items[j];
 

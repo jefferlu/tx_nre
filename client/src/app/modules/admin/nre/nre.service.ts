@@ -22,7 +22,6 @@ export class NreService {
         return this._customers.asObservable();
     }
 
-
     set page(data: any) {
         this._page = data;
     }

@@ -2,7 +2,6 @@ from django.db import models
 
 
 class Item(models.Model):
-    no = models.CharField(max_length=120, verbose_name='no')
     name = models.CharField(max_length=120, verbose_name='name')
     equip_working_hours = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_working_hours')
@@ -62,7 +61,7 @@ class TestItem(models.Model):
 
 class Fee(models.Model):
     test_item = models.ForeignKey(
-        TestItem, on_delete=models.CASCADE, related_name='quotations', verbose_name='test_item')
+        TestItem, on_delete=models.CASCADE, related_name='fees', verbose_name='test_item')
     year = models.IntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 

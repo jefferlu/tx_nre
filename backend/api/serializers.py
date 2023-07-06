@@ -33,10 +33,10 @@ class ChoicesSerializer(serializers.Serializer):
     lab_locations = serializers.ReadOnlyField()
 
 
-# class ItemSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = models.Item
-#         fields = '__all__'
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Item
+        fields = '__all__'
 
 
 class RecordSerializer(serializers.ModelSerializer):
@@ -57,7 +57,7 @@ class TestItemSerializer(serializers.ModelSerializer):
     })
 
     item_name = serializers.ReadOnlyField(source='item.name')
-    equip_working_hour = serializers.ReadOnlyField(source='item.equip_working_hour')
+    equip_working_hours = serializers.ReadOnlyField(source='item.equip_working_hours')
     lab_location = serializers.SerializerMethodField()
 
     class Meta:
@@ -142,7 +142,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         print(validated_data)
         records_data = validated_data.pop('records', None)
-        
+
         if records_data is not None:
             for r in records_data:
                 if r.get('project', None) is not None:
