@@ -2,11 +2,11 @@
 
     <div class="flex flex-auto">
         <div class="flex">
-            <mat-form-field class="w-full sm:w-72 fuse-mat-dense">
+            <mat-form-field class="w-full sm:w-80 fuse-mat-dense">
                 <mat-icon matPrefix fontSet="material-icons-outlined">search</mat-icon>
-                <input type="search" matInput [autocomplete]="'off'" [placeholder]="'Search...'">
+                <input type="search" matInput [autocomplete]="'off'" [placeholder]="'Search...'" (keyup.enter)="onSearch($event.target.value)">
             </mat-form-field>
-            
+
         </div>
         <div class="flex-auto">
             <button mat-icon-button class="ml-2 sm:ml-4" (click)="add()">
@@ -25,11 +25,12 @@
         <thead>
             <tr>
                 <th rowspan="2" class="text-center">NO</th>
-                <th>Enterprise Reliability Test Procedures</th>
+                <th colspan="2">Enterprise Reliability Test Procedures</th>
                 <th class="text-center">人力工時</th>
                 <th class="text-center">設備工時</th>
             </tr>
             <tr>
+                <th>Item No</th>
                 <th>Minotaur SOW</th>
                 <th class="text-center">(hr)</th>
                 <th class="text-center">(hr)</th>
@@ -39,6 +40,7 @@
             <ng-container *ngFor="let item of page.data;let no=index;">
                 <tr>
                     <td class="text-center">{{no+1}}</td>
+                    <td class="edit-str w-50"><input [(ngModel)]="item.no" (change)="change()"></td>
                     <td class="edit-str"><input [(ngModel)]="item.name" (change)="change()"></td>
                     <td class="edit-numeric"><input [(ngModel)]="item.man_working_hours" (change)="change()" numeric-two-digit></td>
                     <td class="edit-numeric"><input [(ngModel)]="item.equip_working_hours" (change)="change()" numeric-two-digit></td>

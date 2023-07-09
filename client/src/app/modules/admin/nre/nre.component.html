@@ -236,7 +236,7 @@
                                             <tr *ngIf="idx==0">
                                                 <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                                 <td>{{item.item_name}}</td>
-                                                <td>{{item.lab_location}}</td>
+                                                <td class="view">{{item.lab_location}}</td>
                                                 <td></td>
                                                 <td class="view">{{item.concept}}</td>
                                                 <td class="view">{{item.bu}}</td>
@@ -247,7 +247,7 @@
                                             </tr>
                                             <tr *ngIf="idx>0">
                                                 <td>{{item.item_name}}</td>
-                                                <td>{{item.lab_location}}</td>
+                                                <td class="view">{{item.lab_location}}</td>
                                                 <td></td>
                                                 <td class="view">{{item.concept}}</td>
                                                 <td class="view">{{item.bu}}</td>

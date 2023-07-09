@@ -2,7 +2,8 @@ from django.db import models
 
 
 class Item(models.Model):
-    name = models.CharField(max_length=120, verbose_name='name', unique=True)
+    no = models.CharField(max_length=120, verbose_name='no', unique=True)
+    name = models.CharField(max_length=120, verbose_name='name')
     equip_working_hours = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_working_hours')
     man_working_hours = models.DecimalField(

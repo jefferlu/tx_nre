@@ -24,6 +24,14 @@ export class SettingsService {
         );
     }
 
+    queryItems(slug: any): Observable<any> {
+        return this._appService.get('items', slug).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            })
+        );
+    }
+
     saveItems(request: any): Observable<any> {
         return this._appService.post('items', request).pipe(
             switchMap((response: any) => {

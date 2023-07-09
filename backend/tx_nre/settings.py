@@ -124,7 +124,7 @@ WSGI_APPLICATION = 'tx_nre.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nre',
+        'NAME': 'nre_dev',
         'USER': 'giantcld',
         'PASSWORD': '90637925',
         'HOST': 'giantcld.com',

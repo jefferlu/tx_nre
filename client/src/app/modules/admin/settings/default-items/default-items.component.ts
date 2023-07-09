@@ -58,6 +58,21 @@ export class DefaultItemsComponent implements OnInit {
             });
     }
 
+    onSearch(value): void {
+        console.log(value)
+        this._settingsService.queryItems({ query: value })
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                if (res) {
+                    console.log(res)
+                    this.page.data = JSON.parse(JSON.stringify(res));
+
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }
+            });
+    }
+
     change(): void {
         // this.page.status = {
         //     label: 'Modified',
@@ -78,37 +93,38 @@ export class DefaultItemsComponent implements OnInit {
     save(): void {
         console.log(this.page.data)
 
-        this._settingsService.saveItems(this.page.data).subscribe({
-            next: (res) => {
-                let dialogRef = this._fuseConfirmationService.open({
-                    message: `Save completed.`,
-                    icon: { color: 'primary' },
-                    actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                });
-                console.log('res', res)
-                this.page.data = res;
+        this._settingsService.saveItems(this.page.data)
+            .subscribe({
+                next: (res) => {
+                    let dialogRef = this._fuseConfirmationService.open({
+                        message: `Save completed.`,
+                        icon: { color: 'primary' },
+                        actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                    });
+                    console.log('res', res)
+                    this.page.data = res;
 
-                this._changeDetectorRef.markForCheck();
-            },
-            error: e => {
-                console.log(e)
-                console.log(e.error.detail ? e.error.detail : e.message)
-                let title = `createProject() error`
-                let message = e.error.detail ? e.error.detail : e.message
+                    this._changeDetectorRef.markForCheck();
+                },
+                error: e => {
+                    console.log(e)
+                    console.log(e.error.detail ? e.error.detail : e.message)
+                    let title = `createProject() error`
+                    let message = e.error.detail ? e.error.detail : e.message
 
-                if (e.status == 400 && e.error) {
-                    title = 'Error';
-                    message = e.error
+                    if (e.status == 400 && e.error) {
+                        title = 'Error';
+                        message = e.error
+                    }
+
+                    const dialogRef = this._fuseConfirmationService.open({
+                        title: title,
+                        message: message,
+                        actions: { cancel: { show: false } }
+                    });
+
                 }
-
-                const dialogRef = this._fuseConfirmationService.open({
-                    title: title,
-                    message: message,
-                    actions: { cancel: { show: false } }
-                });
-
-            }
-        });
+            });
     }
 
     ngOnDestroy(): void {
