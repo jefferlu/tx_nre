@@ -7,7 +7,6 @@ import { NreService } from './nre.service';
 export const nreResolver: ResolveFn<any> = (route, state) => {
 
     return forkJoin([
-        inject(NreService).getChoices(),
         inject(NreService).getCustomers()
     ]);
 };

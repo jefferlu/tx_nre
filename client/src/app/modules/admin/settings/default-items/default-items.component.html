@@ -9,19 +9,19 @@
             
         </div>
         <div class="flex-auto">
-            <button mat-icon-button class="ml-2 sm:ml-4" >
+            <button mat-icon-button class="ml-2 sm:ml-4" (click)="add()">
                 <mat-icon [svgIcon]="'heroicons_solid:plus'"></mat-icon>
             </button>
         </div>
         <div class="sm:ml-auto">
             <!-- Save button-->
-            <button class="ml-3" mat-flat-button [color]="'primary'">
+            <button class="ml-3" mat-flat-button [color]="'primary'" (click)="save()">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
         </div>
     </div>
-    <table class="table-auto w-full border-2 border-slate-500 cust-table">
+    <table class="table-auto w-full border-2 border-slate-500 default-item-table">
         <thead>
             <tr>
                 <th rowspan="2" class="text-center">NO</th>
@@ -35,13 +35,13 @@
                 <th class="text-center">(hr)</th>
             </tr>
         </thead>
-        <tbody *ngIf="page.items">
-            <ng-container *ngFor="let item of page.items;let no=index;">
+        <tbody *ngIf="page.data">
+            <ng-container *ngFor="let item of page.data;let no=index;">
                 <tr>
                     <td class="text-center">{{no+1}}</td>
-                    <td>{{item.name}}</td>
-                    <td class="edit"><input [(ngModel)]="item.man_working_hours" (change)="change()" numeric-two-digit></td>
-                    <td class="edit"><input [(ngModel)]="item.equip_working_hours" (change)="change()" numeric-two-digit></td>
+                    <td class="edit-str"><input [(ngModel)]="item.name" (change)="change()"></td>
+                    <td class="edit-numeric"><input [(ngModel)]="item.man_working_hours" (change)="change()" numeric-two-digit></td>
+                    <td class="edit-numeric"><input [(ngModel)]="item.equip_working_hours" (change)="change()" numeric-two-digit></td>
                 </tr>
             </ng-container>
         </tbody>

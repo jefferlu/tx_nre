@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Item(models.Model):
-    name = models.CharField(max_length=120, verbose_name='name')
+    name = models.CharField(max_length=120, verbose_name='name', unique=True)
     equip_working_hours = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_working_hours')
     man_working_hours = models.DecimalField(
@@ -39,17 +39,18 @@ class Function(models.Model):
 
 
 class TestItem(models.Model):
-    LAB_LOCATION = [
-        (0, 'Compal PCP'),
-        (1, 'Outsourcing')
-    ]
+    # LAB_LOCATION = [
+    #     (0, 'Compal PCP'),
+    #     (1, 'Outsourcing')
+    # ]
 
     function = models.ForeignKey(
         Function, on_delete=models.CASCADE, related_name='test_items', verbose_name='function')
     item = models.ForeignKey(
         Item, on_delete=models.CASCADE, verbose_name='item')
-    lab_location = models.IntegerField(
-        default=1, choices=LAB_LOCATION, verbose_name='lab_location')
+    lab_location = models.CharField(max_length=120, verbose_name='lab_location')
+    # lab_location = models.IntegerField(
+    #     default=1, choices=LAB_LOCATION, verbose_name='lab_location')
 
     class Meta:
         db_table = 'nre_test_item'
@@ -61,7 +62,7 @@ class TestItem(models.Model):
 
 class Fee(models.Model):
     test_item = models.ForeignKey(
-        TestItem, on_delete=models.CASCADE, related_name='fees', verbose_name='test_item')
+        TestItem, on_delete=models.CASCADE, related_name='fees', verbose_name='fee')
     year = models.IntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 

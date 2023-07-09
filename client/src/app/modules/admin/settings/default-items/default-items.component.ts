@@ -3,6 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
 import { SettingsService } from '../settings.service';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'default-items',
@@ -15,8 +16,10 @@ export class DefaultItemsComponent implements OnInit {
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
+    elementPattern = null;
     page = {
-        items: null
+        items: null,
+        data: null
     }
 
     /**
@@ -25,6 +28,7 @@ export class DefaultItemsComponent implements OnInit {
     constructor(
         private _formBuilder: UntypedFormBuilder,
         private _changeDetectorRef: ChangeDetectorRef,
+        private _fuseConfirmationService: FuseConfirmationService,
         private _settingsService: SettingsService
     ) {
     }
@@ -41,12 +45,16 @@ export class DefaultItemsComponent implements OnInit {
         this._settingsService.items$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                this.page.items = res;
+                if (res) {
+                    this.page.items = res;
 
-                console.log(res)
+                    this.elementPattern = res[0];
+                    this.page.data = JSON.parse(JSON.stringify(res));
+                    console.log('init', res)
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }
             });
     }
 
@@ -57,7 +65,52 @@ export class DefaultItemsComponent implements OnInit {
         //     change: true
         // }
     }
-    
+
+    add(): void {
+        let newItem = {}
+        for (let key in this.elementPattern) {
+            if (key !== 'id')
+                newItem[key] = null;
+        }
+        this.page.data.unshift(newItem);
+    }
+
+    save(): void {
+        console.log(this.page.data)
+
+        this._settingsService.saveItems(this.page.data).subscribe({
+            next: (res) => {
+                let dialogRef = this._fuseConfirmationService.open({
+                    message: `Save completed.`,
+                    icon: { color: 'primary' },
+                    actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                });
+                console.log('res', res)
+                this.page.data = res;
+
+                this._changeDetectorRef.markForCheck();
+            },
+            error: e => {
+                console.log(e)
+                console.log(e.error.detail ? e.error.detail : e.message)
+                let title = `createProject() error`
+                let message = e.error.detail ? e.error.detail : e.message
+
+                if (e.status == 400 && e.error) {
+                    title = 'Error';
+                    message = e.error
+                }
+
+                const dialogRef = this._fuseConfirmationService.open({
+                    title: title,
+                    message: message,
+                    actions: { cancel: { show: false } }
+                });
+
+            }
+        });
+    }
+
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();

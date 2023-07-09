@@ -8,15 +8,10 @@ import { AppService } from 'app/core/services/app.service';
 })
 export class NreService {
 
-    private _choices: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _customers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _page: any;
 
     constructor(private _appService: AppService) { }
-
-    get choices$(): Observable<any[]> {
-        return this._choices.asObservable();
-    }
 
     get customers$(): Observable<any[]> {
         return this._customers.asObservable();
@@ -28,14 +23,6 @@ export class NreService {
 
     get page() {
         return this._page;
-    }
-
-    getChoices(): Observable<any> {
-        return this._appService.get('choices').pipe(
-            tap((response: any) => {
-                this._choices.next(response);
-            })
-        );
     }
 
     getCustomers(): Observable<any> {

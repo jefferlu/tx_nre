@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-
-import { AppService } from 'app/core/services/app.service';
 import { NreService } from './nre.service';
 import { Subject, takeUntil } from 'rxjs';
 import { SpecialAlpha } from 'app/core/validators/special-alpha';
@@ -51,9 +49,8 @@ export class NreComponent implements OnInit {
         tab: {
             index: 0
         },
-        inputData: null,
-        equipData: null,
-        manPowerData: null
+        data: null,
+
     }
 
     constructor(
@@ -76,16 +73,6 @@ export class NreComponent implements OnInit {
             power_ratio: [null, [Validators.required]]
         })
 
-        // Get the choices
-        this._nreService.choices$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((res: any) => {
-                this.page.choices = res.results;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
         // Get the customers
         this._nreService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -93,7 +80,7 @@ export class NreComponent implements OnInit {
                 if (res) {
                     this.page.customers = res;
                     this.form.get('customer').setValue(res[0].id)
-                    console.log(res)
+
                     // Mark for check
                     this._changeDetectorRef.markForCheck();
                 }
@@ -163,20 +150,20 @@ export class NreComponent implements OnInit {
 
         this.page.status.label = undefined;
         this.page.customer.name = this.page.customers.find((e: any) => e.id == this.form.value.customer).name;
-        this.page.inputData = JSON.parse(JSON.stringify(this.page.customers.find((e: any) => e.id === this.form.value.customer)));
+        this.page.data = JSON.parse(JSON.stringify(this.page.customers.find((e: any) => e.id === this.form.value.customer)));
 
 
         this._nreService.getProject(this.form.value.project, { 'customer': this.form.value.customer }).subscribe({
             next: (res) => {
                 if (res) {
 
-                    for (let i in this.page.inputData.functions) {
-                        let fun = this.page.inputData.functions[i]
+                    for (let i in this.page.data.functions) {
+                        let fun = this.page.data.functions[i]
                         for (let j in fun.test_items) {
                             let item = fun.test_items[j];
                             let record = res.records.find(e => e.test_item === item.id)
                             if (record) {
-                                this.page.inputData.functions[i].test_items[j].record = record;
+                                this.page.data.functions[i].test_items[j].record = record;
                             }
                         }
                     }
@@ -203,7 +190,8 @@ export class NreComponent implements OnInit {
                         color: 'green'
                     }
 
-                    this._changeDetectorRef.markForCheck();
+                    this.page.tab.index = 0;
+                    // this._changeDetectorRef.markForCheck();
                 }
             },
             error: e => {
@@ -253,7 +241,7 @@ export class NreComponent implements OnInit {
 
         if (this.formSave.invalid) return;
 
-        if (!this.page.inputData) {
+        if (!this.page.data) {
             let dialogRef = this._fuseConfirmationService.open({
                 title: 'Invalid action',
                 message: `Project has not been loaded.`,
@@ -278,7 +266,7 @@ export class NreComponent implements OnInit {
             'power_ratio': this.formSave.value.power_ratio,
             'records': []
         }
-        for (let func of this.page.inputData.functions) {
+        for (let func of this.page.data.functions) {
             for (let item of func.test_items) {
                 item.record.test_item = item.id;
                 request.records.push(item.record)
@@ -355,17 +343,78 @@ export class NreComponent implements OnInit {
     }
 
     calculate(): void {
-        console.log(this.page.inputData)
-        for (let i in this.page.inputData.functions) {
-            let fun = this.page.inputData.functions[i]
-            for (let j in fun.test_items) {
-                let item = fun.test_items[j];
 
-                if (fun.name === 'Reliability') {
-                    // console.log(item)
+
+        if (this.page.data) {
+            for (let i in this.page.data.functions) {
+                let func = this.page.data.functions[i];
+
+                func['concept'] = null;
+                func['bu']=null;
+                func['ct']=null;
+                func['nt']=null;
+                func['ot']=null;
+
+                for (let j in func.test_items) {
+                    let item = func.test_items[j];
+
+
+                    // for (let r in item.record) {
+
+                    if (item.equip_working_hours != null) {
+
+                        item['sub_total'] = 0;
+                        if (item.record.concept_regression_rate != null) {
+                            item['concept'] = parseFloat(item.record.concept_regression_rate) * item.equip_working_hours;
+                            item['sub_total'] += item['concept'];
+
+                            if (func['concept'] == null) func['concept'] = 0
+                            func['concept'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
+                        }
+
+                        if (item.record.bu_regression_rate != null) {
+                            item['bu'] = parseFloat(item.record.bu_regression_rate) * item.equip_working_hours;
+                            item['sub_total'] += item['bu'];
+
+                            if (func['bu'] == null) func['bu'] = 0
+                            func['bu'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
+                        }
+
+                        if (item.record.ct_regression_rate != null) {
+                            item['ct'] = parseFloat(item.record.ct_regression_rate) * item.equip_working_hours;
+                            item['sub_total'] += item['ct'];
+
+                            if (func['ct'] == null) func['ct'] = 0
+                            func['ct'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
+                        }
+                        if (item.record.nt_regression_rate != null) {
+                            item['nt'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
+                            item['sub_total'] += item['nt'];
+
+                            if (func['nt'] == null) func['nt'] = 0
+                            func['nt'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
+                        }
+                        if (item.record.ot_regression_rate != null) {
+                            item['ot'] = parseFloat(item.record.ot_regression_rate) * item.equip_working_hours;
+                            item['sub_total'] += item['ot'];
+
+                            if (func['ot'] == null) func['ot'] = 0
+                            func['ot'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
+                        }
+
+                    }
+
+                    // }
+                    // for (let n of ['concept','bu','ct','nt','ot'])
+                    //     console.log(n)
+
+                    if (func.name === 'Reliability') {
+                        // console.log(item)
+                    }
                 }
             }
         }
+        console.log(this.page.data)
     }
 
     change(): void {

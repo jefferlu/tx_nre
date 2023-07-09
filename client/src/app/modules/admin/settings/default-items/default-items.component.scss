@@ -1,8 +1,8 @@
-table.cust-table {
+table.default-item-table {
     @apply text-left;
 
     th {
-        @apply border-2 border-slate-500 p-0.5 px-1;
+        @apply border-2 text-left border-slate-500 p-0.5 px-1;
     }
 
     td {
@@ -13,9 +13,15 @@ table.cust-table {
         }
     }
 
-    .edit {
-        @apply text-center bg-blue-100 whitespace-nowrap w-20 sm:w-48;
+    .edit-str {
+        @apply bg-blue-100 whitespace-nowrap;
+        input {
+            @apply w-full truncate;
+        }
+    }
 
+    .edit-numeric {
+        @apply text-center bg-blue-100 whitespace-nowrap w-20 sm:w-48;
         input {
             @apply w-full text-center truncate;
         }

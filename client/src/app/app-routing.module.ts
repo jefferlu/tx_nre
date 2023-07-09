@@ -33,9 +33,11 @@ const routes: Routes = [
         canMatch: [authGuard],
         component: LayoutComponent,
         children: [
+            // NRE
             { path: 'nre', resolve: { data: nreResolver }, loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
-            // Profile
-            { path: 'profile', loadChildren: () => import('app/modules/admin/profile/profile.module').then(m => m.ProfileModule) },
+
+            // Dashboard
+            { path: 'dashboard', loadChildren: () => import('app/modules/admin/dashboard/dashboard.module').then(m => m.DashboardModule) },
 
             // Settings
             { path: 'settings', resolve: { data: settingsResolver }, loadChildren: () => import('app/modules/admin/settings/settings.module').then(m => m.SettingsModule) },

@@ -22,7 +22,7 @@ import { appConfig } from './core/config/app.config';
         BrowserModule,
         BrowserAnimationsModule,
         AppRoutingModule,
-        
+
         FuseModule,
         FuseConfigModule.forRoot(appConfig),
 

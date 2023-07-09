@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
@@ -29,14 +30,48 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
         return data
 
 
-class ChoicesSerializer(serializers.Serializer):
-    lab_locations = serializers.ReadOnlyField()
+# class ChoicesSerializer(serializers.Serializer):
+#     lab_locations = serializers.ReadOnlyField()
+
+
+class FeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Fee
+        fields = '__all__'
 
 
 class ItemSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = models.Item
         fields = '__all__'
+        # extra_kwargs = {'id': {'read_only': False, 'required': False}}
+
+# class ItemListSerializer(serializers.ListSerializer):
+#     child = ItemSerializer()    # child is keyword
+#     # create or update
+
+#     def create(self, validated_data):
+
+#         items = []
+#         for item_data in validated_data:
+#             item_id = item_data.get('id')
+
+#             if item_id:
+#                 item_instance = models.Item.objects.get(id=item_id)
+#                 serializer = ItemSerializer(item_instance, data=item_data)
+#             else:
+#                 serializer = ItemSerializer(data=item_data)
+
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 items.append(serializer.data)
+#             # item, created = item_serializer.Meta.model.objects.get_or_create(id=item_id, defaults=item_data)
+#             # if not created:
+#             #     item_serializer.update(item, item_data)
+
+#         sorted_items = sorted(items, key=lambda x: x['name'])  # sort by name
+#         return sorted_items
 
 
 class RecordSerializer(serializers.ModelSerializer):
@@ -58,35 +93,37 @@ class TestItemSerializer(serializers.ModelSerializer):
 
     item_name = serializers.ReadOnlyField(source='item.name')
     equip_working_hours = serializers.ReadOnlyField(source='item.equip_working_hours')
-    lab_location = serializers.SerializerMethodField()
+    man_working_hours = serializers.ReadOnlyField(source='item.man_working_hours')
+    
+    # lab_location = serializers.SerializerMethodField()
+
+    # fees = FeeSerializer(many=True)
+    fee = serializers.SerializerMethodField()
 
     class Meta:
         model = models.TestItem
         fields = '__all__'
 
-    def get_lab_location(self, obj):
-        return dict(models.TestItem.LAB_LOCATION).get(obj.lab_location)
+    # def get_lab_location(self, obj):
+    #     return dict(models.TestItem.LAB_LOCATION).get(obj.lab_location)
 
-    # def get_fee(self, test_item):
-    #     year = datetime.date.today().year
-    #     qs = models.TestItem.objects.filter(test_item=test_item, year=year)
-    #     serializer = TestItemSerializer(instance=qs, many=True, read_only=True)
-    #     return serializer.data
+    def get_fee(self, test_item):
+        year = datetime.date.today().year
+        try:
+            q = models.Fee.objects.get(test_item=test_item, year=year)
+            serializer = FeeSerializer(instance=q)
+            return serializer.data['amount']
+        except ObjectDoesNotExist:
+            return None
 
 
 class FunctionSerializer(serializers.ModelSerializer):
 
-    # test_items = serializers.SerializerMethodField()
     test_items = TestItemSerializer(many=True)
 
     class Meta:
         model = models.Function
         fields = '__all__'
-
-    # def get_test_items(self, function):
-    #     qs = models.TestItem.objects.filter(function=function)
-    #     serializer = TestItemSerializer(instance=qs, many=True, read_only=True)
-    #     return serializer.data
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -124,7 +161,6 @@ class ProjectSerializer(serializers.ModelSerializer):
                 serializer = RecordSerializer(data=r)
 
                 if serializer.is_valid():
-                    print('check')
                     serializer.save(project=project_instance)
 
         return project_instance

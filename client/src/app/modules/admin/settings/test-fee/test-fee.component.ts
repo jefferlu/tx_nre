@@ -1,81 +1,69 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { NreService } from '../../nre/nre.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-    selector       : 'test-fee',
-    templateUrl    : './test-fee.component.html',
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'test-fee',
+    templateUrl: './test-fee.component.html',
+    styleUrls: ['./test-fee.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TestFeeComponent implements OnInit
-{
-    planBillingForm: UntypedFormGroup;
-    plans: any[];
+export class TestFeeComponent implements OnInit {
+
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+    page = {
+        customers: null,
+        customer: null,
+        data: null
+    }
 
     /**
      * Constructor
      */
     constructor(
-        private _formBuilder: UntypedFormBuilder
-    )
-    {
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _nreService: NreService
+    ) {
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
+    ngOnInit(): void {
 
-    /**
-     * On init
-     */
-    ngOnInit(): void
-    {
-        // Create the form
-        this.planBillingForm = this._formBuilder.group({
-            plan          : ['team'],
-            cardHolder    : ['Brian Hughes'],
-            cardNumber    : [''],
-            cardExpiration: [''],
-            cardCVC       : [''],
-            country       : ['usa'],
-            zip           : ['']
-        });
+        // Get the customers
+        this._nreService.customers$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                if (res) {
+                    this.page.customers = res;
+                    // this.form.get('customer').setValue(res[0].id)
+                    this.page.customer = res[0].id
 
-        // Setup the plans
-        this.plans = [
-            {
-                value  : 'basic',
-                label  : 'BASIC',
-                details: 'Starter plan for individuals.',
-                price  : '10'
-            },
-            {
-                value  : 'team',
-                label  : 'TEAM',
-                details: 'Collaborate up to 10 people.',
-                price  : '20'
-            },
-            {
-                value  : 'enterprise',
-                label  : 'ENTERPRISE',
-                details: 'For bigger businesses.',
-                price  : '40'
-            }
-        ];
+                    this.page.data = JSON.parse(JSON.stringify(res[0]));
+
+                    console.log(res)
+                    // Mark for check
+                    this._changeDetectorRef.markForCheck();
+                }
+            });
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
+    onSelectionChange(value): void {
+        this.page.data = JSON.parse(JSON.stringify(this.page.customers.find((e: any) => e.id === value)));
+    }
 
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any
-    {
-        return item.id || index;
+    change():void{
+
+    }
+    
+    add(): void { }
+
+    save(): void { }
+
+    ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
     }
 }

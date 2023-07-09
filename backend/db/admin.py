@@ -22,6 +22,10 @@ class FunctionAdmin(admin.ModelAdmin):
 class TestItemAdmin(admin.ModelAdmin):
     list_display = ('function', 'item', 'lab_location',)
 
+@admin.register(models.Fee)
+class FeeAdmin(admin.ModelAdmin):
+    list_display = ('test_item', 'year', 'amount',)
+
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):

@@ -9,7 +9,7 @@
 
             <div class="flex flex-col sm:flex-row sm:items-center min-w-0 px-4 sm:px-8">
                 <!-- Project and Status -->
-                <ng-container *ngIf="page.inputData">
+                <ng-container *ngIf="page.data">
                     <div class="flex flex-row flex-wrap sm:w-1/2">
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Customer</div>
@@ -91,7 +91,8 @@
                             <!-- Project -->
                             <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">
                                 <mat-icon matPrefix fontSet="material-icons-outlined">search</mat-icon>
-                                <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'" (keyup.enter)="onSearch()">
+                                <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'"
+                                    (keyup.enter)="onSearch()">
                                 <mat-error *ngIf="form.get('project').hasError('required')">
                                     Project is required.
                                 </mat-error>
@@ -101,10 +102,10 @@
                             </mat-form-field>
 
                             <!-- Search button -->
-                            <!-- <button class="w-full sm:w-auto sm:ml-4 mt-0 sm:-mt-4 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
+                            <button class="w-full sm:w-auto sm:ml-4 mt-0 sm:-mt-4 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
                                 <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
                                 <span class="ml-2 mr-1">Search</span>
-                            </button> -->
+                            </button>
 
                         </form>
                         <button class="absolute top-1/2 right-5 sm:right-7 shrink-0 w-10 h-10 -mt-4" mat-icon-button (click)="onSearchClose()">
@@ -117,7 +118,7 @@
 
             </div>
 
-            <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index">
+            <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index" (selectedTabChange)="calculate()">
 
                 <mat-tab label="User Input">
                     <ng-template matTabContent>
@@ -162,8 +163,8 @@
                                     </tr>
 
                                 </thead>
-                                <tbody *ngIf="page.inputData">
-                                    <ng-container *ngFor="let func of page.inputData?.functions">
+                                <tbody *ngIf="page.data">
+                                    <ng-container *ngFor="let func of page.data?.functions">
                                         <ng-container *ngFor="let item of func.test_items;let idx=index">
 
                                             <tr *ngIf="idx==0">
@@ -198,52 +199,6 @@
 
                                         </tr>
                                     </ng-container>
-
-
-
-
-                                    <!-- <tr>
-                                    <td class="text-center" rowspan="3">Reliability</td>
-                                    <td>REL0973 Baseline</td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="checkbox">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>REL0978 Input Power Cycle</td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="checkbox">
-                                    </td>
-                                    <td class="edit">
-                                        <input type="number">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>REL0983 System Restart</td>
-                                </tr>
-
-
-                                <tr>
-                                    <td class="text-center" rowspan="3">S&V</td>
-                                    <td>SV0102 Enterprise Non-Operational Random Vibration Test Procedure</td>
-                                </tr>
-                                <tr>
-                                    <td>SV0105 Enterprise Operational Random Vibration Test Procedure</td>
-                                </tr>
-                                <tr>
-                                    <td>SV0106 Enterprise Non-Operational Half Sine Shock Test Procedure</td>
-                                </tr> -->
-
                                 </tbody>
 
                             </table>
@@ -270,46 +225,36 @@
                                         <th>CT</th>
                                         <th>NT</th>
                                         <th>OT</th>
+                                        <th>Sub Total</th>
                                     </tr>
                                 </thead>
 
-                                <tbody *ngIf="page.inputData">
-                                    <!-- <tr>
-                                            <td class="text-center" rowspan="2">Reliability</td>
-                                            <td>REL0973 Baseline</td>
-                                            <td>1</td>
-                                            <td>2</td>
-                                            <td>3</td>
-                                            <td>4</td>
-                                            <td>5</td>
-                                            <td>6</td>
-                                            <td>7</td>
-                                        </tr>
-                                        <tr>                                            
-                                            <td>REL0973 Baseline</td>
-                                            <td>1</td>
-                                            <td>2</td>
-                                            <td>3</td>
-                                            <td>4</td>
-                                            <td>5</td>
-                                            <td>6</td>
-                                            <td>7</td>
-                                        </tr> -->
+                                <tbody *ngIf="page.data">
 
-                                    <ng-container *ngFor="let func of page.inputData?.functions">
+                                    <ng-container *ngFor="let func of page.data?.functions">
                                         <ng-container *ngFor="let item of func.test_items;let idx=index">
                                             <tr *ngIf="idx==0">
                                                 <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                                 <td>{{item.item_name}}</td>
-                                                <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
-                                                    <td class="view"></td>
-                                                </ng-container>
+                                                <td>{{item.lab_location}}</td>
+                                                <td></td>
+                                                <td class="view">{{item.concept}}</td>
+                                                <td class="view">{{item.bu}}</td>
+                                                <td class="view">{{item.ct}}</td>
+                                                <td class="view">{{item.nt}}</td>
+                                                <td class="view">{{item.ot}}</td>
+                                                <td class="view">{{item.sub_total}}</td>
                                             </tr>
                                             <tr *ngIf="idx>0">
                                                 <td>{{item.item_name}}</td>
-                                                <ng-container *ngFor="let n of ['lab_location','lab_rate','concept','bu','ct','nt','ot']">
-                                                    <td class="view"></td>
-                                                </ng-container>
+                                                <td>{{item.lab_location}}</td>
+                                                <td></td>
+                                                <td class="view">{{item.concept}}</td>
+                                                <td class="view">{{item.bu}}</td>
+                                                <td class="view">{{item.ct}}</td>
+                                                <td class="view">{{item.nt}}</td>
+                                                <td class="view">{{item.ot}}</td>
+                                                <td class="view">{{item.sub_total}}</td>
                                             </tr>
                                         </ng-container>
                                     </ng-container>
@@ -334,15 +279,15 @@
                                         <th>OT (hrs)</th>
                                     </tr>
                                 </thead>
-                                <tbody *ngIf="page.inputData">
-                                    <ng-container *ngFor="let func of page.inputData?.functions">
+                                <tbody *ngIf="page.data">
+                                    <ng-container *ngFor="let func of page.data?.functions">
                                         <tr>
                                             <td class="view">{{func.name}}</td>
-                                            <td class="view"></td>
-                                            <td class="view"></td>
-                                            <td class="view"></td>
-                                            <td class="view"></td>
-                                            <td class="view"></td>
+                                            <td class="view">{{func.concept}}</td>
+                                            <td class="view">{{func.bu}}</td>
+                                            <td class="view">{{func.ct}}</td>
+                                            <td class="view">{{func.nt}}</td>
+                                            <td class="view">{{func.ot}}</td>
                                         </tr>
                                     </ng-container>
                                 </tbody>
