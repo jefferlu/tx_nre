@@ -358,8 +358,11 @@ export class NreComponent implements OnInit {
                 for (let j in func.test_items) {
                     let item = func.test_items[j];
 
-
-                    // for (let r in item.record) {
+                    item['concept'] = null;
+                    item['bu'] = null;
+                    item['ct'] = null;
+                    item['nt'] = null;
+                    item['ot'] = null;
 
                     if (item.equip_working_hours != null) {
 
@@ -387,6 +390,7 @@ export class NreComponent implements OnInit {
                             if (func['ct'] == null) func['ct'] = 0
                             func['ct'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
                         }
+
                         if (item.record.nt_regression_rate != null) {
                             item['nt'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
                             item['sub_total'] += item['nt'];
@@ -394,6 +398,7 @@ export class NreComponent implements OnInit {
                             if (func['nt'] == null) func['nt'] = 0
                             func['nt'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
                         }
+
                         if (item.record.ot_regression_rate != null) {
                             item['ot'] = parseFloat(item.record.ot_regression_rate) * item.equip_working_hours;
                             item['sub_total'] += item['ot'];
@@ -401,12 +406,7 @@ export class NreComponent implements OnInit {
                             if (func['ot'] == null) func['ot'] = 0
                             func['ot'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
                         }
-
                     }
-
-                    // }
-                    // for (let n of ['concept','bu','ct','nt','ot'])
-                    //     console.log(n)
 
                     if (func.name === 'Reliability') {
                         // console.log(item)
