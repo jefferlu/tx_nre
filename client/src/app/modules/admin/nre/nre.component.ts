@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEnca
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { NreService } from './nre.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, debounceTime, filter, map, startWith, takeUntil } from 'rxjs';
 import { SpecialAlpha } from 'app/core/validators/special-alpha';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { fuseAnimations } from '@fuse/animations';
@@ -21,13 +21,19 @@ export class NreComponent implements OnInit {
 
     form: UntypedFormGroup;
     formSave: UntypedFormGroup;
+    versionCtrl: UntypedFormControl;
+
+    filteredProjects: Observable<string[]>;
 
     records: any;
     selectedCustomer: any;
 
     page = {
-        choices: null,
+        debounce: 300,
+        minLength: 3,
+        projects: null,
         customers: null,
+        versions: null,
         search: {
             opened: false,
         },
@@ -38,6 +44,7 @@ export class NreComponent implements OnInit {
         project: {
             id: null,
             name: '',
+            version: '',
             power_ratio: null,
 
         },
@@ -66,22 +73,66 @@ export class NreComponent implements OnInit {
 
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
-            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]]
+            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]],
+            version: ['']
         });
 
         this.formSave = this._formBuilder.group({
             power_ratio: [null, [Validators.required]]
         })
 
-        // Get the customers
+        // Observable filter
+        this.form.get('project').valueChanges.pipe(
+            debounceTime(this.page.debounce),
+            takeUntil(this._unsubscribeAll),
+            map(value => {
+
+                if (!value || value.length < this.page.minLength) {
+                    this.page.projects = null;
+                    this._changeDetectorRef.markForCheck();
+                }
+
+                // Continue
+                return value;
+
+                // let projects = this.page.projects.filter(e => e.customer == this.form.value.customer)
+                // const name = typeof value === 'string' ? value : value?.name;
+                // console.log('valuechange', name, projects)
+                // return name ? this._filter(name as string) : projects.slice();
+            }),
+            filter(value => value && value.length >= this.page.minLength)
+        ).subscribe((value) => {
+            this._nreService.getProjects({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe()
+        });
+
+
+        // Get customers
         this._nreService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 if (res) {
                     this.page.customers = res;
-                    this.form.get('customer').setValue(res[0].id)
+                    this.form.get('customer').setValue(res[0].id);
+                }
+            });
 
-                    // Mark for check
+        // Get projects
+        this._nreService.projects$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                if (res) {
+                    this.page.projects = res;
+                    this._changeDetectorRef.markForCheck();
+                }
+            });
+
+        // Get projects
+        this._nreService.versions$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                console.log('init', res)
+                if (res) {
+                    this.page.versions = res;
                     this._changeDetectorRef.markForCheck();
                 }
             });
@@ -96,6 +147,16 @@ export class NreComponent implements OnInit {
         }
 
         // console.log(this._nreService.project);
+
+    }
+
+    onBlur(): void {
+
+        if (!this.form.value.project || this.form.value.project === '')
+            return;
+
+        this._nreService.getVersions({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe()
+
 
     }
 
@@ -169,70 +230,71 @@ export class NreComponent implements OnInit {
                     }
 
                     this.page.project = {
-                        id: res.id,
-                        name: res.name,
-                        power_ratio: +res.power_ratio
+                        id: res.id ?? null,
+                        name: res.name == '' ? this.form.value.project : res.name,
+                        version: res.version,
+                        power_ratio: res.power_ratio
                     }
 
-                    this.page.customer = {
-                        id: res.customer,
-                        name: res.customer_name
-                    }
-
+                    this.page.customer.id = res.customer ?? this.form.value.customer
+                    console.log(res.power_ratio, res.power_ratio === 0, this.page.project)
+                    // if (res.power_ratio != 0)
                     this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
+                    // else
+                    //     this.formSave.get('power_ratio').setValue(null);
 
                     // keep page data
                     this._nreService.page = this.page;
 
                     this.page.status = {
-                        label: 'Saved',
+                        label: res.id ? 'Saved' : 'New',
                         change: false,
-                        color: 'green'
+                        color: res.id ? 'green' : 'blue'
                     }
-
+                    console.log(this.page.project)
                     this.page.tab.index = 0;
-                    // this._changeDetectorRef.markForCheck();
+                    this._changeDetectorRef.markForCheck();
                 }
             },
             error: e => {
-                if (e.status === 404) {
-                    // console.log(e.error.detail ? e.error.detail : e.message)
+                // if (e.status === 404) {
+                //     // console.log(e.error.detail ? e.error.detail : e.message)
 
-                    this.page.project = {
-                        id: null,
-                        name: this.form.value.project,
-                        power_ratio: null,
+                //     this.page.project = {
+                //         id: null,
+                //         name: this.form.value.project,
+                //         power_ratio: null,
+                //     }
+
+                //     this.page.customer.id = this.form.value.customer;
+
+                //     this._nreService.page = this.page;
+
+                //     this.page.status = {
+                //         label: 'New',
+                //         change: false,
+                //         color: 'blue'
+                //     }
+
+                //     // this.formSave.get('power_ratio').setValue(null);
+
+                //     this._changeDetectorRef.markForCheck();
+                // }
+                // else {
+                let dialogRef = this._fuseConfirmationService.open({
+                    title: `Error ${e.status}`,
+                    message: `${e.statusText}.<br/>Please contact the administrator.`,
+                    actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                });
+
+                dialogRef.afterClosed().subscribe(result => {
+                    if (result === 'confirmed') {
+                        this.onSearchOpen();
+                        this._changeDetectorRef.markForCheck();
                     }
-
-                    this.page.customer.id = this.form.value.customer;
-
-                    this._nreService.page = this.page;
-
-                    this.page.status = {
-                        label: 'New',
-                        change: false,
-                        color: 'blue'
-                    }
-
-                    // this.formSave.get('power_ratio').setValue(null);
-
-                    this._changeDetectorRef.markForCheck();
-                }
-                else {
-                    let dialogRef = this._fuseConfirmationService.open({
-                        title: `Error ${e.status}`,
-                        message: `${e.statusText}.<br/>Please contact the administrator.`,
-                        actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                    });
-
-                    dialogRef.afterClosed().subscribe(result => {
-                        if (result === 'confirmed') {
-                            this.onSearchOpen();
-                            this._changeDetectorRef.markForCheck();
-                        }
-                    });
-                    console.log(e)
-                }
+                });
+                console.log(e)
+                // }
             }
         });
     }
@@ -262,6 +324,7 @@ export class NreComponent implements OnInit {
         let request = {
             'id': null,
             'name': this.page.project.name,
+            'version': this.page.project.version,
             'customer': this.page.customer.id,
             'power_ratio': this.formSave.value.power_ratio,
             'records': []
@@ -350,10 +413,10 @@ export class NreComponent implements OnInit {
                 let func = this.page.data.functions[i];
 
                 func['concept'] = null;
-                func['bu']=null;
-                func['ct']=null;
-                func['nt']=null;
-                func['ot']=null;
+                func['bu'] = null;
+                func['ct'] = null;
+                func['nt'] = null;
+                func['ot'] = null;
 
                 for (let j in func.test_items) {
                     let item = func.test_items[j];
@@ -442,5 +505,14 @@ export class NreComponent implements OnInit {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
+    }
+
+
+    private _filter(name: string) {
+
+        const filterValue = name.toLowerCase();
+        let ret = this.page.projects.filter(option => option.name.toLowerCase().includes(filterValue));
+        console.log('_filter', name, ret)
+        return ret
     }
 }

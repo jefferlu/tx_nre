@@ -57,7 +57,7 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         qs = models.Item.objects.all().order_by('name')
 
         if query:
-            qs = self.queryset.filter(Q(no__icontains=query) | Q(name__icontains=query))
+            qs = qs.filter(Q(no__icontains=query) | Q(name__icontains=query))
 
         return qs
 
@@ -68,7 +68,7 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
        # Categorize data into items to create and items to update
         create_data = [item for item in data if 'id' not in item]
         update_data = [item for item in data if 'id' in item]
-        print(update_data)
+        
         created_objects = []
         if create_data:
             serializer = self.get_serializer(data=create_data, many=True)
@@ -118,7 +118,12 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     # pagination_class = None
 
 
-class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
+class ProjectViewSet(
+        AutoPrefetchViewSetMixin,
+        mixins.RetrieveModelMixin,
+        mixins.UpdateModelMixin,
+        viewsets.GenericViewSet):
+
     if (not settings.DEBUG):
         permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ProjectSerializer
@@ -126,6 +131,52 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     lookup_field = 'name'
 
     def get_object(self):
-        customer = self.request.GET.get('customer', None)
+        customer = self.request.query_params.get('customer')
+
         name = self.kwargs['name']
-        return get_object_or_404(models.Project, name=name, customer=customer)
+        q = models.Project.objects.all().filter(name=name, customer=customer).order_by('-id').first()
+        # q = get_object_or_404(models.Project, name=name, customer=customer)
+        return q
+
+
+class ProjectDistinctViewSet(
+        AutoPrefetchViewSetMixin,
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
+
+    if (not settings.DEBUG):
+        permission_classes = (IsAuthenticated, )
+
+    serializer_class = serializers.ProjectDistinctSerializer
+    queryset = models.Project.objects.all()
+
+    def get_queryset(self):
+        customer = self.request.query_params.get('customer')
+        name = self.request.query_params.get('name')
+        print(customer, name,)
+
+        qs = []
+        if customer and name:
+            qs = models.Project.objects.all().distinct('name', 'customer').order_by('name')
+            qs = qs.filter(customer=customer, name__icontains=name)
+        return qs
+
+
+class ProjectVersionsViewSet(
+        AutoPrefetchViewSetMixin,
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
+    if (not settings.DEBUG):
+        permission_classes = (IsAuthenticated, )
+
+    serializer_class = serializers.ProjectDistinctSerializer
+    queryset = models.Project.objects.all()
+
+    def get_queryset(self):
+        customer = self.request.query_params.get('customer')
+        name = self.request.query_params.get('name')       
+        qs = []
+        if customer and name:
+            qs = models.Project.objects.all().order_by('version')
+            qs = qs.filter(customer=customer, name=name)
+        return qs

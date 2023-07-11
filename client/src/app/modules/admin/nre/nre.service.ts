@@ -8,10 +8,20 @@ import { AppService } from 'app/core/services/app.service';
 })
 export class NreService {
 
+    private _projects: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _customers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
+    private _versions: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _page: any;
 
     constructor(private _appService: AppService) { }
+
+    get projects$(): Observable<any[]> {
+        return this._projects.asObservable();
+    }
+
+    get versions$(): Observable<any[]> {
+        return this._versions.asObservable();
+    }
 
     get customers$(): Observable<any[]> {
         return this._customers.asObservable();
@@ -25,6 +35,24 @@ export class NreService {
         return this._page;
     }
 
+    getProjects(slug?: any): Observable<any> {
+        console.log('getProjects')
+        return this._appService.get('projects', slug).pipe(
+            tap((response: any) => {
+                this._projects.next(response);
+            })
+        );
+    }
+
+    getVersions(slug?: any): Observable<any> {
+
+        return this._appService.get('project-versions', slug).pipe(
+            tap((response: any) => {
+                this._versions.next(response);
+            })
+        );
+    }
+
     getCustomers(): Observable<any> {
         return this._appService.get('customers').pipe(
             tap((response: any) => {
@@ -34,7 +62,7 @@ export class NreService {
     }
 
     getProject(name: string, kwargs?: any): Observable<any> {
-        return this._appService.get(`projects/${name}`, kwargs).pipe(
+        return this._appService.get(`project/${name}`, kwargs).pipe(
             switchMap((response: any) => {
                 return of(response);
             })
@@ -42,7 +70,7 @@ export class NreService {
     }
 
     createProject(request: any): Observable<any> {
-        return this._appService.post('projects', request).pipe(
+        return this._appService.post('project', request).pipe(
             switchMap((response: any) => {
                 return of(response);
             })
@@ -50,7 +78,7 @@ export class NreService {
     }
 
     updateProject(name: string, kwargs: any, request: any): Observable<any> {
-        return this._appService.put(`projects/${name}`, kwargs, request).pipe(
+        return this._appService.put(`project/${name}`, kwargs, request).pipe(
             switchMap((response: any) => {
                 return of(response);
             })

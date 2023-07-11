@@ -15,14 +15,35 @@
                             <div class="text-sm font-medium leading-none text-secondary">Customer</div>
                             <div class="mt-2 text-xl leading-none">{{page.customer.name}}</div>
                         </div>
+                        <!-- Project -->
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Project</div>
                             <div class="mt-2 text-xl leading-none">{{page.project.name}}</div>
                         </div>
+                        <!-- Version -->
                         <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
-                            <div class="mt-2 text-xl leading-none" *ngIf="page.project.power_ratio">{{page.project.power_ratio}}W</div>
+                            <div class="text-sm font-medium leading-none text-secondary">Version</div>
+                            <div class="mt-2 text-xl leading-none"><input class="w-full sm:w-30" [(ngModel)]="page.project.version"></div>
+                            <!-- <mat-form-field class="w-full sm:w-40 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">                                
+                                <input type="search" matInput [autocomplete]="'off'" [placeholder]="'Version'"
+                                    [matAutocomplete]="version">
+                                <mat-autocomplete #version="matAutocomplete">
+                                    <mat-option *ngFor="let option of page.versions" [value]="option.version">
+                                        {{option.version}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <mat-error *ngIf="form.get('project').hasError('required')">
+                                    Project is required.
+                                </mat-error>
+                                <mat-error *ngIf="form.get('project').hasError('invalidName')">
+                                    Special characters are not allowed.
+                                </mat-error>
+                            </mat-form-field> -->
                         </div>
+                        <!-- <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
+                            <div class="mt-2 text-xl leading-none" *ngIf="page.project.power_ratio">{{page.project.power_ratio}}(W)</div>
+                        </div> -->
                         <div class="flex flex-col mx-6 my-3">
                             <div *ngIf="page.status.label" class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1"
                                 [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'">
@@ -68,14 +89,14 @@
                         </mat-form-field>
 
                         <!-- Save button-->
-                        <button class="ml-3 -mt-4" mat-flat-button [color]="'primary'" (click)="save()">
+                        <button class="ml-3 -mt-4" mat-flat-button [color]="'basic'" (click)="save()">
                             <mat-icon fontIcon="save"></mat-icon>
                             <span class="ml-2 mr-1">Save</span>
                         </button>
                     </form>
 
                     <!-- Search panel -->
-                    <div class="absolute inset-0 flex items-center shrink-0 z-99 bg-card h-52 sm:h-24 border-b sm:border-0 pb-6 sm:pb-0" @slideInTop
+                    <div class="absolute inset-0 flex items-center shrink-0 z-99 bg-card h-72 sm:h-24 border-b sm:border-0 pb-6 sm:pb-0" @slideInTop
                         *ngIf="page.search.opened">
                         <form [formGroup]="form" class="mt-2 pl-10 pr-16 sm:mt-6 sm:px-10">
                             <!-- Customer -->
@@ -85,14 +106,19 @@
                                         <mat-option [value]="cust.id">{{cust.name}}</mat-option>
                                     </ng-container>
                                 </mat-select>
-                                <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon>
+                                <!-- <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon> -->
                             </mat-form-field>
 
                             <!-- Project -->
                             <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">
-                                <mat-icon matPrefix fontSet="material-icons-outlined">search</mat-icon>
+                                <!-- <mat-icon matPrefix fontSet="material-icons-outlined">search</mat-icon> -->
                                 <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'"
-                                    (keyup.enter)="onSearch()">
+                                    [matAutocomplete]="project" (keyup.enter)="onSearch()" (blur)="onBlur()">
+                                <mat-autocomplete #project="matAutocomplete">
+                                    <mat-option *ngFor="let option of page.projects" [value]="option.name">
+                                        {{option.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
                                 <mat-error *ngIf="form.get('project').hasError('required')">
                                     Project is required.
                                 </mat-error>
@@ -101,8 +127,10 @@
                                 </mat-error>
                             </mat-form-field>
 
+
+
                             <!-- Search button -->
-                            <button class="w-full sm:w-auto sm:ml-4 mt-0 sm:-mt-4 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
+                            <button class="w-full sm:w-auto sm:ml-4 mt-0 sm:-mt-1 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
                                 <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
                                 <span class="ml-2 mr-1">Search</span>
                             </button>
@@ -118,7 +146,8 @@
 
             </div>
 
-            <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index" (selectedTabChange)="calculate()">
+            <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index"
+                (selectedTabChange)="calculate()">
 
                 <mat-tab label="User Input">
                     <ng-template matTabContent>

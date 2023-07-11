@@ -94,7 +94,7 @@ class TestItemSerializer(serializers.ModelSerializer):
     item_name = serializers.ReadOnlyField(source='item.name')
     equip_working_hours = serializers.ReadOnlyField(source='item.equip_working_hours')
     man_working_hours = serializers.ReadOnlyField(source='item.man_working_hours')
-    
+
     # lab_location = serializers.SerializerMethodField()
 
     # fees = FeeSerializer(many=True)
@@ -200,3 +200,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
         # return instance
+
+
+class ProjectDistinctSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Project
+        fields = '__all__'

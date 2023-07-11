@@ -73,6 +73,7 @@ class Fee(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=120, verbose_name='name')
+    version = models.CharField(max_length=120, verbose_name='version')
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE, verbose_name='customer')
     power_ratio = models.DecimalField(
