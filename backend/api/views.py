@@ -15,6 +15,23 @@ from utils.utils import Utils
 from db import models
 from . import serializers
 
+'''
+UI:
+1. this.page.data是顯示架構以customer為主串出頁面顯示架構
+2. project API回傳的是每一筆record的資料，因此需對應test_item將查詢資料回填至thisp.page.data
+
+Backend:
+1. 查詢時使用GET，參數只有customer及project
+    a. 資料存在時: 在get_object()用first()取得最新一筆資料(-id降冪排序)
+    b. 資料不存在時，會回傳所有欄為皆為null的結果
+2. 當query_params裡面有version時:
+    a. 以customer、project及version查詢，因使用get()找不到資料會回傳404，因此一樣以first()回傳結果
+    b. 找不到資料會回傳所有欄位皆為null的結果
+3. 前端以project.id來判別執行create及update
+    a. create時，只帶lookup_field，即可新資資料
+    b. update時，需在get_object()提供version以避免更新錯識資料(只用custumer、project會有多筆)
+    
+'''
 
 class TokenObtainView(TokenObtainPairView):
     serializer_class = serializers.TokenObtainSerializer
@@ -68,7 +85,7 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
        # Categorize data into items to create and items to update
         create_data = [item for item in data if 'id' not in item]
         update_data = [item for item in data if 'id' in item]
-        
+
         created_objects = []
         if create_data:
             serializer = self.get_serializer(data=create_data, many=True)
@@ -78,11 +95,11 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
                 if '這個 name 在 item 已經存在。' in str(e):
                     # Data duplication case
                     message = f'{create_data[0]["name"]} 資料重覆'
-                    print("資料重覆")
+                    # print("資料重覆")
                 else:
                     # Other error cases
                     message = e.message
-                    print("其他錯誤")
+                    # print("其他錯誤")
                 return Response(message, status=status.HTTP_400_BAD_REQUEST)
             created_objects = serializer.save()
 
@@ -97,11 +114,11 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
                     if '這個 name 在 item 已經存在。' in str(e):
                         # Data duplication case
                         message = f'{update_data[0]["name"]} 資料重覆'
-                        print("資料重覆")
+                        # print("資料重覆")
                     else:
                         # Other error cases
                         message = e.message
-                        print("其他錯誤")
+                        # print("其他錯誤")
                     return Response(message, status=status.HTTP_400_BAD_REQUEST)
                 serializer.save()
 
@@ -122,6 +139,7 @@ class ProjectViewSet(
         AutoPrefetchViewSetMixin,
         mixins.RetrieveModelMixin,
         mixins.UpdateModelMixin,
+        mixins.CreateModelMixin,
         viewsets.GenericViewSet):
 
     if (not settings.DEBUG):
@@ -132,9 +150,15 @@ class ProjectViewSet(
 
     def get_object(self):
         customer = self.request.query_params.get('customer')
-
+        version = self.request.query_params.get('version')
         name = self.kwargs['name']
-        q = models.Project.objects.all().filter(name=name, customer=customer).order_by('-id').first()
+
+        print(customer, name, version)
+        if version is not None:
+            print('check', version)
+            q = models.Project.objects.all().filter(name=name, customer=customer, version=version).first()
+        else:
+            q = models.Project.objects.all().filter(name=name, customer=customer).order_by('-id').first()
         # q = get_object_or_404(models.Project, name=name, customer=customer)
         return q
 
@@ -153,7 +177,7 @@ class ProjectDistinctViewSet(
     def get_queryset(self):
         customer = self.request.query_params.get('customer')
         name = self.request.query_params.get('name')
-        print(customer, name,)
+        # print(customer, name,)
 
         qs = []
         if customer and name:
@@ -174,9 +198,9 @@ class ProjectVersionsViewSet(
 
     def get_queryset(self):
         customer = self.request.query_params.get('customer')
-        name = self.request.query_params.get('name')       
+        name = self.request.query_params.get('name')
         qs = []
         if customer and name:
-            qs = models.Project.objects.all().order_by('version')
+            qs = models.Project.objects.all().order_by('id')
             qs = qs.filter(customer=customer, name=name)
         return qs

@@ -19,7 +19,12 @@ table.cust-table {
         }
     }
 
-    .view{
-        @apply text-center
+    .view {
+        @apply text-center;
     }
+}
+
+.show-error {
+    display: block;
+    color: red;
 }

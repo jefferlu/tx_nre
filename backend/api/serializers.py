@@ -148,10 +148,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, attrs):
+        print('attrs', attrs)
         return attrs
 
     def create(self, validated_data):
-
+        print('create', validated_data)
         records_data = validated_data.pop('records', None)
         project_instance = models.Project.objects.create(**validated_data)
 
@@ -165,18 +166,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         return project_instance
 
-    # def create(self, validated_data):
-    #     print('create', validated_data)
-    #     records = validated_data.pop('records')
-
-    #     project_instance = models.Project.objects.create(**validated_data)
-    #     for r in records:
-    #         print(r)
-    #         models.Record.objects.create(project=project_instance, **r)
-    #     return project_instance
-
     def update(self, instance, validated_data):
-        print(validated_data)
+        print('update', validated_data)
         records_data = validated_data.pop('records', None)
 
         if records_data is not None:
@@ -188,6 +179,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
                 record_id = r.get('id', None)
                 if record_id:
+                    print('----->', record_id, instance.__dict__)
                     record_instance = models.Record.objects.get(id=record_id, project=instance)
                     serializer = RecordSerializer(record_instance, data=r)
                     if serializer.is_valid():

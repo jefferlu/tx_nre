@@ -1,9 +1,5 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-y-auto" cdkScrollable>
 
-    <!-- <div class="flex flex-col w-full py-2 sm:pt-10 max-w-xs sm:max-w-6xl mx-auto">
-       
-    </div> -->
-
     <div class="flex flex-auto">
         <div class="flex flex-col flex-auto w-full mx-auto">
 
@@ -11,51 +7,34 @@
                 <!-- Project and Status -->
                 <ng-container *ngIf="page.data">
                     <div class="flex flex-row flex-wrap sm:w-1/2">
+                        <!-- customer -->
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Customer</div>
-                            <div class="mt-2 text-xl leading-none">{{page.customer.name}}</div>
+                            <div class="mt-2 text-lg leading-none">{{page.project.customer_name}}</div>
                         </div>
-                        <!-- Project -->
+                        <!-- project -->
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Project</div>
-                            <div class="mt-2 text-xl leading-none">{{page.project.name}}</div>
+                            <div class="mt-2 text-lg leading-none">{{page.project.name}}</div>
                         </div>
-                        <!-- Version -->
+                        <!-- version -->
                         <div class="flex flex-col mx-6 my-3">
                             <div class="text-sm font-medium leading-none text-secondary">Version</div>
-                            <div class="mt-2 text-xl leading-none"><input class="w-full sm:w-30" [(ngModel)]="page.project.version"></div>
-                            <!-- <mat-form-field class="w-full sm:w-40 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">                                
-                                <input type="search" matInput [autocomplete]="'off'" [placeholder]="'Version'"
-                                    [matAutocomplete]="version">
-                                <mat-autocomplete #version="matAutocomplete">
-                                    <mat-option *ngFor="let option of page.versions" [value]="option.version">
-                                        {{option.version}}
-                                    </mat-option>
-                                </mat-autocomplete>
-                                <mat-error *ngIf="form.get('project').hasError('required')">
-                                    Project is required.
-                                </mat-error>
-                                <mat-error *ngIf="form.get('project').hasError('invalidName')">
-                                    Special characters are not allowed.
-                                </mat-error>
-                            </mat-form-field> -->
+                            <div class="mt-2 text-lg leading-none" *ngIf="page.project.version">{{page.project.version}}</div>
                         </div>
-                        <!-- <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
-                            <div class="mt-2 text-xl leading-none" *ngIf="page.project.power_ratio">{{page.project.power_ratio}}(W)</div>
-                        </div> -->
+                        <!-- power ratio -->
                         <div class="flex flex-col mx-6 my-3">
+                            <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
+                            <div class="mt-2 text-lg leading-none" *ngIf="page.project.power_ratio">{{page.project.power_ratio}}</div>
+                        </div>
+                        <div class="flex flex-col mx-4 my-3">
                             <div *ngIf="page.status.label" class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1"
                                 [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'">
                                 <span class="text-sm font-medium whitespace-nowrap">{{page.status.label}}</span>
                             </div>
                         </div>
+
                         <div class="flex flex-col mx-6 my-3">
-                            <!-- <button *ngIf="page.tab.index==1"
-                                class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1 text-indigo-600 bg-indigo-100"
-                                [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'" (click)="onExport()">
-                                <span class="text-sm font-medium whitespace-nowrap">Export</span>
-                            </button> -->
                             <button *ngIf="page.tab.index==1" class="sm:w-auto -ml-6 -mt-2 sm:-mt-1 text-indigo-500" mat-flat-button
                                 (click)="export(0)">
                                 <mat-icon fontSet="material-icons-outlined">cloud_download</mat-icon>
@@ -78,9 +57,28 @@
 
                     <form [formGroup]="formSave">
 
+                        <!-- version -->
+                        <mat-form-field class="w-auto mt-4 mr-3 sm:mt-0 fuse-mat-dense sm:w-40">
+                            <input matInput [autocomplete]="'off'" [placeholder]="'Version'" [formControlName]="'version'">
+                            <ng-container *ngIf="page.dataset.versions.length>0">
+                                <mat-icon class="ml-1.5 hover:cursor-pointer" fontSet="material-icons-outlined"
+                                    [matMenuTriggerFor]="conversionMenu">arrow_drop_down</mat-icon>
+                                <mat-menu #conversionMenu="matMenu">
+                                    <button mat-menu-item *ngFor="let ver of page.dataset.versions"
+                                        (click)="search(ver.version)">{{ver.version}}</button>
+                                </mat-menu>
+                            </ng-container>
+                            <mat-error *ngIf="formSave.get('version').hasError('required')">
+                                Version is required. {{page.version_duplicate}}
+                            </mat-error>
+                            <mat-error *ngIf="formSave.get('version').hasError('duplicate')">
+                                Already exists.
+                            </mat-error>
+                        </mat-form-field>
+
                         <!-- Power Ratio -->
-                        <mat-form-field class="w-auto mt-4 sm:mt-0  fuse-mat-dense">
-                            <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon>
+                        <mat-form-field class="w-auto mt-4 mr-3 sm:mt-0 fuse-mat-dense sm:w-36">
+                            <!-- <mat-icon matPrefix fontSet="material-icons-outlined">bolt</mat-icon> -->
                             <input numeric-two-digit matInput [autocomplete]="'off'" [placeholder]="'Power Ratio'" [formControlName]="'power_ratio'">
                             <span matSuffix class="ml-2">W</span>
                             <mat-error *ngIf="formSave.get('power_ratio').hasError('required')">
@@ -89,7 +87,7 @@
                         </mat-form-field>
 
                         <!-- Save button-->
-                        <button class="ml-3 -mt-4" mat-flat-button [color]="'basic'" (click)="save()">
+                        <button class="-mt-1" mat-flat-button [color]="'basic'" (click)="save()">
                             <mat-icon fontIcon="save"></mat-icon>
                             <span class="ml-2 mr-1">Save</span>
                         </button>
@@ -102,20 +100,19 @@
                             <!-- Customer -->
                             <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
                                 <mat-select [placeholder]="'Customer'" [formControlName]="'customer'">
-                                    <ng-container *ngFor="let cust of page.customers;">
+                                    <ng-container *ngFor="let cust of page.dataset.customers;">
                                         <mat-option [value]="cust.id">{{cust.name}}</mat-option>
                                     </ng-container>
                                 </mat-select>
-                                <!-- <mat-icon matPrefix fontSet="material-icons-outlined">supervisor_account</mat-icon> -->
                             </mat-form-field>
 
                             <!-- Project -->
                             <mat-form-field class="w-full sm:w-72 mt-4 sm:mt-0 sm:ml-4 fuse-mat-dense">
                                 <!-- <mat-icon matPrefix fontSet="material-icons-outlined">search</mat-icon> -->
                                 <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'" [placeholder]="'Project'"
-                                    [matAutocomplete]="project" (keyup.enter)="onSearch()" (blur)="onBlur()">
+                                    [matAutocomplete]="project" (keyup.enter)="onSearch()">
                                 <mat-autocomplete #project="matAutocomplete">
-                                    <mat-option *ngFor="let option of page.projects" [value]="option.name">
+                                    <mat-option *ngFor="let option of page.dataset.projects" [value]="option.name">
                                         {{option.name}}
                                     </mat-option>
                                 </mat-autocomplete>
@@ -126,8 +123,6 @@
                                     Special characters are not allowed.
                                 </mat-error>
                             </mat-form-field>
-
-
 
                             <!-- Search button -->
                             <button class="w-full sm:w-auto sm:ml-4 mt-0 sm:-mt-1 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
@@ -140,10 +135,7 @@
                             <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
                         </button>
                     </div>
-
-
                 </div>
-
             </div>
 
             <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'" [(selectedIndex)]="page.tab.index"
@@ -266,7 +258,7 @@
                                                 <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                                 <td>{{item.item_name}}</td>
                                                 <td class="view">{{item.lab_location}}</td>
-                                                <td></td>
+                                                <td class="view">{{item.fee}}</td>
                                                 <td class="view">{{item.concept}}</td>
                                                 <td class="view">{{item.bu}}</td>
                                                 <td class="view">{{item.ct}}</td>
@@ -277,7 +269,7 @@
                                             <tr *ngIf="idx>0">
                                                 <td>{{item.item_name}}</td>
                                                 <td class="view">{{item.lab_location}}</td>
-                                                <td></td>
+                                                <td class="view">{{item.fee}}</td>
                                                 <td class="view">{{item.concept}}</td>
                                                 <td class="view">{{item.bu}}</td>
                                                 <td class="view">{{item.ct}}</td>

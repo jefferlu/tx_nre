@@ -4,7 +4,7 @@
 /* ----------------------------------------------------------------------------------------------------- */
 
 @import "../assets/fonts/inter/inter.css";
-@import 'material-icons/iconfont/material-icons.css';
+@import "material-icons/iconfont/material-icons.css";
 
 /* -------------------------------------------------------------------------- */
 /*  @ Form fields
@@ -51,5 +51,16 @@ form {
                 }
             } */
         }
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  @ Snackbar
+/* -------------------------------------------------------------------------- */
+.mat-mdc-snack-bar-container.snackbar-customer {
+    .mdc-snackbar__surface {
+        @apply bg-transparent #{'!important'};
+        @apply border-0 #{'!important'};
+        @apply shadow-none #{'!important'};
     }
 }

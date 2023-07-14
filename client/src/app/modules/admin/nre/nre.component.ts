@@ -6,6 +6,12 @@ import { Observable, Subject, debounceTime, filter, map, startWith, takeUntil } 
 import { SpecialAlpha } from 'app/core/validators/special-alpha';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { fuseAnimations } from '@fuse/animations';
+import { VersionDuplicate } from 'app/core/validators/version-duplicate';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { FuseAlertComponent } from '@fuse/components/alert/alert.component';
+import { AlertComponent } from 'app/layout/common/alert/alert.component';
+import { AlertService } from 'app/layout/common/alert/alert.service';
+
 
 @Component({
     selector: 'app-nre',
@@ -22,6 +28,7 @@ export class NreComponent implements OnInit {
     form: UntypedFormGroup;
     formSave: UntypedFormGroup;
     versionCtrl: UntypedFormControl;
+    originalVersionValue: string;
 
     filteredProjects: Observable<string[]>;
 
@@ -31,22 +38,22 @@ export class NreComponent implements OnInit {
     page = {
         debounce: 300,
         minLength: 3,
-        projects: null,
-        customers: null,
-        versions: null,
+        dataset: {
+            customers: null,
+            projects: null,
+            versions: []
+        },
         search: {
             opened: false,
         },
-        customer: {
-            id: null,
-            name: ''
-        },
         project: {
             id: null,
-            name: '',
-            version: '',
+            name: null,
+            customer: null,
+            customer_name: null,
+            version: null,
             power_ratio: null,
-
+            records: []
         },
         status: {
             label: null,
@@ -63,9 +70,11 @@ export class NreComponent implements OnInit {
     constructor(
         private _formBuilder: UntypedFormBuilder,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _specialApha: SpecialAlpha,
         private _fuseConfirmationService: FuseConfirmationService,
-        private _nreService: NreService
+        private _specialApha: SpecialAlpha,
+        private _versionDuplicate: VersionDuplicate,
+        private _nreService: NreService,
+        private _alert: AlertService
 
     ) { }
 
@@ -73,11 +82,11 @@ export class NreComponent implements OnInit {
 
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
-            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]],
-            version: ['']
+            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]]
         });
 
         this.formSave = this._formBuilder.group({
+            version: ['', [Validators.required, control => this._versionDuplicate.validator(control, this.page.project.id, this.page.dataset.versions)]],
             power_ratio: [null, [Validators.required]]
         })
 
@@ -88,7 +97,7 @@ export class NreComponent implements OnInit {
             map(value => {
 
                 if (!value || value.length < this.page.minLength) {
-                    this.page.projects = null;
+                    this.page.dataset.projects = null;
                     this._changeDetectorRef.markForCheck();
                 }
 
@@ -111,7 +120,7 @@ export class NreComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 if (res) {
-                    this.page.customers = res;
+                    this.page.dataset.customers = res;
                     this.form.get('customer').setValue(res[0].id);
                 }
             });
@@ -121,42 +130,33 @@ export class NreComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 if (res) {
-                    this.page.projects = res;
+                    this.page.dataset.projects = res;
                     this._changeDetectorRef.markForCheck();
                 }
             });
 
-        // Get projects
+        // Get versions
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 console.log('init', res)
                 if (res) {
-                    this.page.versions = res;
+                    this.page.dataset.versions = res;
                     this._changeDetectorRef.markForCheck();
                 }
             });
 
+        // reload saved page data
         if (this._nreService.page) {
             this.page = this._nreService.page;
             console.log(this._nreService.page)
             this.form.get('project').setValue(this.page.project.name);
-            this.form.get('customer').setValue(this.page.customer.id);
+            this.form.get('customer').setValue(this.page.project.customer);
             this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
             // this.search();
         }
 
         // console.log(this._nreService.project);
-
-    }
-
-    onBlur(): void {
-
-        if (!this.form.value.project || this.form.value.project === '')
-            return;
-
-        this._nreService.getVersions({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe()
-
 
     }
 
@@ -166,7 +166,7 @@ export class NreComponent implements OnInit {
             return;
         }
 
-        // Open the search
+        // Open the search1
         this.page.search.opened = true;
     }
 
@@ -206,81 +206,23 @@ export class NreComponent implements OnInit {
         }
     }
 
-    search(): void {
-
+    search(version?: any): void {
 
         this.page.status.label = undefined;
-        this.page.customer.name = this.page.customers.find((e: any) => e.id == this.form.value.customer).name;
-        this.page.data = JSON.parse(JSON.stringify(this.page.customers.find((e: any) => e.id === this.form.value.customer)));
+        // this.page.data = JSON.parse(JSON.stringify(this.page.dataset.customers.find((e: any) => e.id === this.form.value.customer)));
 
+        let slug: any = { 'customer': this.form.value.customer };
+        if (version) slug.version = version;
 
-        this._nreService.getProject(this.form.value.project, { 'customer': this.form.value.customer }).subscribe({
+        this._nreService.getProject(this.form.value.project, slug).subscribe({
             next: (res) => {
                 if (res) {
 
-                    for (let i in this.page.data.functions) {
-                        let fun = this.page.data.functions[i]
-                        for (let j in fun.test_items) {
-                            let item = fun.test_items[j];
-                            let record = res.records.find(e => e.test_item === item.id)
-                            if (record) {
-                                this.page.data.functions[i].test_items[j].record = record;
-                            }
-                        }
-                    }
-
-                    this.page.project = {
-                        id: res.id ?? null,
-                        name: res.name == '' ? this.form.value.project : res.name,
-                        version: res.version,
-                        power_ratio: res.power_ratio
-                    }
-
-                    this.page.customer.id = res.customer ?? this.form.value.customer
-                    console.log(res.power_ratio, res.power_ratio === 0, this.page.project)
-                    // if (res.power_ratio != 0)
-                    this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
-                    // else
-                    //     this.formSave.get('power_ratio').setValue(null);
-
-                    // keep page data
-                    this._nreService.page = this.page;
-
-                    this.page.status = {
-                        label: res.id ? 'Saved' : 'New',
-                        change: false,
-                        color: res.id ? 'green' : 'blue'
-                    }
-                    console.log(this.page.project)
+                    this.manageData(res);
                     this.page.tab.index = 0;
-                    this._changeDetectorRef.markForCheck();
                 }
             },
             error: e => {
-                // if (e.status === 404) {
-                //     // console.log(e.error.detail ? e.error.detail : e.message)
-
-                //     this.page.project = {
-                //         id: null,
-                //         name: this.form.value.project,
-                //         power_ratio: null,
-                //     }
-
-                //     this.page.customer.id = this.form.value.customer;
-
-                //     this._nreService.page = this.page;
-
-                //     this.page.status = {
-                //         label: 'New',
-                //         change: false,
-                //         color: 'blue'
-                //     }
-
-                //     // this.formSave.get('power_ratio').setValue(null);
-
-                //     this._changeDetectorRef.markForCheck();
-                // }
-                // else {
                 let dialogRef = this._fuseConfirmationService.open({
                     title: `Error ${e.status}`,
                     message: `${e.statusText}.<br/>Please contact the administrator.`,
@@ -293,16 +235,16 @@ export class NreComponent implements OnInit {
                         this._changeDetectorRef.markForCheck();
                     }
                 });
-                console.log(e)
-                // }
             }
         });
     }
 
     save(): void {
 
+        // check version and project.id is in 'version' FormControl
         if (this.formSave.invalid) return;
 
+        // check project is loaded
         if (!this.page.data) {
             let dialogRef = this._fuseConfirmationService.open({
                 title: 'Invalid action',
@@ -319,48 +261,70 @@ export class NreComponent implements OnInit {
             return;
         }
 
-        // this.page.tab.index = 1;
+        this.page.project.version = this.formSave.value.version;
+        this.page.project.power_ratio = this.formSave.value.power_ratio;
 
-        let request = {
-            'id': null,
-            'name': this.page.project.name,
-            'version': this.page.project.version,
-            'customer': this.page.customer.id,
-            'power_ratio': this.formSave.value.power_ratio,
-            'records': []
-        }
+
+
+        // check new version. exist->update, not exist->create
+        let exist = this.page.dataset.versions.findIndex(e => e.version === this.page.project.version)
+
+        // clear project id
+        if (exist === -1) this.page.project.id = null;
+
+        this.page.project.records = [];
         for (let func of this.page.data.functions) {
             for (let item of func.test_items) {
-                item.record.test_item = item.id;
-                request.records.push(item.record)
+
+                item.record.test_item = item.id;    //new record from api doesn't have item id
+
+                if (exist === -1) {
+                    // clear record id
+                    delete item.record.id;
+                    // clear project in in record
+                    delete item.record.project;
+                }
+
+                this.page.project.records.push(item.record)
             }
         }
 
+        console.log(this.page.data, this.page.project);
+
+
         // Update
         if (this.page.project.id) {
-            request.id = this.page.project.id;
+            // request.id = this.page.project.id;
+            let slug: any = { 'customer': this.form.value.customer, 'version': this.page.project.version };
 
-            this._nreService.updateProject(this.page.project.name, { 'customer': this.page.customer.id }, request).subscribe({
+            this._nreService.updateProject(this.page.project.name, slug, this.page.project).subscribe({
                 next: (res) => {
                     if (res) {
-                        let dialogRef = this._fuseConfirmationService.open({
-                            message: `The project has been saved.`,
-                            icon: { color: 'primary' },
-                            actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                        });
+                        // let dialogRef = this._fuseConfirmationService.open({
+                        //     message: `The project has been saved.`,
+                        //     icon: { color: 'primary' },
+                        //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                        // });
+                        this._alert.open({ message: 'The project has been saved.' });
 
-                        this.calculate();
-                        this.search();
+                        this.manageData(res);
+
+                        // this.calculate();
+                        // this.search(this.page.project.version);
                     }
                 },
                 error: e => {
                     console.log(e)
-                    console.log(e.error.detail ? e.error.detail : e.message)
+                    let message = e.error.detail ? e.error.detail : e.message;
+
+                    if (e.error.version) message = `Version: ${e.error.version[0]}`;
+                    if (e.error.non_field_errors) message = `${e.error.non_field_errors[0].replace('name', 'project')}`;
+
                     const dialogRef = this._fuseConfirmationService.open({
-                        // title: e.statusText,
-                        title: `createProject() error`,
-                        message: e.error.detail ? e.error.detail : e.message,
-                        actions: { cancel: { show: false } }
+                        icon: { color: 'primary' },
+                        title: `Info`,
+                        message: message,
+                        actions: { confirm: { color: 'primary' }, cancel: { show: false } }
                     });
                 }
             })
@@ -368,7 +332,7 @@ export class NreComponent implements OnInit {
         // Crate
         else {
             // console.log('request-->', request)
-            this._nreService.createProject(request).subscribe({
+            this._nreService.createProject(this.page.project).subscribe({
                 next: (res) => {
                     let dialogRef = this._fuseConfirmationService.open({
                         message: `The project has been saved.`,
@@ -376,28 +340,25 @@ export class NreComponent implements OnInit {
                         actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
                     });
 
-                    this.calculate();
-                    this.search();
-
-                    // let dialogRef = this._fuseConfirmationService.open({
-                    //     title: 'Hint',
-                    //     message: `Save completed.`,
-                    //     icon: { color: 'success' },
-                    //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                    // });
-
+                    console.log('create res', res, this.page.project)
+                    this.manageData(res);
 
                     this._changeDetectorRef.markForCheck();
                 },
                 error: e => {
                     console.log(e)
-                    console.log(e.error.detail ? e.error.detail : e.message)
+                    let message = e.error.detail ? e.error.detail : e.message;
+
+                    if (e.error.version) message = `The field version is required.`;
+                    if (e.error.non_field_errors) message = `${e.error.non_field_errors[0].replace('name', 'project')}`;
+
                     const dialogRef = this._fuseConfirmationService.open({
-                        // title: e.statusText,
-                        title: `createProject() error`,
-                        message: e.error.detail ? e.error.detail : e.message,
-                        actions: { cancel: { show: false } }
+                        icon: { color: 'primary' },
+                        title: `Info`,
+                        message: message,
+                        actions: { confirm: { color: 'primary' }, cancel: { show: false } }
                     });
+
 
                 }
             });
@@ -406,7 +367,6 @@ export class NreComponent implements OnInit {
     }
 
     calculate(): void {
-
 
         if (this.page.data) {
             for (let i in this.page.data.functions) {
@@ -501,18 +461,52 @@ export class NreComponent implements OnInit {
         }
     }
 
+    private manageData(res: any) {
+
+        this.page.data = JSON.parse(JSON.stringify(this.page.dataset.customers.find((e: any) => e.id === this.form.value.customer)));
+
+        // fill res.records from api GET to this.page.data
+        for (let i in this.page.data.functions) {
+            let func = this.page.data.functions[i]
+            for (let j in func.test_items) {
+                let item = func.test_items[j];
+                let record = res.records.find(e => e.test_item === item.id)
+                if (record) {
+                    this.page.data.functions[i].test_items[j].record = record;
+                }
+            }
+        }
+
+        // fill this.page.project
+        delete res.records;
+        this.page.project = res;
+
+        console.log(this.page.project, this.page.data)
+
+        if (res.name == '') this.page.project.name = this.form.value.project;
+        this.page.project.customer = this.form.value.customer;
+        this.page.project.customer_name = this.page.dataset.customers.find((e: any) => e.id == this.form.value.customer).name;
+
+        this.formSave.get('version').setValue(this.page.project.version);
+        this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
+
+        this.page.status = {
+            label: res.id ? 'Saved' : 'New',
+            change: false,
+            color: res.id ? 'green' : 'blue'
+        }
+
+        // refresh versions
+        this._nreService.getVersions({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe();
+
+        // this._nreService.page = this.page;        
+
+        this._changeDetectorRef.markForCheck();
+    }
+
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
-    }
-
-
-    private _filter(name: string) {
-
-        const filterValue = name.toLowerCase();
-        let ret = this.page.projects.filter(option => option.name.toLowerCase().includes(filterValue));
-        console.log('_filter', name, ret)
-        return ret
     }
 }

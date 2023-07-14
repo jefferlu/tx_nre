@@ -81,9 +81,10 @@ class Project(models.Model):
 
     class Meta:
         db_table = 'nre_project'
+        unique_together = ('name', 'version',)
 
     def __str__(self):
-        return '%s-%s' % (self.customer.name, self.name)
+        return '%s-%s-%s' % (self.customer.name, self.name, self.version)
 
 
 class Record(models.Model):
