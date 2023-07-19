@@ -86,11 +86,21 @@ export class NreComponent implements OnInit {
         });
 
         this.formSave = this._formBuilder.group({
-            version: ['', [Validators.required, control => this._versionDuplicate.validator(control, this.page.project.id, this.page.dataset.versions)]],
+            version: ['', [Validators.required, this._specialApha.nameValidator,
+            control => this._versionDuplicate.validator(control, this.page.project.id, this.page.dataset.versions)]],
             power_ratio: [null, [Validators.required]]
         })
 
-        // Observable filter
+
+        // FormControls Observable 
+
+        this.form.get('customer').valueChanges.pipe(
+            takeUntil(this._unsubscribeAll),
+            map(_ => {
+                this.page.dataset.projects = null;
+            })
+        ).subscribe()
+
         this.form.get('project').valueChanges.pipe(
             debounceTime(this.page.debounce),
             takeUntil(this._unsubscribeAll),
@@ -103,14 +113,9 @@ export class NreComponent implements OnInit {
 
                 // Continue
                 return value;
-
-                // let projects = this.page.projects.filter(e => e.customer == this.form.value.customer)
-                // const name = typeof value === 'string' ? value : value?.name;
-                // console.log('valuechange', name, projects)
-                // return name ? this._filter(name as string) : projects.slice();
             }),
             filter(value => value && value.length >= this.page.minLength)
-        ).subscribe((value) => {
+        ).subscribe(_ => {
             this._nreService.getProjects({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe()
         });
 
@@ -223,23 +228,61 @@ export class NreComponent implements OnInit {
                 }
             },
             error: e => {
-                let dialogRef = this._fuseConfirmationService.open({
-                    title: `Error ${e.status}`,
-                    message: `${e.statusText}.<br/>Please contact the administrator.`,
-                    actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                });
-
-                dialogRef.afterClosed().subscribe(result => {
-                    if (result === 'confirmed') {
-                        this.onSearchOpen();
-                        this._changeDetectorRef.markForCheck();
-                    }
+                console.log(e)
+                const dialogRef = this._fuseConfirmationService.open({
+                    title: 'Error',
+                    message: JSON.stringify(e.error),
+                    actions: { confirm: { color: 'warn', label: 'OK' }, cancel: { show: false } }
                 });
             }
         });
     }
 
     save(): void {
+        // check version and project.id is in 'version' FormControl
+        if (this.formSave.invalid) return;
+        console.log('create')
+
+        // check project is loaded
+        if (!this.page.data) {
+            this._alert.open({ type: 'warn', message: 'Project has not been loaded.' });
+            this.onSearchOpen();
+            this._changeDetectorRef.markForCheck();
+            return;
+        }
+
+        this.page.project.version = this.formSave.value.version;
+        this.page.project.power_ratio = this.formSave.value.power_ratio;
+        this.page.project.records = [];
+        for (let func of this.page.data.functions) {
+            for (let item of func.test_items) {
+                item.record.test_item = item.id;    //new record from api doesn't have item id                
+                this.page.project.records.push(item.record)
+            }
+        }
+        console.log(this.page.data, this.page.project);
+
+        this._nreService.createProject(this.page.project).subscribe({
+            next: (res) => {
+                if (res) {
+                    this._alert.open({ message: 'The project has been saved.' });
+                    this.manageData(res);
+                }
+            },
+            error: e => {
+                console.log(e)
+                let message = JSON.stringify(e.error)
+                const dialogRef = this._fuseConfirmationService.open({
+                    icon: { color: 'warn' },
+                    title: `Error`,
+                    message: message,
+                    actions: { confirm: { color: 'primary' }, cancel: { show: false } }
+                });
+            }
+        });
+    }
+
+    save_bk(): void {
 
         // check version and project.id is in 'version' FormControl
         if (this.formSave.invalid) return;
@@ -305,8 +348,8 @@ export class NreComponent implements OnInit {
                         //     icon: { color: 'primary' },
                         //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
                         // });
-                        this._alert.open({ message: 'The project has been saved.' });
 
+                        this._alert.open({ message: 'The project has been saved.' });
                         this.manageData(res);
 
                         // this.calculate();
@@ -315,7 +358,7 @@ export class NreComponent implements OnInit {
                 },
                 error: e => {
                     console.log(e)
-                    let message = e.error.detail ? e.error.detail : e.message;
+                    let message = JSON.stringify(e.error)
 
                     if (e.error.version) message = `Version: ${e.error.version[0]}`;
                     if (e.error.non_field_errors) message = `${e.error.non_field_errors[0].replace('name', 'project')}`;
@@ -334,20 +377,20 @@ export class NreComponent implements OnInit {
             // console.log('request-->', request)
             this._nreService.createProject(this.page.project).subscribe({
                 next: (res) => {
-                    let dialogRef = this._fuseConfirmationService.open({
-                        message: `The project has been saved.`,
-                        icon: { color: 'primary' },
-                        actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                    });
+                    // let dialogRef = this._fuseConfirmationService.open({
+                    //     message: `The project has been saved.`,
+                    //     icon: { color: 'primary' },
+                    //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
+                    // });
 
-                    console.log('create res', res, this.page.project)
+                    // console.log('create res', res, this.page.project)
+
+                    this._alert.open({ message: 'The project has been saved.' });
                     this.manageData(res);
-
-                    this._changeDetectorRef.markForCheck();
                 },
                 error: e => {
                     console.log(e)
-                    let message = e.error.detail ? e.error.detail : e.message;
+                    let message = JSON.stringify(e.erro);
 
                     if (e.error.version) message = `The field version is required.`;
                     if (e.error.non_field_errors) message = `${e.error.non_field_errors[0].replace('name', 'project')}`;
@@ -358,107 +401,10 @@ export class NreComponent implements OnInit {
                         message: message,
                         actions: { confirm: { color: 'primary' }, cancel: { show: false } }
                     });
-
-
                 }
             });
         }
 
-    }
-
-    calculate(): void {
-
-        if (this.page.data) {
-            for (let i in this.page.data.functions) {
-                let func = this.page.data.functions[i];
-
-                func['concept'] = null;
-                func['bu'] = null;
-                func['ct'] = null;
-                func['nt'] = null;
-                func['ot'] = null;
-
-                for (let j in func.test_items) {
-                    let item = func.test_items[j];
-
-                    item['concept'] = null;
-                    item['bu'] = null;
-                    item['ct'] = null;
-                    item['nt'] = null;
-                    item['ot'] = null;
-
-                    if (item.equip_working_hours != null) {
-
-                        item['sub_total'] = 0;
-                        if (item.record.concept_regression_rate != null) {
-                            item['concept'] = parseFloat(item.record.concept_regression_rate) * item.equip_working_hours;
-                            item['sub_total'] += item['concept'];
-
-                            if (func['concept'] == null) func['concept'] = 0
-                            func['concept'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
-                        }
-
-                        if (item.record.bu_regression_rate != null) {
-                            item['bu'] = parseFloat(item.record.bu_regression_rate) * item.equip_working_hours;
-                            item['sub_total'] += item['bu'];
-
-                            if (func['bu'] == null) func['bu'] = 0
-                            func['bu'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
-                        }
-
-                        if (item.record.ct_regression_rate != null) {
-                            item['ct'] = parseFloat(item.record.ct_regression_rate) * item.equip_working_hours;
-                            item['sub_total'] += item['ct'];
-
-                            if (func['ct'] == null) func['ct'] = 0
-                            func['ct'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
-                        }
-
-                        if (item.record.nt_regression_rate != null) {
-                            item['nt'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
-                            item['sub_total'] += item['nt'];
-
-                            if (func['nt'] == null) func['nt'] = 0
-                            func['nt'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
-                        }
-
-                        if (item.record.ot_regression_rate != null) {
-                            item['ot'] = parseFloat(item.record.ot_regression_rate) * item.equip_working_hours;
-                            item['sub_total'] += item['ot'];
-
-                            if (func['ot'] == null) func['ot'] = 0
-                            func['ot'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
-                        }
-                    }
-
-                    if (func.name === 'Reliability') {
-                        // console.log(item)
-                    }
-                }
-            }
-        }
-        console.log(this.page.data)
-    }
-
-    change(): void {
-        this.page.status = {
-            label: 'Modified',
-            color: 'red',
-            change: true
-        }
-    }
-
-    export(type: number): void {
-        switch (type) {
-            // Equipment
-            case 0:
-                console.log('equipment');
-                break;
-            // Man Power
-            case 1:
-                console.log('man power')
-                break;
-        }
     }
 
     private manageData(res: any) {
@@ -503,6 +449,215 @@ export class NreComponent implements OnInit {
 
         this._changeDetectorRef.markForCheck();
     }
+
+    calculate(): void {
+
+        if (this.page.data) {
+            for (let i in this.page.data.functions) {
+                let func = this.page.data.functions[i];
+
+                func['concept_man_hrs_sum'] = null;
+                func['bu_man_hrs_sum'] = null;
+                func['ct_man_hrs_sum'] = null;
+                func['nt_man_hrs_sum'] = null;
+                func['ot_man_hrs_sum'] = null;
+
+                for (let j in func.test_items) {
+                    let item = func.test_items[j];
+
+                    item['concept_equip_hrs'] = null;
+                    item['concept_capacity'] = null;
+                    item['concept_chambers'] = null;
+                    item['bu_equip_hrs'] = null;
+                    item['bu_capacity'] = null;
+                    item['bu_chambers'] = null;
+                    item['ct_equip_hrs'] = null;
+                    item['ct_capacity'] = null;
+                    item['ct_chambers'] = null;
+                    item['nt_equip_hrs'] = null;
+                    item['nt_capacity'] = null;
+                    item['nt_chambers'] = null;
+                    item['ot_equip_hrs'] = null;
+                    item['ot_capacity'] = null;
+                    item['ot_chambers'] = null;
+                    item['sub_total'] = 0;
+
+                    console.log(item)
+
+                    // Concept
+                    if (item.record.concept_need_test) {
+                        item['concept_capacity'] = item.record.concept_test_uut * this.page.project.power_ratio;
+                        if (func.name === 'Reliability') item['concept_capacity'] *= 0.8;
+                        item['concept_chambers'] = this.selectChambers(item['concept_capacity']);
+                        if (item.record.concept_regression_rate != null) {
+
+                            if (item.equip_working_hours != null) {
+                                item['concept_equip_hrs'] = parseFloat(item.record.concept_regression_rate) * item.equip_working_hours;
+                                item['sub_total'] += item['concept_equip_hrs'];
+                            }
+
+                            if (item.man_working_hours != null) {
+                                if (func['concept_man_hrs_sum'] == null) func['concept_man_hrs_sum'] = 0
+                                func['concept_man_hrs_sum'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
+                            }
+                        }
+                    }
+
+                    // BU        
+                    if (item.record.bu_need_test) {
+                        item['bu_capacity'] = item.record.bu_test_uut * this.page.project.power_ratio;
+                        if (func.name === 'Reliability') item['bu_capacity'] *= 0.8;
+                        item['bu_chambers'] = this.selectChambers(item['bu_capacity']);
+                        if (item.record.bu_regression_rate != null) {
+                            if (item.equip_working_hours != null) {
+                                item['bu_equip_hrs'] = parseFloat(item.record.bu_regression_rate) * item.equip_working_hours;
+                                item['sub_total'] += item['bu_equip_hrs'];
+                            }
+
+                            if (item.man_working_hours != null) {
+                                if (func['bu_man_hrs_sum'] == null) func['bu_man_hrs_sum'] = 0
+                                func['bu_man_hrs_sum'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
+                            }
+                        }
+                    }
+
+                    // CT
+                    if (item.record.ct_need_test) {
+                        item['ct_capacity'] = item.record.ct_test_uut * this.page.project.power_ratio;
+                        if (func.name === 'Reliability') item['ct_capacity'] *= 0.8;
+                        item['ct_chambers'] = this.selectChambers(item['ct_capacity']);
+                        if (item.record.ct_regression_rate != null) {
+
+                            if (item.equip_working_hours != null) {
+                                item['ct_equip_hrs'] = parseFloat(item.record.ct_regression_rate) * item.equip_working_hours;
+                                item['sub_total'] += item['ct_equip_hrs'];
+                            }
+
+                            if (item.man_working_hours != null) {
+                                if (func['ct_man_hrs_sum'] == null) func['ct_man_hrs_sum'] = 0
+                                func['ct_man_hrs_sum'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
+                            }
+                        }
+                    }
+
+                    // NT
+                    if (item.record.nt_need_test) {
+                        item['nt_capacity'] = item.record.nt_test_uut * this.page.project.power_ratio;
+                        if (func.name === 'Reliability') item['nt_capacity'] *= 0.8;
+                        item['nt_chambers'] = this.selectChambers(item['nt_capacity']);
+                        if (item.record.nt_regression_rate != null) {
+                            if (item.equip_working_hours != null) {
+                                item['nt_equip_hrs'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
+                                item['sub_total'] += item['nt_equip_hrs'];
+                            }
+
+                            if (item.man_working_hours != null) {
+                                if (func['nt_man_hrs_sum'] == null) func['nt_man_hrs_sum'] = 0
+                                func['nt_man_hrs_sum'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
+                            }
+                        }
+                    }
+
+                    // OT
+                    if (item.record.ot_need_test) {
+                        item['ot_capacity'] = item.record.nt_test_uut * this.page.project.power_ratio;
+                        if (func.name === 'Reliability') item['ot_capacity'] *= 0.8;
+                        item['ot_chambers'] = this.selectChambers(item['ot_capacity']);
+                        if (item.record.ot_regression_rate != null) {
+
+                            if (item.equip_working_hours != null) {
+                                item['ot_equip_hrs'] = parseFloat(item.record.ot_regression_rate) * item.equip_working_hours;
+                                item['sub_total'] += item['ot_equip_hrs'];
+                            }
+
+                            if (item.man_working_hours != null) {
+                                if (func['ot_man_hrs_sum'] == null) func['ot_man_hrs_sum'] = 0
+                                func['ot_man_hrs_sum'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        console.log(this.selectChambers(12200))
+    }
+
+    private selectChambers(capacity: number) {
+        const chambers: any[] = [
+            { name: '1K', capacity: 1000 },
+            { name: '2K', capacity: 2000 },
+            { name: 'Walk-in', capacity: 6000 }
+        ];
+        chambers.sort((a, b) => b.capacity - a.capacity); // 按照容量從大到小排序
+
+        let sortedChambers = JSON.parse(JSON.stringify(chambers));
+        sortedChambers = sortedChambers.sort((a, b) => a.capacity - b.capacity)// 按照容量從小到大排序
+
+        const selectedChambers: any[] = [];
+        if (capacity > 0) {
+            // // 優先選擇可以滿足 capacity 的單個 chamber
+            // for (let i = 0; i < chambers.length; i++) {
+            //     let chamber = chambers[i];
+            //     if (chamber.capacity >= capacity) {
+            //         selectedChambers.push({ name: chambers[i].name, count: 1 });
+            //         return selectedChambers; // 返回单个 chamber
+            //     }
+            // }
+
+
+            let remainingRate = capacity;
+            for (let chamber of chambers) {
+                if (remainingRate > 0) {
+                    // 商數找出滿足最大容量的chamber(降冪)
+                    let count = Math.floor(remainingRate / chamber.capacity);
+                    if (count > 0) {
+                        selectedChambers.push({ name: chamber.name, count: count });
+                    }
+
+                    // 餘數找出滿足最小容量的chamber(升冪)
+                    remainingRate = remainingRate % chamber.capacity;
+                    if (remainingRate > 0) {
+                        for (let chamber of sortedChambers) {
+                            if (chamber.capacity >= remainingRate) {
+
+                                let index = selectedChambers.findIndex(e => e.name === chamber.name)
+                                console.log('index', index)
+                                if (index === -1) selectedChambers.push({ name: chamber.name, count: 1 });
+                                else selectedChambers[index].count += 1;
+                                return selectedChambers;
+                            }
+                        }
+                    }
+                    else return selectedChambers;
+                }
+            }
+
+        }
+
+        return selectedChambers;
+    }
+
+    change(): void {
+        this.page.status = {
+            label: 'Modified',
+            color: 'red',
+            change: true
+        }
+    }
+
+    export(type: number): void {
+        switch (type) {
+            // Equipment
+            case 0:
+                console.log('equipment');
+                break;
+            // Man Power
+            case 1:
+                console.log('man power')
+                break;
+        }
+    }
+
 
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions

@@ -17,7 +17,7 @@ class Item(models.Model):
 
 
 class Customer(models.Model):
-    name = models.CharField(max_length=120, verbose_name='name')
+    name = models.CharField(max_length=120, verbose_name='name', unique=True)
 
     class Meta:
         db_table = 'nre_customer'
@@ -40,18 +40,13 @@ class Function(models.Model):
 
 
 class TestItem(models.Model):
-    # LAB_LOCATION = [
-    #     (0, 'Compal PCP'),
-    #     (1, 'Outsourcing')
-    # ]
 
     function = models.ForeignKey(
         Function, on_delete=models.CASCADE, related_name='test_items', verbose_name='function')
     item = models.ForeignKey(
         Item, on_delete=models.CASCADE, verbose_name='item')
     lab_location = models.CharField(max_length=120, verbose_name='lab_location')
-    # lab_location = models.IntegerField(
-    #     default=1, choices=LAB_LOCATION, verbose_name='lab_location')
+    order = models.IntegerField(null=True, blank=True)
 
     class Meta:
         db_table = 'nre_test_item'
@@ -81,7 +76,7 @@ class Project(models.Model):
 
     class Meta:
         db_table = 'nre_project'
-        unique_together = ('name', 'version',)
+        unique_together = ('customer', 'name', 'version',)
 
     def __str__(self):
         return '%s-%s-%s' % (self.customer.name, self.name, self.version)
@@ -92,6 +87,8 @@ class Record(models.Model):
                                 verbose_name='project', related_name='records', null=True, blank=True)
     test_item = models.ForeignKey(
         TestItem, on_delete=models.CASCADE, verbose_name='test_item')
+    walk_in = models.BooleanField(
+        default=False, verbose_name='walk_in')
 
     concept_test_uut = models.IntegerField(
         null=True, blank=True, verbose_name='concept_test_uut')

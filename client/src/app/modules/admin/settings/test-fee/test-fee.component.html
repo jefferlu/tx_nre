@@ -11,14 +11,19 @@
             </mat-form-field>
 
         </div>
-        <div class="flex-auto">
-            <button mat-icon-button class="ml-2 sm:ml-4" (click)="add()">
-                <mat-icon [svgIcon]="'heroicons_solid:plus'"></mat-icon>
-            </button>
+        <div class="ml-auto">
+            <button mat-icon-button class="ml-2 sm:ml-4"  (click)="onUpload()">
+                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
+            </button>      
+            
+            <!-- <button mat-icon-button class="ml-2 sm:ml-4" (click)="onUpload()">
+                 <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
+                 <span class="ml-2 mr-1">Import</span>
+            </button> -->
         </div>
-        <div class="sm:ml-auto">
-            <!-- Save button-->
-            <button class="ml-3" mat-flat-button [color]="'primary'" (click)="save()">
+        <div>           
+             <!-- Save button-->
+             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
@@ -47,20 +52,20 @@
                         <td class="text-center w-32" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                         <td class="edit-item"><input [(ngModel)]="item.item_name" (change)="change()"></td>
                         <td class="edit-str"><input [(ngModel)]="item.lab_location" (change)="change()"></td>
-                        <td class="edit-numeric"><input [(ngModel)]="item.fee" (change)="change()"numeric-two-digit></td>
+                        <td class="edit-numeric"><input [(ngModel)]="item.fee" (change)="change()" numeric-two-digit></td>
                     </tr>
 
                     <tr *ngIf="idx>0">
                         <td class="edit-item"><input [(ngModel)]="item.item_name" (change)="change()"></td>
                         <td class="edit-str"><input [(ngModel)]="item.lab_location" (change)="change()"></td>
-                        <td class="edit-numeric"><input [(ngModel)]="item.fee" (change)="change()"numeric-two-digit></td>
+                        <td class="edit-numeric"><input [(ngModel)]="item.fee" (change)="change()" numeric-two-digit></td>
                         <!-- <td class="edit-select">
                             <select>
                                 <option>Compal PCP</option>
                                 <option>Outsourcing</option>
                             </select>
                         </td> -->
-                        
+
                     </tr>
 
                 </ng-container>

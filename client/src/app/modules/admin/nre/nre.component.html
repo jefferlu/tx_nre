@@ -74,6 +74,9 @@
                             <mat-error *ngIf="formSave.get('version').hasError('duplicate')">
                                 Already exists.
                             </mat-error>
+                            <mat-error *ngIf="formSave.get('version').hasError('invalidName')">
+                                Special characters are not allowed.
+                            </mat-error>
                         </mat-form-field>
 
                         <!-- Power Ratio -->
@@ -154,6 +157,7 @@
                                     <tr>
                                         <th rowspan="2">Function</th>
                                         <th rowspan="2">Test Item</th>
+                                        <th rowspan="2">Walk-in</th>
                                         <th colspan="3">Concept</th>
                                         <th colspan="3">BU</th>
                                         <th colspan="3">CT</th>
@@ -162,24 +166,24 @@
                                     </tr>
 
                                     <tr>
-                                        <th>Test UUT</th>
                                         <th>Need Test</th>
+                                        <th>Test UUT</th>                                        
                                         <th>Regression Rate</th>
 
-                                        <th>Test UUT</th>
                                         <th>Need Test</th>
+                                        <th>Test UUT</th>
                                         <th>Regression Rate</th>
 
-                                        <th>Test UUT</th>
                                         <th>Need Test</th>
+                                        <th>Test UUT</th>
                                         <th>Regression Rate</th>
 
-                                        <th>Test UUT</th>
                                         <th>Need Test</th>
+                                        <th>Test UUT</th>
                                         <th>Regression Rate</th>
 
-                                        <th>Test UUT</th>
                                         <th>Need Test</th>
+                                        <th>Test UUT</th>
                                         <th>Regression Rate</th>
                                     </tr>
 
@@ -188,28 +192,33 @@
                                     <ng-container *ngFor="let func of page.data?.functions">
                                         <ng-container *ngFor="let item of func.test_items;let idx=index">
 
-                                            <tr *ngIf="idx==0">
+                                            <tr *ngIf="idx == 0">
                                                 <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                                 <td>{{item.item_name}}</td>
+                                                <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
+                                                    [(ngModel)]="item.walk_in" (change)="change()"></td>
+
                                                 <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                                    <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
+                                                        [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
                                                     <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']" (change)="change()"
                                                             numeric-only>
-                                                    </td>
-                                                    <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
-                                                            [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
+                                                    </td>                                                    
                                                     <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()"
                                                             numeric-two-digit></td>
                                                 </ng-container>
                                             </tr>
 
-                                            <tr *ngIf="idx>0">
+                                            <tr *ngIf="idx > 0">
                                                 <td>{{item.item_name}}</td>
+                                                <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
+                                                    [(ngModel)]="item.walk_in" (change)="change()"></td>
                                                 <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                                    <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
+                                                        [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
                                                     <td class="edit"><input [(ngModel)]="item.record[n + '_test_uut']" (change)="change()"
                                                             numeric-only>
-                                                    </td>
-                                                    <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
-                                                            [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
+                                                    </td>                                                    
                                                     <td class="edit"><input [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()"
                                                             numeric-two-digit></td>
                                                 </ng-container>
@@ -234,19 +243,35 @@
                             <table class="table-auto w-full border-2 border-slate-500 cust-table">
                                 <thead>
                                     <tr>
-                                        <th colspan="10">Reliability/S&V Test</th>
+                                        <th colspan="15">Reliability/S&V Test</th>
                                     </tr>
                                     <tr>
-                                        <th>Function</th>
-                                        <th>Test Item</th>
-                                        <th>Lab Location</th>
-                                        <th>Lab Rate</th>
-                                        <th>Concept</th>
-                                        <th>BU</th>
-                                        <th>CT</th>
-                                        <th>NT</th>
-                                        <th>OT</th>
-                                        <th>Sub Total</th>
+                                        <th rowspan="2">Function</th>
+                                        <th rowspan="2">Test Item</th>
+                                        <th rowspan="2">Lab Location</th>
+                                        <th rowspan="2">Lab Rate</th>
+                                        <th colspan="2">Concept</th>
+                                        <th colspan="2">BU</th>
+                                        <th colspan="2">CT</th>
+                                        <th colspan="2">NT</th>
+                                        <th colspan="2">OT</th>
+                                        <th rowspan="2">Sub Total</th>
+                                    </tr>
+                                    <tr>
+                                        <th>HRS</th>
+                                        <th>Equipment</th>
+
+                                        <th>HRS</th>
+                                        <th>Equipment</th>
+
+                                        <th>HRS</th>
+                                        <th>Equipment</th>
+
+                                        <th>HRS</th>
+                                        <th>Equipment</th>
+
+                                        <th>HRS</th>
+                                        <th>Equipment</th>
                                     </tr>
                                 </thead>
 
@@ -254,28 +279,83 @@
 
                                     <ng-container *ngFor="let func of page.data?.functions">
                                         <ng-container *ngFor="let item of func.test_items;let idx=index">
-                                            <tr *ngIf="idx==0">
+                                            <tr *ngIf="idx == 0">
                                                 <td class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                                 <td>{{item.item_name}}</td>
                                                 <td class="view">{{item.lab_location}}</td>
                                                 <td class="view">{{item.fee}}</td>
-                                                <td class="view">{{item.concept}}</td>
-                                                <td class="view">{{item.bu}}</td>
-                                                <td class="view">{{item.ct}}</td>
-                                                <td class="view">{{item.nt}}</td>
-                                                <td class="view">{{item.ot}}</td>
-                                                <td class="view">{{item.sub_total}}</td>
+                                                <td class="view">{{item.concept_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">
+                                                    <ng-container *ngFor="let chamber of item.concept_chambers; let idx=index">
+                                                        <span [matTooltip]="idx==0?'Lab Rate: ' + item.concept_capacity+'W':''"
+                                                            class="inline-flex items-center font-bold text-xs px-1.5 rounded-full tracking-wide"
+                                                            [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50': chamber.name === 'Walk-in',
+                                                            'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50': chamber.name !== 'Walk-in'}">
+                                                            <span class="leading-relaxed whitespace-nowrap">{{chamber.name}}</span>*{{chamber.count}}
+                                                        </span>
+                                                    </ng-container>
+                                                </td>
+                                                <td class="view">{{item.bu_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">
+                                                    <ng-container *ngFor="let chamber of item.bu_chambers;let idx=index">
+                                                        <span [matTooltip]="idx==0?'Lab Rate: ' + item.bu_capacity+'W':''"
+                                                            class="inline-flex items-center font-bold text-xs px-1.5 rounded-full tracking-wide"
+                                                            [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50': chamber.name === 'Walk-in',
+                                                            'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50': chamber.name !== 'Walk-in'}">
+                                                            <span class="leading-relaxed whitespace-nowrap">{{chamber.name}}</span>*{{chamber.count}}
+                                                        </span>
+                                                    </ng-container>
+                                                </td>
+                                                <td class="view">{{item.ct_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">
+                                                    <ng-container *ngFor="let chamber of item.ct_chambers;let idx=index">
+                                                        <span [matTooltip]="idx==0?'Lab Rate: ' + item.ct_capacity+'W':''"
+                                                            class="inline-flex items-center font-bold text-xs px-1.5 rounded-full tracking-wide"
+                                                            [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50': chamber.name === 'Walk-in',
+                                                            'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50': chamber.name !== 'Walk-in'}">
+                                                            <span class="leading-relaxed whitespace-nowrap">{{chamber.name}}</span>*{{chamber.count}}
+                                                        </span>
+                                                    </ng-container>
+                                                </td>
+                                                <td class="view">{{item.nt_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">
+                                                    <ng-container *ngFor="let chamber of item.nt_chambers;let idx=index">
+                                                        <span [matTooltip]="idx==0?'Lab Rate: ' + item.nt_capacity+'W':''"
+                                                            class="inline-flex items-center font-bold text-xs px-1.5 rounded-full tracking-wide"
+                                                            [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50': chamber.name === 'Walk-in',
+                                                            'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50': chamber.name !== 'Walk-in'}">
+                                                            <span class="leading-relaxed whitespace-nowrap">{{chamber.name}}</span>*{{chamber.count}}
+                                                        </span>
+                                                    </ng-container>
+                                                </td>
+                                                <td class="view">{{item.ot_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">
+                                                    <ng-container *ngFor="let chamber of item.ot_chambers;let idx=index">
+                                                        <span [matTooltip]="idx==0?'Lab Rate: ' + item.ot_capacity+'W':''"
+                                                            class="inline-flex items-center font-bold text-xs px-1.5 rounded-full tracking-wide"
+                                                            [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50': chamber.name === 'Walk-in',
+                                                            'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50': chamber.name !== 'Walk-in'}">
+                                                            <span class="leading-relaxed whitespace-nowrap">{{chamber.name}}</span>*{{chamber.count}}
+                                                        </span>
+                                                    </ng-container>
+                                                </td>
+                                                <td class="view">{{item.sub_total | number:'1.2-2'}}</td>
                                             </tr>
-                                            <tr *ngIf="idx>0">
+                                            <tr *ngIf="idx > 0">
                                                 <td>{{item.item_name}}</td>
                                                 <td class="view">{{item.lab_location}}</td>
                                                 <td class="view">{{item.fee}}</td>
-                                                <td class="view">{{item.concept}}</td>
-                                                <td class="view">{{item.bu}}</td>
-                                                <td class="view">{{item.ct}}</td>
-                                                <td class="view">{{item.nt}}</td>
-                                                <td class="view">{{item.ot}}</td>
-                                                <td class="view">{{item.sub_total}}</td>
+                                                <td class="view">{{item.concept_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">{{item.concept_chamber}}</td>
+                                                <td class="view">{{item.bu_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">{{item.bu_chamber}}</td>
+                                                <td class="view">{{item.ct_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">{{item.ct_chamber}}</td>
+                                                <td class="view">{{item.nt_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">{{item.nt_chamber}}</td>
+                                                <td class="view">{{item.ot_equip_hrs | number:'1.2-2'}}</td>
+                                                <td class="view">{{item.ot_chamber}}</td>
+                                                <td class="view">{{item.sub_total | number:'1.2-2'}}</td>
                                             </tr>
                                         </ng-container>
                                     </ng-container>
@@ -304,11 +384,11 @@
                                     <ng-container *ngFor="let func of page.data?.functions">
                                         <tr>
                                             <td class="view">{{func.name}}</td>
-                                            <td class="view">{{func.concept}}</td>
-                                            <td class="view">{{func.bu}}</td>
-                                            <td class="view">{{func.ct}}</td>
-                                            <td class="view">{{func.nt}}</td>
-                                            <td class="view">{{func.ot}}</td>
+                                            <td class="view">{{func.concept_man_hrs_sum | number:'1.2-2'}}</td>
+                                            <td class="view">{{func.bu_man_hrs_sum | number:'1.2-2'}}</td>
+                                            <td class="view">{{func.ct_man_hrs_sum | number:'1.2-2'}}</td>
+                                            <td class="view">{{func.nt_man_hrs_sum | number:'1.2-2'}}</td>
+                                            <td class="view">{{func.ot_man_hrs_sum | number:'1.2-2'}}</td>
                                         </tr>
                                     </ng-container>
                                 </tbody>

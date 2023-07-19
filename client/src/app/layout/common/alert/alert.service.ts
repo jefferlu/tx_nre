@@ -15,10 +15,10 @@ export class AlertService {
     open(data: any): void {
         this._snackBar.openFromComponent(AlertComponent, {
             horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,                        
+            verticalPosition: this.verticalPosition,
             panelClass: [`snackbar-customer`], // overwrite default style
-            duration: 3 * 1000,
-            data: data            
+            duration: (data.duration ?? 3) * 1000,
+            data: data
         });
     }
 }

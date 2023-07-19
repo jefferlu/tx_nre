@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
@@ -33,6 +35,7 @@ Backend:
     
 '''
 
+
 class TokenObtainView(TokenObtainPairView):
     serializer_class = serializers.TokenObtainSerializer
 
@@ -62,7 +65,7 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ItemSerializer
     # list_serializer_class = serializers.ItemListSerializer
-    queryset = models.Item.objects.all().order_by('name')
+    queryset = models.Item.objects.all().order_by('id')
 
     # def get_serializer_class(self):
     #     if self.action == 'create' and isinstance(self.request.data, list):
@@ -71,7 +74,7 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         query = self.request.query_params.get('query')
-        qs = models.Item.objects.all().order_by('name')
+        qs = models.Item.objects.all().order_by('id')
 
         if query:
             qs = qs.filter(Q(no__icontains=query) | Q(name__icontains=query))
@@ -82,25 +85,33 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         # get
         data = request.data
 
-       # Categorize data into items to create and items to update
-        create_data = [item for item in data if 'id' not in item]
-        update_data = [item for item in data if 'id' in item]
+        # Categorize data into items to create and items to update
+        # create_data = [item for item in data if 'id' not in item]
+        # update_data = [item for item in data if 'id' in item]
+
+        create_data = []
+        update_data = []
+
+        for item in data:
+            if 'id' in item:
+                update_data.append(item)
+            else:
+                try:
+                    item['id'] = models.Item.objects.get(no=item['no']).id
+                    update_data.append(item)
+                except models.Item.DoesNotExist:
+                    # 資料不存在的處理邏輯
+                    create_data.append(item)
 
         created_objects = []
         if create_data:
             serializer = self.get_serializer(data=create_data, many=True)
+
             try:
                 serializer.is_valid(raise_exception=True)
             except exceptions.ValidationError as e:
-                if '這個 name 在 item 已經存在。' in str(e):
-                    # Data duplication case
-                    message = f'{create_data[0]["name"]} 資料重覆'
-                    # print("資料重覆")
-                else:
-                    # Other error cases
-                    message = e.message
-                    # print("其他錯誤")
-                return Response(message, status=status.HTTP_400_BAD_REQUEST)
+                return Response(e.get_full_details(), status=status.HTTP_400_BAD_REQUEST)
+
             created_objects = serializer.save()
 
         # Perform update actions
@@ -111,15 +122,7 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
                 try:
                     serializer.is_valid(raise_exception=True)
                 except exceptions.ValidationError as e:
-                    if '這個 name 在 item 已經存在。' in str(e):
-                        # Data duplication case
-                        message = f'{update_data[0]["name"]} 資料重覆'
-                        # print("資料重覆")
-                    else:
-                        # Other error cases
-                        message = e.message
-                        # print("其他錯誤")
-                    return Response(message, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(e.get_full_details(), status=status.HTTP_400_BAD_REQUEST)
                 serializer.save()
 
         # Combine the results of creation and update and return
@@ -134,13 +137,52 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     queryset = models.Customer.objects.all()
     # pagination_class = None
 
+    def create(self, request, *args, **kwargs):
+        data = request.data
 
-class ProjectViewSet(
-        AutoPrefetchViewSetMixin,
-        mixins.RetrieveModelMixin,
-        mixins.UpdateModelMixin,
-        mixins.CreateModelMixin,
-        viewsets.GenericViewSet):
+        customer_name = data.get('name')
+        functions_data = data.get('functions', [])
+
+        # 檢查 Customer 是否存在
+        customer, _ = models.Customer.objects.update_or_create(name=customer_name)
+
+        # 處理 functions 數據
+        for function_data in functions_data:
+            function_name = function_data.get('name')
+            test_items_data = function_data.get('test_items', [])
+
+            # 檢查 Function 是否存在
+            function, _ = models.Function.objects.update_or_create(customer=customer, name=function_name)
+
+            # 處理 test_items 資料
+            for test_item_data in test_items_data:
+                item_name = test_item_data.get('item_name')
+                lab_location = test_item_data.get('lab_location')
+                fee = test_item_data.get('fee')
+                order = test_item_data.get('order')
+
+            # 檢查 TestItem 是否存在
+                try:
+                    item = models.Item.objects.get(no=item_name.split()[0])
+                except models.Item.DoesNotExist:
+                    item = None
+
+                if not item:
+                    continue
+
+                test_item, _ = models.TestItem.objects.update_or_create(function=function, item=item, lab_location=lab_location, defaults={'order': order})
+
+                # Fee
+                year = datetime.date.today().year
+                fee, _ = models.Fee.objects.update_or_create(test_item=test_item, defaults={'year': year, 'amount': fee})
+                print(test_item, test_item.order), test_item.lab_location
+
+        # 返回新增的資料
+        serializer = self.get_serializer(customer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
     if (not settings.DEBUG):
         permission_classes = (IsAuthenticated, )
@@ -148,14 +190,39 @@ class ProjectViewSet(
     queryset = models.Project.objects.all()
     lookup_field = 'name'
 
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        records_data = data.pop('records', None)
+
+        name = data.get('name')
+        customer = get_object_or_404(models.Customer, id=data.get('customer'))  # 避免create時找不到，取得customer實體
+        version = data.get('version')
+        power_ratio = data.get('power_ratio')
+
+        # 檢查 專案版本 是否存在
+        project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={'power_ratio': power_ratio})
+
+        for record_data in records_data:
+            if created:
+                record_data.pop('id')  # 移除record.id執行新增
+                record_data['project'] = project.id  # 綁定新的project.id
+                serializer = serializers.RecordSerializer(data=record_data)
+            else:
+                instance = models.Record.objects.get(id=record_data['id'])
+                serializer = serializers.RecordSerializer(instance, data=record_data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+
+        serializer = self.get_serializer(project)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     def get_object(self):
         customer = self.request.query_params.get('customer')
         version = self.request.query_params.get('version')
         name = self.kwargs['name']
 
-        print(customer, name, version)
         if version is not None:
-            print('check', version)
             q = models.Project.objects.all().filter(name=name, customer=customer, version=version).first()
         else:
             q = models.Project.objects.all().filter(name=name, customer=customer).order_by('-id').first()
@@ -177,13 +244,16 @@ class ProjectDistinctViewSet(
     def get_queryset(self):
         customer = self.request.query_params.get('customer')
         name = self.request.query_params.get('name')
-        # print(customer, name,)
 
         qs = []
         if customer and name:
             qs = models.Project.objects.all().distinct('name', 'customer').order_by('name')
             qs = qs.filter(customer=customer, name__icontains=name)
         return qs
+
+    def list(self, request, *args, **kwargs):
+        print('list')
+        return super().list(request, *args, **kwargs)
 
 
 class ProjectVersionsViewSet(

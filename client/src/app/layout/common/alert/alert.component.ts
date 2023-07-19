@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
-import { FuseAlertModule } from '@fuse/components/alert';
+import { FuseAlertModule, FuseAlertType } from '@fuse/components/alert';
 
 @Component({
     selector: 'app-alert',
@@ -11,12 +11,15 @@ import { FuseAlertModule } from '@fuse/components/alert';
 })
 export class AlertComponent {
 
+    type: FuseAlertType = 'primary';
+
     constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) {
 
     }
 
     ngOnInit(): void {
-        // this.data.message='update completed'
-        console.log('init',this.data)
+        if (this.data.type) {
+            this.type = this.data.type;
+        }
     }
 }

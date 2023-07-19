@@ -84,6 +84,7 @@ class RecordSerializer(serializers.ModelSerializer):
 
 class TestItemSerializer(serializers.ModelSerializer):
     record = serializers.ReadOnlyField(default={
+        'walk_in': None,
         'concept_test_uut': None, 'concept_need_test': False, 'concept_regression_rate': None,
         'bu_test_uut': None, 'bu_need_test': False, 'bu_regression_rate': None,
         'ct_test_uut': None, 'ct_need_test': False, 'ct_regression_rate': None,
@@ -147,50 +148,45 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = models.Project
         fields = '__all__'
 
-    def validate(self, attrs):
-        print('attrs', attrs)
-        return attrs
+    # def create(self, validated_data):
+    #     records_data = validated_data.pop('records', None)
+    #     project_instance = models.Project.objects.create(**validated_data)
 
-    def create(self, validated_data):
-        print('create', validated_data)
-        records_data = validated_data.pop('records', None)
-        project_instance = models.Project.objects.create(**validated_data)
+    #     if records_data is not None:
+    #         for r in records_data:
+    #             r['test_item'] = r['test_item'].id
+    #             serializer = RecordSerializer(data=r)
 
-        if records_data is not None:
-            for r in records_data:
-                r['test_item'] = r['test_item'].id
-                serializer = RecordSerializer(data=r)
+    #             if serializer.is_valid():
+    #                 serializer.save(project=project_instance)
 
-                if serializer.is_valid():
-                    serializer.save(project=project_instance)
+    #     return project_instance
 
-        return project_instance
+    # def update(self, instance, validated_data):
+    #     records_data = validated_data.pop('records', None)
 
-    def update(self, instance, validated_data):
-        print('update', validated_data)
-        records_data = validated_data.pop('records', None)
+    #     if records_data is not None:
+    #         for r in records_data:
+    #             # validated_data後，records_data['project']、records_data['text_item']會序被序列化
+    #             if r.get('project', None) is not None:
+    #                 r['project'] = r.get('project', None).id
 
-        if records_data is not None:
-            for r in records_data:
-                if r.get('project', None) is not None:
-                    r['project'] = r.get('project', None).id
+    #             r['test_item'] = r.get('test_item').id  # validated_data後的test_item是record instance，必須改為id才能正確建立關聯
 
-                r['test_item'] = r.get('test_item').id
+    #             record_id = r.get('id', None)
 
-                record_id = r.get('id', None)
-                if record_id:
-                    print('----->', record_id, instance.__dict__)
-                    record_instance = models.Record.objects.get(id=record_id, project=instance)
-                    serializer = RecordSerializer(record_instance, data=r)
-                    if serializer.is_valid():
-                        serializer.save()
-                else:
-                    serializer = RecordSerializer(data=r)
+    #             if record_id:
+    #                 record_instance = models.Record.objects.get(id=record_id, project=instance)
+    #                 serializer = RecordSerializer(record_instance, data=r)
+    #                 if serializer.is_valid():
+    #                     serializer.save()
+    #             else:
+    #                 serializer = RecordSerializer(data=r)
 
-                    if serializer.is_valid():
-                        serializer.save(project=instance)
+    #                 if serializer.is_valid():
+    #                     serializer.save(project=instance)
 
-        return super().update(instance, validated_data)
+    #     return super().update(instance, validated_data)
         # return instance
 
 

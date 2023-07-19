@@ -8,19 +8,25 @@
             </mat-form-field>
 
         </div>
-        <div class="flex-auto">
-            <button mat-icon-button class="ml-2 sm:ml-4" (click)="add()">
-                <mat-icon [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+        <div class="ml-auto">
+            <button mat-icon-button class="ml-2 sm:ml-4" (click)="onUpload()">
+                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
             </button>
         </div>
-        <div class="sm:ml-auto">
+        <!-- <div class="sm:ml-auto">
+            <button mat-flat-button class="ml-2 sm:ml-4" [color]="'basic'" (click)="onAdd()">
+                <mat-icon [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+            </button>
+        </div> -->
+        <div>
             <!-- Save button-->
-            <button class="ml-3" mat-flat-button [color]="'primary'" (click)="save()">
+            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
         </div>
     </div>
+
     <table class="table-auto w-full border-2 border-slate-500 default-item-table">
         <thead>
             <tr>
@@ -40,10 +46,10 @@
             <ng-container *ngFor="let item of page.data;let no=index;">
                 <tr>
                     <td class="text-center">{{no+1}}</td>
-                    <td class="edit-str w-50"><input [(ngModel)]="item.no" (change)="change()"></td>
-                    <td class="edit-str"><input [(ngModel)]="item.name" (change)="change()"></td>
-                    <td class="edit-numeric"><input [(ngModel)]="item.man_working_hours" (change)="change()" numeric-two-digit></td>
-                    <td class="edit-numeric"><input [(ngModel)]="item.equip_working_hours" (change)="change()" numeric-two-digit></td>
+                    <td class="edit-str w-50"><input [(ngModel)]="item.no" (change)="onChange()"></td>
+                    <td class="edit-str"><input [(ngModel)]="item.name" (change)="onChange()"></td>
+                    <td class="edit-numeric"><input [(ngModel)]="item.man_working_hours" (change)="onChange()" numeric-two-digit></td>
+                    <td class="edit-numeric"><input [(ngModel)]="item.equip_working_hours" (change)="onChange()" numeric-two-digit></td>
                 </tr>
             </ng-container>
         </tbody>

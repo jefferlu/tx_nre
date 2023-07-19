@@ -20,7 +20,7 @@ class FunctionAdmin(admin.ModelAdmin):
 
 @admin.register(models.TestItem)
 class TestItemAdmin(admin.ModelAdmin):
-    list_display = ('function', 'item', 'lab_location',)
+    list_display = ('function', 'item', 'lab_location', 'order')
 
 
 @admin.register(models.Fee)
@@ -35,5 +35,5 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(models.Record)
 class RecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'test_item', 'project', 'concept_test_uut',
+    list_display = ('id', 'test_item', 'project', 'walk_in', 'concept_test_uut',
                     'concept_need_test', 'concept_regression_rate',)
