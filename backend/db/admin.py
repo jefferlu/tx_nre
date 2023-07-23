@@ -3,6 +3,11 @@ from django.contrib import admin
 from . import models
 
 
+@admin.register(models.Chamber)
+class ChamberAdmin(admin.ModelAdmin):
+    list_display = ('name', 'capacity', 'amount',)
+
+
 @admin.register(models.Item)
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('no', 'name', 'man_working_hours', 'equip_working_hours', )

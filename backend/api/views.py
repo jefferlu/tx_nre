@@ -59,6 +59,12 @@ class TokenObtainView(TokenObtainPairView):
 #             di.append({'id': t[0], 'name': t[1]})
 #         return di
 
+class ChamberViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    if (not settings.DEBUG):
+        permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.ChamberSerializer
+    queryset = models.Chamber.objects.all()
+
 
 class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     if (not settings.DEBUG):
@@ -119,11 +125,9 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
             for item in update_data:
                 instance = self.get_queryset().get(id=item['id'])
                 serializer = self.get_serializer(instance, data=item, partial=True)
-                try:
-                    serializer.is_valid(raise_exception=True)
-                except exceptions.ValidationError as e:
-                    return Response(e.get_full_details(), status=status.HTTP_400_BAD_REQUEST)
-                serializer.save()
+
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
 
         # Combine the results of creation and update and return
         result = self.get_serializer(created_objects + update_data, many=True)
@@ -157,6 +161,7 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
             # 處理 test_items 資料
             for test_item_data in test_items_data:
                 item_name = test_item_data.get('item_name')
+                print('-->',item_name)
                 lab_location = test_item_data.get('lab_location')
                 fee = test_item_data.get('fee')
                 order = test_item_data.get('order')
@@ -203,16 +208,19 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={'power_ratio': power_ratio})
 
         for record_data in records_data:
+            record_id = record_data.pop('id', None)
+
             if created:
-                record_data.pop('id')  # 移除record.id執行新增
-                record_data['project'] = project.id  # 綁定新的project.id
                 serializer = serializers.RecordSerializer(data=record_data)
             else:
-                instance = models.Record.objects.get(id=record_data['id'])
-                serializer = serializers.RecordSerializer(instance, data=record_data, partial=True)
+                if record_id:
+                    instance = models.Record.objects.get(id=record_id)
+                    serializer = serializers.RecordSerializer(instance, data=record_data, partial=True)
+                else:
+                    serializer = serializers.RecordSerializer(data=record_data)
 
-            if serializer.is_valid():
-                serializer.save()
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(project=project)  # 綁定project
 
         serializer = self.get_serializer(project)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

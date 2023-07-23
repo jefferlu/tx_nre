@@ -1,5 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+
+import * as XLSX from 'xlsx';
+import { read, utils, writeFile } from 'xlsx';
 
 import { NreService } from './nre.service';
 import { Observable, Subject, debounceTime, filter, map, startWith, takeUntil } from 'rxjs';
@@ -7,9 +10,6 @@ import { SpecialAlpha } from 'app/core/validators/special-alpha';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { fuseAnimations } from '@fuse/animations';
 import { VersionDuplicate } from 'app/core/validators/version-duplicate';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { FuseAlertComponent } from '@fuse/components/alert/alert.component';
-import { AlertComponent } from 'app/layout/common/alert/alert.component';
 import { AlertService } from 'app/layout/common/alert/alert.service';
 
 
@@ -22,6 +22,8 @@ import { AlertService } from 'app/layout/common/alert/alert.service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NreComponent implements OnInit {
+
+    @ViewChild('table', { static: false }) table: ElementRef;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -39,6 +41,7 @@ export class NreComponent implements OnInit {
         debounce: 300,
         minLength: 3,
         dataset: {
+            chambers: null,
             customers: null,
             projects: null,
             versions: []
@@ -119,6 +122,14 @@ export class NreComponent implements OnInit {
             this._nreService.getProjects({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe()
         });
 
+        // Get chambers
+        this._nreService.chambers$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                if (res) {
+                    this.page.dataset.chambers = res;
+                }
+            });
 
         // Get customers
         this._nreService.customers$
@@ -144,7 +155,6 @@ export class NreComponent implements OnInit {
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                console.log('init', res)
                 if (res) {
                     this.page.dataset.versions = res;
                     this._changeDetectorRef.markForCheck();
@@ -154,7 +164,7 @@ export class NreComponent implements OnInit {
         // reload saved page data
         if (this._nreService.page) {
             this.page = this._nreService.page;
-            console.log(this._nreService.page)
+
             this.form.get('project').setValue(this.page.project.name);
             this.form.get('customer').setValue(this.page.project.customer);
             this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
@@ -241,7 +251,6 @@ export class NreComponent implements OnInit {
     save(): void {
         // check version and project.id is in 'version' FormControl
         if (this.formSave.invalid) return;
-        console.log('create')
 
         // check project is loaded
         if (!this.page.data) {
@@ -260,7 +269,7 @@ export class NreComponent implements OnInit {
                 this.page.project.records.push(item.record)
             }
         }
-        console.log(this.page.data, this.page.project);
+        // console.log(this.page.data, this.page.project);
 
         this._nreService.createProject(this.page.project).subscribe({
             next: (res) => {
@@ -332,7 +341,7 @@ export class NreComponent implements OnInit {
             }
         }
 
-        console.log(this.page.data, this.page.project);
+        // console.log(this.page.data, this.page.project);
 
 
         // Update
@@ -427,7 +436,7 @@ export class NreComponent implements OnInit {
         delete res.records;
         this.page.project = res;
 
-        console.log(this.page.project, this.page.data)
+        // console.log(this.page.project, this.page.data)
 
         if (res.name == '') this.page.project.name = this.form.value.project;
         this.page.project.customer = this.form.value.customer;
@@ -482,13 +491,13 @@ export class NreComponent implements OnInit {
                     item['ot_chambers'] = null;
                     item['sub_total'] = 0;
 
-                    console.log(item)
-
                     // Concept
                     if (item.record.concept_need_test) {
                         item['concept_capacity'] = item.record.concept_test_uut * this.page.project.power_ratio;
-                        if (func.name === 'Reliability') item['concept_capacity'] *= 0.8;
-                        item['concept_chambers'] = this.selectChambers(item['concept_capacity']);
+                        if (func.name === 'Reliability') {
+                            item['concept_capacity'] *= 0.8;
+                            item['concept_chambers'] = this.selectChambers(item['concept_capacity'], item.record.walk_in);
+                        }
                         if (item.record.concept_regression_rate != null) {
 
                             if (item.equip_working_hours != null) {
@@ -578,62 +587,91 @@ export class NreComponent implements OnInit {
                     }
                 }
             }
+
+            // console.log(this.page.data)
         }
-        console.log(this.selectChambers(12200))
+
+        // console.log(this.selectChambers(20200, true))
     }
 
-    private selectChambers(capacity: number) {
-        const chambers: any[] = [
-            { name: '1K', capacity: 1000 },
-            { name: '2K', capacity: 2000 },
-            { name: 'Walk-in', capacity: 6000 }
-        ];
+    private selectChambers(capacity: number, walk_in: boolean = false) {
+        // console.log(walk_in)
+        // const chambers: any[] = [
+        //     { name: '2K', capacity: 2000, 'amount': 10 },
+        //     { name: '3K', capacity: 3000, 'amount': 1 },
+        //     { name: 'Walk-in', capacity: 6000, 'amount': 2 }
+        // ];
+        const chambers = this.page.dataset.chambers;
         chambers.sort((a, b) => b.capacity - a.capacity); // 按照容量從大到小排序
 
         let sortedChambers = JSON.parse(JSON.stringify(chambers));
         sortedChambers = sortedChambers.sort((a, b) => a.capacity - b.capacity)// 按照容量從小到大排序
 
         const selectedChambers: any[] = [];
+
+        let remainingRate = capacity;
+
         if (capacity > 0) {
-            // // 優先選擇可以滿足 capacity 的單個 chamber
-            // for (let i = 0; i < chambers.length; i++) {
-            //     let chamber = chambers[i];
-            //     if (chamber.capacity >= capacity) {
-            //         selectedChambers.push({ name: chambers[i].name, count: 1 });
-            //         return selectedChambers; // 返回单个 chamber
-            //     }
-            // }
+            // 限制只使用walk-in
+            if (walk_in) {
+                let chamber = chambers.find(e => e.name.toUpperCase() === 'WALK-IN');
+                let count = Math.floor(remainingRate / chamber.capacity);
 
+                remainingRate -= (count * chamber.capacity);
+                remainingRate = remainingRate % chamber.capacity;
+                if (remainingRate > 0) count += 1;
 
-            let remainingRate = capacity;
-            for (let chamber of chambers) {
-                if (remainingRate > 0) {
-                    // 商數找出滿足最大容量的chamber(降冪)
-                    let count = Math.floor(remainingRate / chamber.capacity);
-                    if (count > 0) {
-                        selectedChambers.push({ name: chamber.name, count: count });
-                    }
+                selectedChambers.push({ name: chamber.name, count: count });
 
-                    // 餘數找出滿足最小容量的chamber(升冪)
-                    remainingRate = remainingRate % chamber.capacity;
+            }
+            else {
+                for (let i in chambers) {
+                    let chamber = chambers[i];
                     if (remainingRate > 0) {
-                        for (let chamber of sortedChambers) {
-                            if (chamber.capacity >= remainingRate) {
+                        // 商數找出滿足最大容量的chamber(降冪)
+                        let count = Math.floor(remainingRate / chamber.capacity);
 
-                                let index = selectedChambers.findIndex(e => e.name === chamber.name)
-                                console.log('index', index)
-                                if (index === -1) selectedChambers.push({ name: chamber.name, count: 1 });
-                                else selectedChambers[index].count += 1;
-                                return selectedChambers;
+                        // 超過可用數量    
+                        if (count > chamber.amount) {
+                            remainingRate -= (chamber.amount * chamber.capacity);
+                            selectedChambers.push({ name: chamber.name, count: chamber.amount });
+                        }
+                        // 未超過可用數量
+                        else if (count > 0) {
+                            selectedChambers.push({ name: chamber.name, count: count });
+                            remainingRate -= count * chamber.capacity;
+                        }
+
+                        // 最後一個chamber
+                        if (+i === (chambers.length - 1)) {
+
+                            // 當remainingRate還是有商數時，表示所有的chamber都不夠用
+                            count = Math.floor(remainingRate / chamber.capacity);
+                            if (count > 0) {
+                                selectedChambers.push({ name: 'remain', count: remainingRate });
+                            }
+                            else {
+                                // 餘數找出滿足最小容量的chamber(升冪)
+                                remainingRate = remainingRate % chamber.capacity;
+                                if (remainingRate > 0) {
+                                    for (let chamber of sortedChambers) {
+
+                                        if (chamber.capacity >= remainingRate) {
+
+                                            let index = selectedChambers.findIndex(e => e.name === chamber.name)
+
+                                            if (index === -1) selectedChambers.push({ name: chamber.name, count: 1 });
+                                            else selectedChambers[index].count += 1;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                    else return selectedChambers;
                 }
             }
-
         }
-
         return selectedChambers;
     }
 
@@ -645,17 +683,141 @@ export class NreComponent implements OnInit {
         }
     }
 
-    export(type: number): void {
-        switch (type) {
-            // Equipment
-            case 0:
-                console.log('equipment');
-                break;
-            // Man Power
-            case 1:
-                console.log('man power')
-                break;
+    onExport(): void {
+        console.log('export');
+        
+        
+        // // 建立新的 Workbook
+        // const workbook = XLSX.utils.book_new();
+
+        // // 新增一個工作表
+        // const worksheet = XLSX.utils.aoa_to_sheet([
+        //     ["Hello", "World"],
+        //     [null, "Example"],
+        // ]);
+
+        // // 設定字體樣式
+        // const font = {
+        //     name: "Arial", // 字型名稱
+        //     size: 12,      // 字體大小
+        //     bold: true,    // 是否粗體
+        //     italic: false, // 是否斜體
+        //     color: "#FF0000", // 字體顏色，以十六進位表示
+        //     underline: true, // 是否底線
+        // };
+
+        // const style = {
+        //     font: font, // 將字體樣式應用到 style 物件中
+        // };
+
+        // // 設定工作表的默認樣式
+        // worksheet['!cols'] = [{ wpx: 100 }, { wpx: 300 }]; // 設定列寬
+        // worksheet['!rows'] = [{ hpx: 20 }, { hpx: 20 }]; // 設定行高
+        // worksheet['!merges'] = [ { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },]; // 合併儲存格（如果有需要的話）
+        // worksheet['!margins'] = { left: 1.0, right: 1.0, top: 1.0, bottom: 1.0 }; // 頁邊距
+        // worksheet['!autofilter'] = { ref: "A1:B2" }; // 自動篩選
+
+        // // 將樣式應用到工作表的每個儲存格
+        // Object.keys(worksheet).forEach((cell) => {
+        //     if (cell[0] === '!') return; // 跳過特殊儲存格，如 '!ref'
+        //     const cellRef = XLSX.utils.decode_cell(cell);
+        //     const cellObject = worksheet[cell];
+        //     cellObject.s = style;
+        // });
+
+        // // 將工作表新增到 Workbook
+        // XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+        // // 寫入文件
+        // XLSX.writeFile(workbook, "workbook.xlsx");
+    }
+
+    onExport_bk(type: number): void {
+        let sheets = [
+            {
+                'name': '使用者填入', records: [
+                    ["Reliability/S&V Test"],
+                    ["Function", "Test Item", "Walk-in", "Concept", null, null, "BU", null, null, "CT", null, null, "NT", null, null, "OT"],
+                    [null, null, null, "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate"]
+                ]
+            },
+            { 'name': '成果_Equipment', records: [] },
+            { 'name': '成果_Man Power', records: [] }
+        ]
+
+        // sheet 1
+        // sheets[0].records = [];
+        // sheets[0].records.push()
+
+        // 設定整個 workbook 的字型
+        const font = {
+            name: 'Arial', // 字型名稱
+            sz: 12, // 字型大小
+            bold: true, // 是否粗體
+            italic: false, // 是否斜體
+            color: 'FF000000', // 字型顏色（黑色）
+        };
+
+        const style = {
+            font: font, // 將字體樣式應用到 style 物件中
+        };
+
+        console.log(sheets[0].records)
+        const workbook = utils.book_new();
+        for (let sheet of sheets) {
+            const worksheet = utils.aoa_to_sheet(sheet.records);
+
+            console.log(worksheet)
+            Object.keys(worksheet).forEach((cell) => {
+                if (cell[0] === '!') return; // 跳過特殊儲存格，如 '!ref'
+                const cellObject = worksheet[cell];
+                cellObject.s = style;
+            });
+
+            utils.book_append_sheet(workbook, worksheet, sheet.name);
         }
+
+
+        // 將Excel文件保存到本地
+        XLSX.writeFile(workbook, 'data.xlsx');
+
+        // const worksheet = XLSX.utils.table_to_sheet(this.table.nativeElement);
+        // const workbook = XLSX.utils.book_new();
+        // XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+        // const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        // console.log(jsonData)
+
+
+        // // 添加樣式，設置邊框
+        // const range = XLSX.utils.decode_range(ws['!ref']);
+        // for (let R = range.s.r; R <= range.e.r; ++R) {
+        //     for (let C = range.s.c; C <= range.e.c; ++C) {
+        //         const cell = XLSX.utils.encode_cell({ r: R, c: C });
+        //         if (!ws[cell]) continue;
+        //         ws[cell].s = {
+        //             border: {
+        //                 top: { style: 'thin', color: { rgb: '000000' } },
+        //                 bottom: { style: 'thin', color: { rgb: '000000' } },
+        //                 left: { style: 'thin', color: { rgb: '000000' } },
+        //                 right: { style: 'thin', color: { rgb: '000000' } }
+        //             }
+        //         };
+        //     }
+        // }
+
+        // // 將工作簿轉換成二進位數據
+        // const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+        // // 創建一個 Blob 物件
+        // const blob: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        // // 創建一個下載連結，並觸發下載
+        // const downloadLink: HTMLAnchorElement = document.createElement('a');
+        // downloadLink.href = URL.createObjectURL(blob);
+        // downloadLink.download = 'data.xlsx';
+        // downloadLink.click();
+
+
     }
 
 

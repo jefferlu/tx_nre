@@ -1,6 +1,12 @@
 from django.db import models
 
 
+class Chamber(models.Model):
+    name = models.CharField(max_length=120, verbose_name='name')
+    capacity = models.IntegerField(verbose_name='capacity')
+    amount = models.IntegerField(verbose_name='amount')
+
+
 class Item(models.Model):
     no = models.CharField(max_length=120, verbose_name='no', unique=True)
     name = models.CharField(max_length=120, verbose_name='name')
@@ -60,7 +66,7 @@ class Fee(models.Model):
     test_item = models.ForeignKey(
         TestItem, on_delete=models.CASCADE, related_name='fees', verbose_name='fee')
     year = models.IntegerField()
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='amount')
 
     class Meta:
         db_table = 'nre_fee'

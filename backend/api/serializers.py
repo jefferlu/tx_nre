@@ -33,6 +33,11 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
 # class ChoicesSerializer(serializers.Serializer):
 #     lab_locations = serializers.ReadOnlyField()
 
+class ChamberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Chamber
+        fields = '__all__'
+
 
 class FeeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,7 +89,7 @@ class RecordSerializer(serializers.ModelSerializer):
 
 class TestItemSerializer(serializers.ModelSerializer):
     record = serializers.ReadOnlyField(default={
-        'walk_in': None,
+        'walk_in': False,
         'concept_test_uut': None, 'concept_need_test': False, 'concept_regression_rate': None,
         'bu_test_uut': None, 'bu_need_test': False, 'bu_regression_rate': None,
         'ct_test_uut': None, 'ct_need_test': False, 'ct_regression_rate': None,

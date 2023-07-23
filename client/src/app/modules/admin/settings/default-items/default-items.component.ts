@@ -3,6 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
 import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 
 import { SettingsService } from '../settings.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -62,7 +63,7 @@ export class DefaultItemsComponent implements OnInit {
             });
     }
 
-    onSearch(value): void {
+    onSearch(value: string): void {
         console.log(value)
         this._settingsService.queryItems({ query: value })
             .pipe(takeUntil(this._unsubscribeAll))
@@ -77,7 +78,115 @@ export class DefaultItemsComponent implements OnInit {
             });
     }
 
-    onUpload(): void {
+    onImport(): void {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.xlsx,.xls'
+        input.click();
+
+        input.addEventListener('change', (event: any) => {
+            const file = event.target.files[0];
+
+            if (file && file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                this.readExcel(file);
+            }
+            else {
+                this._alert.open({ type: 'warn', message: 'Please select a valid Excel file.' });
+            }
+        });
+    }
+
+    async readExcel(file: any) {
+        try {
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(file);
+
+            // 取得第工作表
+            const worksheet = workbook.worksheets[0];
+
+            // 讀取資料
+            let jsonData: any[] = [];
+            worksheet.eachRow((row, rowNumber) => {
+                const rowData = [];
+                
+                row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                    let cellValue = cell.value;
+
+                    // 檢查cell是否含有複雜格式
+                    if (cellValue && cellValue['richText'])
+                        cellValue = cell.text;
+
+                    // 去掉字串開頭和結尾的空白及換行符號
+                    if (typeof (cellValue) === 'string')
+                        cellValue = cellValue.replace(/\r\n$/, '').trim();
+
+                    rowData.push(cellValue);
+                });
+
+                jsonData.push(rowData);
+            });
+
+            // 移除所有欄位都是空白的column
+            const isColumnAllNull = colIndex => jsonData.every(row => row[colIndex] === null);
+            jsonData = jsonData.map(row => row.filter((cell, colIndex) => !isColumnAllNull(colIndex)));
+
+            // 檢查Excel格式
+            if (jsonData.length === 0) {
+                this._alert.open({ type: 'warn', message: 'The Excel has no data.' });
+                return;
+            }
+
+            if (jsonData[0][1] !== 'Enterprise Reliability Test Procedures') {
+                this._alert.open({ type: 'warn', duration: 5, message: 'The format of the Excel data is wrong, please confirm whether the correct template is used.' });
+                return;
+            }
+
+            this.page.data = [];
+            for (let rowIndex = 0; rowIndex < jsonData.length; rowIndex++) {
+                const row = jsonData[rowIndex];
+                if (rowIndex > 1) {
+                    this.page.data.push({
+                        'no': row[1].split(' ')[0],
+                        'name': row[1],
+                        'man_working_hours': parseFloat(row[2]).toFixed(2),
+                        'equip_working_hours': parseFloat(row[3]).toFixed(2),
+                    })
+                }
+            };
+
+            // 檢查重複的no，並保留索引較大的項目
+            this.page.data = this.page.data.reduceRight((accumulator, current) => {
+                const existingItem = accumulator.find(item => item.no === current.no);
+                if (!existingItem) {
+                    accumulator.unshift(current);
+                }
+                return accumulator;
+            }, []);
+
+            this._settingsService.saveItems(this.page.data)
+                .subscribe({
+                    next: (res) => {
+                        this.page.data = res;
+                        this._alert.open({ message: 'Upload completed.' });
+                        this._changeDetectorRef.markForCheck();
+                    },
+                    error: e => {
+                        console.log(e)
+                        const dialogRef = this._fuseConfirmationService.open({
+                            title: 'Error',
+                            message: JSON.stringify(e.error),
+                            actions: { confirm: { color: 'warn', label: 'OK' }, cancel: { show: false } }
+                        });
+                    }
+                });
+
+        }
+        catch (e) {
+            this._alert.open({ type: 'warn', duration: 5, message: 'The format of the Excel data is wrong, please confirm whether the correct template is used.' });
+        }
+    }
+
+    onImport_bk(): void {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.xlsx,.xls'
@@ -157,7 +266,7 @@ export class DefaultItemsComponent implements OnInit {
             }
         });
 
-        
+
     }
 
     onChange(): void {

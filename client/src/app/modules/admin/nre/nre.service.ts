@@ -11,6 +11,7 @@ export class NreService {
     private _projects: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _customers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _versions: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
+    private _chambers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _page: any;
 
     constructor(private _appService: AppService) { }
@@ -27,12 +28,24 @@ export class NreService {
         return this._customers.asObservable();
     }
 
+    get chambers$(): Observable<any[]> {
+        return this._chambers.asObservable();
+    }
+
     set page(data: any) {
         this._page = data;
     }
 
     get page() {
         return this._page;
+    }
+
+    getChambers(): Observable<any> {
+        return this._appService.get('chambers').pipe(
+            tap((response: any) => {
+                this._chambers.next(response);
+            })
+        );
     }
 
     getProjects(slug?: any): Observable<any> {
