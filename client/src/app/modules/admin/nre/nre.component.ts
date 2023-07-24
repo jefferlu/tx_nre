@@ -86,7 +86,7 @@ export class NreComponent implements OnInit {
 
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
-            project: ['proj-demo-1', [Validators.required, this._specialApha.nameValidator]]
+            project: ['', [Validators.required, this._specialApha.nameValidator]]
         });
 
         this.formSave = this._formBuilder.group({
@@ -136,7 +136,7 @@ export class NreComponent implements OnInit {
         this._nreService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                if (res) {
+                if (res && res.length > 0) {
                     this.page.dataset.customers = res;
                     this.form.get('customer').setValue(res[0].id);
                 }

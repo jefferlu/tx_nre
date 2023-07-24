@@ -156,8 +156,10 @@ export class AuthService {
         // Remove the access token from the local storage
         localStorage.removeItem(USER_KEY);
 
-        this._cookieService.delete('access');
-        this._cookieService.delete('refresh');
+        // this._cookieService.delete('access');
+        // this._cookieService.delete('refresh');
+
+        this._cookieService.deleteAll();
 
         // Set the authenticated flag to false
         this._authenticated = false;
