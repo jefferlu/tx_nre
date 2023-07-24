@@ -224,6 +224,8 @@ export class NreComponent implements OnInit {
 
     search(version?: any): void {
 
+        if (!this.page.dataset.chambers) return;
+
         this.page.status.label = undefined;
         // this.page.data = JSON.parse(JSON.stringify(this.page.dataset.customers.find((e: any) => e.id === this.form.value.customer)));
 
@@ -234,7 +236,7 @@ export class NreComponent implements OnInit {
             next: (res) => {
                 if (res) {
 
-                    this.manageData(res);                   
+                    this.manageData(res);
                 }
             },
             error: e => {
@@ -274,7 +276,7 @@ export class NreComponent implements OnInit {
             next: (res) => {
                 if (res) {
                     this._alert.open({ message: 'The project has been saved.' });
-                    this.manageData(res);                    
+                    this.manageData(res);
                 }
             },
             error: e => {
@@ -329,7 +331,7 @@ export class NreComponent implements OnInit {
         // this._nreService.page = this.page;        
 
         this.page.tab.index = 0;
-        
+
         this._changeDetectorRef.markForCheck();
     }
 
@@ -558,7 +560,7 @@ export class NreComponent implements OnInit {
 
     onExport(): void {
 
-        if (this.page.status.change || !this.page.project.version) { 
+        if (this.page.status.change || !this.page.project.version) {
             this._alert.open({ type: 'warn', duration: 5, message: 'The project has not been saved.' });
             return;
         }
