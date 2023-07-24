@@ -270,7 +270,6 @@ export class NreComponent implements OnInit {
                 this.page.project.records.push(item.record)
             }
         }
-        // console.log(this.page.data, this.page.project);
 
         this._nreService.createProject(this.page.project).subscribe({
             next: (res) => {
@@ -291,132 +290,7 @@ export class NreComponent implements OnInit {
             }
         });
     }
-
-    save_bk(): void {
-
-        // check version and project.id is in 'version' FormControl
-        if (this.formSave.invalid) return;
-
-        // check project is loaded
-        if (!this.page.data) {
-            let dialogRef = this._fuseConfirmationService.open({
-                title: 'Invalid action',
-                message: `Project has not been loaded.`,
-                actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-            });
-
-            dialogRef.afterClosed().subscribe(result => {
-                if (result === 'confirmed') {
-                    this.onSearchOpen();
-                    this._changeDetectorRef.markForCheck();
-                }
-            });
-            return;
-        }
-
-        this.page.project.version = this.formSave.value.version;
-        this.page.project.power_ratio = this.formSave.value.power_ratio;
-
-
-
-        // check new version. exist->update, not exist->create
-        let exist = this.page.dataset.versions.findIndex(e => e.version === this.page.project.version)
-
-        // clear project id
-        if (exist === -1) this.page.project.id = null;
-
-        this.page.project.records = [];
-        for (let func of this.page.data.functions) {
-            for (let item of func.test_items) {
-
-                item.record.test_item = item.id;    //new record from api doesn't have item id
-
-                if (exist === -1) {
-                    // clear record id
-                    delete item.record.id;
-                    // clear project in in record
-                    delete item.record.project;
-                }
-
-                this.page.project.records.push(item.record)
-            }
-        }
-
-        // console.log(this.page.data, this.page.project);
-
-
-        // Update
-        if (this.page.project.id) {
-            // request.id = this.page.project.id;
-            let slug: any = { 'customer': this.form.value.customer, 'version': this.page.project.version };
-
-            this._nreService.updateProject(this.page.project.name, slug, this.page.project).subscribe({
-                next: (res) => {
-                    if (res) {
-                        // let dialogRef = this._fuseConfirmationService.open({
-                        //     message: `The project has been saved.`,
-                        //     icon: { color: 'primary' },
-                        //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                        // });
-
-                        this._alert.open({ message: 'The project has been saved.' });
-                        this.manageData(res);
-
-                        // this.calculate();
-                        // this.search(this.page.project.version);
-                    }
-                },
-                error: e => {
-                    console.log(e)
-                    let message = JSON.stringify(e.error)
-
-                    if (e.error.version) message = `Version: ${e.error.version[0]}`;
-                    if (e.error.non_field_errors) message = `${e.error.non_field_errors[0].replace('name', 'project')}`;
-
-                    const dialogRef = this._fuseConfirmationService.open({
-                        icon: { color: 'primary' },
-                        title: `Info`,
-                        message: message,
-                        actions: { confirm: { color: 'primary' }, cancel: { show: false } }
-                    });
-                }
-            })
-        }
-        // Crate
-        else {
-            // console.log('request-->', request)
-            this._nreService.createProject(this.page.project).subscribe({
-                next: (res) => {
-                    // let dialogRef = this._fuseConfirmationService.open({
-                    //     message: `The project has been saved.`,
-                    //     icon: { color: 'primary' },
-                    //     actions: { confirm: { color: 'primary', label: 'OK' }, cancel: { show: false } }
-                    // });
-
-                    // console.log('create res', res, this.page.project)
-
-                    this._alert.open({ message: 'The project has been saved.' });
-                    this.manageData(res);
-                },
-                error: e => {
-                    console.log(e)
-                    let message = JSON.stringify(e.erro);
-
-                    if (e.error.version) message = `The field version is required.`;
-                    if (e.error.non_field_errors) message = `${e.error.non_field_errors[0].replace('name', 'project')}`;
-
-                    const dialogRef = this._fuseConfirmationService.open({
-                        icon: { color: 'primary' },
-                        title: `Info`,
-                        message: message,
-                        actions: { confirm: { color: 'primary' }, cancel: { show: false } }
-                    });
-                }
-            });
-        }
-
-    }
-
+   
     private manageData(res: any) {
 
         this.page.data = JSON.parse(JSON.stringify(this.page.dataset.customers.find((e: any) => e.id === this.form.value.customer)));
@@ -436,8 +310,6 @@ export class NreComponent implements OnInit {
         // fill this.page.project
         delete res.records;
         this.page.project = res;
-
-        // console.log(this.page.project, this.page.data)
 
         if (res.name == '') this.page.project.name = this.form.value.project;
         this.page.project.customer = this.form.value.customer;
@@ -589,7 +461,6 @@ export class NreComponent implements OnInit {
                 }
             }
 
-            // console.log(this.page.data)
         }
 
         // console.log(this.selectChambers(20200, true))
@@ -686,7 +557,6 @@ export class NreComponent implements OnInit {
 
     onExport(): void {
         this.calculate();
-        console.log('export', this.page.data);
 
         /* Manage Records */
         let sheets = [
@@ -778,8 +648,6 @@ export class NreComponent implements OnInit {
             sheets[2].records.push(record);
 
         }
-
-        console.log(sheets)
 
         /* Write to Excel */
         const workbook = new Workbook();
@@ -965,8 +833,8 @@ export class NreComponent implements OnInit {
                     break;
             }
 
-            let res = this.getEndColumn(108);
-            console.log('res', res)
+            // let res = this.getEndColumn(108);
+            // console.log('res', res)
         }
 
         // Save to File
@@ -996,96 +864,7 @@ export class NreComponent implements OnInit {
             num = Math.floor(num / 26) - 1
         }
         return letters
-    }
-
-    onExport_bk(type: number): void {
-        let sheets = [
-            {
-                'name': '使用者填入', records: [
-                    ["Reliability/S&V Test"],
-                    ["Function", "Test Item", "Walk-in", "Concept", null, null, "BU", null, null, "CT", null, null, "NT", null, null, "OT"],
-                    [null, null, null, "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate"]
-                ]
-            },
-            { 'name': '成果_Equipment', records: [] },
-            { 'name': '成果_Man Power', records: [] }
-        ]
-
-        // sheet 1
-        // sheets[0].records = [];
-        // sheets[0].records.push()
-
-        // // 設定整個 workbook 的字型
-        // const font = {
-        //     name: 'Arial', // 字型名稱
-        //     sz: 12, // 字型大小
-        //     bold: true, // 是否粗體
-        //     italic: false, // 是否斜體
-        //     color: 'FF000000', // 字型顏色（黑色）
-        // };
-
-        // const style = {
-        //     font: font, // 將字體樣式應用到 style 物件中
-        // };
-
-        // console.log(sheets[0].records)
-        // const workbook = utils.book_new();
-        // for (let sheet of sheets) {
-        //     const worksheet = utils.aoa_to_sheet(sheet.records);
-
-        //     console.log(worksheet)
-        //     Object.keys(worksheet).forEach((cell) => {
-        //         if (cell[0] === '!') return; // 跳過特殊儲存格，如 '!ref'
-        //         const cellObject = worksheet[cell];
-        //         cellObject.s = style;
-        //     });
-
-        //     utils.book_append_sheet(workbook, worksheet, sheet.name);
-        // }
-
-
-        // // 將Excel文件保存到本地
-        // XLSX.writeFile(workbook, 'data.xlsx');
-
-        // const worksheet = XLSX.utils.table_to_sheet(this.table.nativeElement);
-        // const workbook = XLSX.utils.book_new();
-        // XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-        // const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        // console.log(jsonData)
-
-
-        // // 添加樣式，設置邊框
-        // const range = XLSX.utils.decode_range(ws['!ref']);
-        // for (let R = range.s.r; R <= range.e.r; ++R) {
-        //     for (let C = range.s.c; C <= range.e.c; ++C) {
-        //         const cell = XLSX.utils.encode_cell({ r: R, c: C });
-        //         if (!ws[cell]) continue;
-        //         ws[cell].s = {
-        //             border: {
-        //                 top: { style: 'thin', color: { rgb: '000000' } },
-        //                 bottom: { style: 'thin', color: { rgb: '000000' } },
-        //                 left: { style: 'thin', color: { rgb: '000000' } },
-        //                 right: { style: 'thin', color: { rgb: '000000' } }
-        //             }
-        //         };
-        //     }
-        // }
-
-        // // 將工作簿轉換成二進位數據
-        // const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-
-        // // 創建一個 Blob 物件
-        // const blob: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-        // // 創建一個下載連結，並觸發下載
-        // const downloadLink: HTMLAnchorElement = document.createElement('a');
-        // downloadLink.href = URL.createObjectURL(blob);
-        // downloadLink.download = 'data.xlsx';
-        // downloadLink.click();
-
-
-    }
-
+    }   
 
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions

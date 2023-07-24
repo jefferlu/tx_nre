@@ -179,7 +179,7 @@ export class TestFeeComponent implements OnInit {
         this._settingService.saveCustomers(data)
             .subscribe({
                 next: (res) => {
-                    console.log(data)
+
                     // reset customer dropdown
                     let selectedItem = null;
                     if (this.page.customers)
