@@ -11,11 +11,19 @@
             </mat-form-field>
 
         </div>
+        <div>            
+            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onDownload()">
+                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-down-tray'"></mat-icon>
+                <span class="ml-2 mr-1">Download Template</span>
+            </button>
+        </div>
         <div class="ml-auto">
-            <button mat-icon-button class="ml-2 sm:ml-4"  (click)="onImport()">
-                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
-            </button>      
-            
+            <div class="ml-auto">
+                <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onImport()">
+                    <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
+                    <span class="ml-2 mr-1">Import</span>
+                </button>
+            </div>                  
             <!-- <button mat-icon-button class="ml-2 sm:ml-4" (click)="onUpload()">
                  <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
                  <span class="ml-2 mr-1">Import</span>

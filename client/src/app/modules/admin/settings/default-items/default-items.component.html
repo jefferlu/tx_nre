@@ -8,16 +8,18 @@
             </mat-form-field>
 
         </div>
-        <div class="ml-auto">
-            <button mat-icon-button class="ml-2 sm:ml-4" (click)="onImport()">
-                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
+        <div>            
+            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onDownload()">
+                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-down-tray'"></mat-icon>
+                <span class="ml-2 mr-1">Download Template</span>
             </button>
         </div>
-        <!-- <div class="sm:ml-auto">
-            <button mat-flat-button class="ml-2 sm:ml-4" [color]="'basic'" (click)="onAdd()">
-                <mat-icon [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+        <div class="ml-auto">
+            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onImport()">
+                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
+                <span class="ml-2 mr-1">Import</span>
             </button>
-        </div> -->
+        </div>       
         <div>
             <!-- Save button-->
             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()">

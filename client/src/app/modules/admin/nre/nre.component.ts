@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 
-import * as XLSX from 'xlsx';
-import { read, utils, writeFile } from 'xlsx';
+import { Workbook, Worksheet } from 'exceljs';
+import * as fs from 'file-saver';
+import * as dayjs from 'dayjs';
 
 import { NreService } from './nre.service';
 import { Observable, Subject, debounceTime, filter, map, startWith, takeUntil } from 'rxjs';
@@ -684,52 +685,317 @@ export class NreComponent implements OnInit {
     }
 
     onExport(): void {
-        console.log('export');
-        
-        
-        // // 建立新的 Workbook
-        // const workbook = XLSX.utils.book_new();
+        this.calculate();
+        console.log('export', this.page.data);
 
-        // // 新增一個工作表
-        // const worksheet = XLSX.utils.aoa_to_sheet([
-        //     ["Hello", "World"],
-        //     [null, "Example"],
-        // ]);
+        /* Manage Records */
+        let sheets = [
+            {
+                name: '使用者填入',
+                headers: [
+                    ["Reliability/S&V Test"],
+                    ["Function", "Test Item", "Walk-in", "Concept", null, null, "BU", null, null, "CT", null, null, "NT", null, null, "OT"],
+                    [null, null, null, "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate"]
+                ],
+                records: []
+            },
+            {
+                name: '成果_Equipment',
+                headers: [
+                    ["Reliability/S&V Test"],
+                    ["Function", "Test Item", "Lab Location", "Lab Rate", "Concept", null, "BU", null, "CT", null, "NT", null, null, "OT", "Sub Total"],
+                    [null, null, null, null, "HRS", "Equipment", "HRS", "Equipment", "HRS", "Equipment", "HRS", "Equipment", "HRS", "Equipment", null]
+                ],
+                records: []
+            },
+            {
+                name: '成果_Man Power',
+                headers: [[null, 'Concept', 'BU(hrs)', 'CT(hrs)', 'NT(hrs)', 'OT(hrs)']],
+                records: []
+            }
+        ]
 
-        // // 設定字體樣式
-        // const font = {
-        //     name: "Arial", // 字型名稱
-        //     size: 12,      // 字體大小
-        //     bold: true,    // 是否粗體
-        //     italic: false, // 是否斜體
-        //     color: "#FF0000", // 字體顏色，以十六進位表示
-        //     underline: true, // 是否底線
-        // };
+        // sheet1 data
+        for (let func of this.page.data.functions) {
+            let record = [];
+            for (let item of func.test_items) {
 
-        // const style = {
-        //     font: font, // 將字體樣式應用到 style 物件中
-        // };
+                // sheet 1
+                record = [];
 
-        // // 設定工作表的默認樣式
-        // worksheet['!cols'] = [{ wpx: 100 }, { wpx: 300 }]; // 設定列寬
-        // worksheet['!rows'] = [{ hpx: 20 }, { hpx: 20 }]; // 設定行高
-        // worksheet['!merges'] = [ { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },]; // 合併儲存格（如果有需要的話）
-        // worksheet['!margins'] = { left: 1.0, right: 1.0, top: 1.0, bottom: 1.0 }; // 頁邊距
-        // worksheet['!autofilter'] = { ref: "A1:B2" }; // 自動篩選
+                record.push(func.name);
+                record.push(item.item_name);
+                record.push(item.record.walk_in ? '✔' : '');
+                record.push(item.record.concept_need_test ? '✔' : '');
+                record.push(item.record.concept_test_uut);
+                record.push(item.record.concept_regression_rate);
+                record.push(item.record.bu_need_test ? '✔' : '');
+                record.push(item.record.bu_test_uut);
+                record.push(item.record.bu_regression_rate);
+                record.push(item.record.ct_need_test ? '✔' : '');
+                record.push(item.record.ct_test_uut);
+                record.push(item.record.ct_regression_rate);
+                record.push(item.record.nt_need_test ? '✔' : '');
+                record.push(item.record.nt_test_uut);
+                record.push(item.record.nt_regression_rate);
+                record.push(item.record.ot_need_test ? '✔' : '');
+                record.push(item.record.ot_test_uut);
+                record.push(item.record.ot_regression_rate);
 
-        // // 將樣式應用到工作表的每個儲存格
-        // Object.keys(worksheet).forEach((cell) => {
-        //     if (cell[0] === '!') return; // 跳過特殊儲存格，如 '!ref'
-        //     const cellRef = XLSX.utils.decode_cell(cell);
-        //     const cellObject = worksheet[cell];
-        //     cellObject.s = style;
-        // });
+                sheets[0].records.push(record);
 
-        // // 將工作表新增到 Workbook
-        // XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+                // sheet 2
+                record = [];
 
-        // // 寫入文件
-        // XLSX.writeFile(workbook, "workbook.xlsx");
+                record.push(func.name);
+                record.push(item.item_name);
+                record.push(item.lab_location);
+                record.push(item.fee);
+                record.push(item.concept_equip_hrs);
+                record.push(item.concept_chambers ? item.concept_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                record.push(item.bu_equip_hrs);
+                record.push(item.bu_chambers_chambers ? item.bu_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                record.push(item.ct_equip_hrs);
+                record.push(item.ct_chambers ? item.ct_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                record.push(item.nt_equip_hrs);
+                record.push(item.nt_chambers ? item.nt_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                record.push(item.ot_equip_hrs);
+                record.push(item.ot_chambers ? item.ot_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                record.push(item.sub_total);
+
+                sheets[1].records.push(record);
+            }
+
+            // sheet 3
+            record = [];
+            record.push(func.name);
+            record.push(func.concept_man_hrs_sum);
+            record.push(func.bu_man_hrs_sum);
+            record.push(func.ct_man_hrs_sum);
+            record.push(func.nt_man_hrs_sum);
+            record.push(func.ot_man_hrs_sum);
+
+            sheets[2].records.push(record);
+
+        }
+
+        console.log(sheets)
+
+        /* Write to Excel */
+        const workbook = new Workbook();
+
+        let startNum = 0, endNum = 0;
+        const borderStyle: any = {
+            style: 'thin',
+            color: { argb: '000000' }, // 黑色
+        };
+
+        for (let index in sheets) {
+            let sheet = sheets[index];
+            const worksheet = workbook.addWorksheet(sheet.name);
+
+            let row = null;
+            switch (+index) {
+                // Sheet 1
+                case 0:
+                    // Fill headers
+                    for (let header of sheet.headers) {
+                        row = worksheet.addRow(header);
+                        row.font = { name: 'Calibri', bold: true };
+                        row.alignment = { horizontal: 'center', vertical: 'middle' };
+                    }
+
+                    // Merge header 1
+                    worksheet.mergeCells('A1:R1');
+
+                    // Merge header 2
+                    worksheet.mergeCells('D2:F2');
+                    worksheet.mergeCells('G2:I2');
+                    worksheet.mergeCells('J2:L2');
+                    worksheet.mergeCells('M2:O2');
+                    worksheet.mergeCells('P2:R2');
+
+                    // Merge header columns
+                    worksheet.mergeCells('A2:A3');
+                    worksheet.mergeCells('B2:B3');
+                    worksheet.mergeCells('C2:C3');
+
+                    // Fill records
+                    for (let record of sheet.records) {
+                        row = worksheet.addRow(record);
+                        row.font = { name: 'Calibri' };
+                        row.alignment = { horizontal: 'center', vertical: 'middle' };
+                    }
+
+                    // Merge Function columns
+                    startNum = 4;
+                    endNum = 0;
+                    for (let func of this.page.data.functions) {
+                        if (func.test_items.length === 0) continue;
+
+                        endNum = startNum + (func.test_items.length - 1);
+                        worksheet.mergeCells(`A${startNum}:A${endNum}`);
+                        startNum = endNum + 1;
+
+                    }
+
+                    // 繪製框線                    
+                    worksheet.eachRow({ includeEmpty: true }, (row, rowIndex) => {
+                        row.eachCell({ includeEmpty: true }, (cell, cellIndex) => {
+                            cell.border = {
+                                top: borderStyle,
+                                left: borderStyle,
+                                bottom: borderStyle,
+                                right: borderStyle,
+                            };
+
+                            // Test Item alignment
+                            if (rowIndex > 3) {
+                                if (cellIndex === 2)
+                                    cell.alignment = { horizontal: 'left', vertical: 'middle' };
+                                if ([3, 4, 7, 10, 13, 16].includes(cellIndex))
+                                    cell.font = { name: 'Calibri', color: { argb: '00823B' } }
+                            }
+                        });
+                    });
+
+                    // 自動調整列寬
+                    this.adjustWidth(worksheet);
+
+                    break;
+
+                // Sheet 2
+                case 1:
+                    // Fill headers
+                    for (let header of sheet.headers) {
+                        row = worksheet.addRow(header);
+                        row.font = { name: 'Calibri', bold: true };
+                        row.alignment = { horizontal: 'center', vertical: 'middle' };
+                    }
+
+                    // Merge header 1
+                    worksheet.mergeCells('A1:O1');
+
+                    // Merge header 2
+                    worksheet.mergeCells('E2:F2');
+                    worksheet.mergeCells('G2:H2');
+                    worksheet.mergeCells('I2:J2');
+                    worksheet.mergeCells('K2:L2');
+                    worksheet.mergeCells('M2:N2');
+
+                    // Merge header columns
+                    worksheet.mergeCells('A2:A3');
+                    worksheet.mergeCells('B2:B3');
+                    worksheet.mergeCells('C2:C3');
+                    worksheet.mergeCells('D2:D3');
+                    worksheet.mergeCells('O2:O3');
+
+                    // Fill records
+                    for (let record of sheet.records) {
+                        row = worksheet.addRow(record);
+                        row.font = { name: 'Calibri' };
+                        row.alignment = { horizontal: 'center', vertical: 'middle' };
+                    }
+
+                    // Merge Function columns
+                    startNum = 4;
+                    endNum = 0;
+                    for (let func of this.page.data.functions) {
+                        if (func.test_items.length === 0) continue;
+
+                        endNum = startNum + (func.test_items.length - 1);
+                        worksheet.mergeCells(`A${startNum}:A${endNum}`);
+                        startNum = endNum + 1;
+
+                    }
+
+                    // 繪製框線                    
+                    worksheet.eachRow({ includeEmpty: true }, (row, rowIndex) => {
+                        row.eachCell({ includeEmpty: true }, (cell, cellIndex) => {
+                            cell.border = {
+                                top: borderStyle,
+                                left: borderStyle,
+                                bottom: borderStyle,
+                                right: borderStyle,
+                            };
+
+                            // Test Item alignment
+                            if (rowIndex > 3) {
+                                if (cellIndex === 2)
+                                    cell.alignment = { horizontal: 'left', vertical: 'middle' };
+                            }
+                        });
+                    });
+
+                    // 自動調整列寬
+                    this.adjustWidth(worksheet);
+
+                    break;
+
+                // Sheet 3
+                case 2:
+                    // Fill headers
+                    for (let header of sheet.headers) {
+                        row = worksheet.addRow(header);
+                        row.font = { name: 'Calibri', bold: true };
+                        row.alignment = { horizontal: 'center', vertical: 'middle' };
+                    }
+
+                    // Fill records
+                    for (let record of sheet.records) {
+                        row = worksheet.addRow(record);
+                        row.font = { name: 'Calibri' };
+                        row.alignment = { horizontal: 'center', vertical: 'middle' };
+                    }
+
+                    // 繪製框線                    
+                    worksheet.eachRow({ includeEmpty: true }, (row, rowIndex) => {
+                        row.eachCell({ includeEmpty: true }, (cell, cellIndex) => {
+                            cell.border = {
+                                top: borderStyle,
+                                left: borderStyle,
+                                bottom: borderStyle,
+                                right: borderStyle,
+                            };
+                        });
+                    });
+
+                    // 自動調整列寬
+                    this.adjustWidth(worksheet);
+                    break;
+            }
+
+            let res = this.getEndColumn(108);
+            console.log('res', res)
+        }
+
+        // Save to File
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            let blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            let datetime: any = dayjs().format('YYYYMMDDHHmmss');
+            fs.saveAs(blob, `${this.page.project.customer_name}_${this.page.project.name}_${this.page.project.version}_${datetime}.xlsx`);
+        });
+    }
+
+    private adjustWidth(worksheet: Worksheet) {
+        worksheet.columns.forEach((column, index) => {
+            let maxCellLength = 0;
+            worksheet.getColumn(index + 1).eachCell({ includeEmpty: true }, (cell) => {
+                const columnLength = cell.value ? cell.value.toString().length - 2 : 0;
+                maxCellLength = Math.max(maxCellLength, columnLength);
+            });
+            column.width = maxCellLength < 8 ? 12 : maxCellLength;
+
+        });
+    }
+
+    private getEndColumn(num) { //num start from 0
+        let letters = ''
+        while (num >= 0) {
+            letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[num % 26] + letters
+            num = Math.floor(num / 26) - 1
+        }
+        return letters
     }
 
     onExport_bk(type: number): void {
@@ -749,37 +1015,37 @@ export class NreComponent implements OnInit {
         // sheets[0].records = [];
         // sheets[0].records.push()
 
-        // 設定整個 workbook 的字型
-        const font = {
-            name: 'Arial', // 字型名稱
-            sz: 12, // 字型大小
-            bold: true, // 是否粗體
-            italic: false, // 是否斜體
-            color: 'FF000000', // 字型顏色（黑色）
-        };
+        // // 設定整個 workbook 的字型
+        // const font = {
+        //     name: 'Arial', // 字型名稱
+        //     sz: 12, // 字型大小
+        //     bold: true, // 是否粗體
+        //     italic: false, // 是否斜體
+        //     color: 'FF000000', // 字型顏色（黑色）
+        // };
 
-        const style = {
-            font: font, // 將字體樣式應用到 style 物件中
-        };
+        // const style = {
+        //     font: font, // 將字體樣式應用到 style 物件中
+        // };
 
-        console.log(sheets[0].records)
-        const workbook = utils.book_new();
-        for (let sheet of sheets) {
-            const worksheet = utils.aoa_to_sheet(sheet.records);
+        // console.log(sheets[0].records)
+        // const workbook = utils.book_new();
+        // for (let sheet of sheets) {
+        //     const worksheet = utils.aoa_to_sheet(sheet.records);
 
-            console.log(worksheet)
-            Object.keys(worksheet).forEach((cell) => {
-                if (cell[0] === '!') return; // 跳過特殊儲存格，如 '!ref'
-                const cellObject = worksheet[cell];
-                cellObject.s = style;
-            });
+        //     console.log(worksheet)
+        //     Object.keys(worksheet).forEach((cell) => {
+        //         if (cell[0] === '!') return; // 跳過特殊儲存格，如 '!ref'
+        //         const cellObject = worksheet[cell];
+        //         cellObject.s = style;
+        //     });
 
-            utils.book_append_sheet(workbook, worksheet, sheet.name);
-        }
+        //     utils.book_append_sheet(workbook, worksheet, sheet.name);
+        // }
 
 
-        // 將Excel文件保存到本地
-        XLSX.writeFile(workbook, 'data.xlsx');
+        // // 將Excel文件保存到本地
+        // XLSX.writeFile(workbook, 'data.xlsx');
 
         // const worksheet = XLSX.utils.table_to_sheet(this.table.nativeElement);
         // const workbook = XLSX.utils.book_new();
