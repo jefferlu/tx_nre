@@ -31,7 +31,7 @@
         </div>
         <div>           
              <!-- Save button-->
-             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()">
+             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()"  *ngIf="page.data && page.data.length>0">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
