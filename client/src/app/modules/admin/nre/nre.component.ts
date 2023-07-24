@@ -224,7 +224,7 @@ export class NreComponent implements OnInit {
 
     search(version?: any): void {
 
-        if (!this.page.dataset.chambers) return;
+        if (!this.page.dataset.customers) return;
 
         this.page.status.label = undefined;
         // this.page.data = JSON.parse(JSON.stringify(this.page.dataset.customers.find((e: any) => e.id === this.form.value.customer)));
