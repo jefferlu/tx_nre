@@ -49,7 +49,6 @@ export class NreService {
     }
 
     getProjects(slug?: any): Observable<any> {
-        console.log('getProjects')
         return this._appService.get('projects', slug).pipe(
             tap((response: any) => {
                 this._projects.next(response);
