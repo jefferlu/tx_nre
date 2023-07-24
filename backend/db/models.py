@@ -14,6 +14,7 @@ class Item(models.Model):
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_working_hours')
     man_working_hours = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_working_hours')
+    order = models.IntegerField(null=True, blank=True)
 
     class Meta:
         db_table = 'nre_item'

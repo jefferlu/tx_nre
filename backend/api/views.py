@@ -80,7 +80,7 @@ class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         query = self.request.query_params.get('query')
-        qs = models.Item.objects.all().order_by('id')
+        qs = models.Item.objects.all().order_by('order')
 
         if query:
             qs = qs.filter(Q(no__icontains=query) | Q(name__icontains=query))

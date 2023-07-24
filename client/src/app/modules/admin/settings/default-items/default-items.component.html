@@ -8,7 +8,7 @@
             </mat-form-field>
 
         </div>
-        <div>            
+        <div>
             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onDownload()">
                 <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-down-tray'"></mat-icon>
                 <span class="ml-2 mr-1">Download Template</span>
@@ -19,10 +19,10 @@
                 <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
                 <span class="ml-2 mr-1">Import</span>
             </button>
-        </div>       
+        </div>
         <div>
             <!-- Save button-->
-            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()">
+            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()" *ngIf="page.data && page.data.length>0">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>

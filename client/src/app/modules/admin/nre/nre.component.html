@@ -27,6 +27,7 @@
                             <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
                             <div class="mt-2 text-lg leading-none" *ngIf="page.project.power_ratio">{{page.project.power_ratio}}</div>
                         </div>
+                        <!-- status -->
                         <div class="flex flex-col mx-4 my-3">
                             <div *ngIf="page.status.label" class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1"
                                 [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'">
@@ -35,11 +36,19 @@
                         </div>
 
                         <div class="flex flex-col mx-6 my-3">
-                            <button class="sm:w-auto -ml-6 -mt-2 sm:-mt-1 text-indigo-500" mat-flat-button
+                            <!-- <button mat-icon-button class="mr-2 sm:mr-4" (click)="onExport()">
+                                <mat-icon class="icon-size-7" [svgIcon]="'heroicons_outline:excel'"></mat-icon>
+                            </button> -->
+
+                            <!-- <button class="sm:w-auto -ml-6 -mt-2 sm:-mt-1 text-indigo-500" mat-flat-button
                                 (click)="onExport()">
                                 <mat-icon fontSet="material-icons-outlined">cloud_download</mat-icon>
                                 <span class="ml-2 mr-1">Export</span>
-                            </button>                            
+                            </button> -->
+                            <button class="ml-3" mat-flat-button color="success" (click)="onExport()">
+                                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:excel'"></mat-icon>
+                                <span class="ml-2 mr-1">Export</span>
+                              </button>
                         </div>
                     </div>
                 </ng-container>

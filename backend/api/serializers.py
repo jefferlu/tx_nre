@@ -109,6 +109,7 @@ class TestItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TestItem
         fields = '__all__'
+        order_by = ['order']
 
     # def get_lab_location(self, obj):
     #     return dict(models.TestItem.LAB_LOCATION).get(obj.lab_location)

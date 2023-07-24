@@ -43,7 +43,7 @@ export class TestFeeComponent implements OnInit {
         this._settingService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                if (res) {
+                if (res && res.length > 0) {
                     this.page.customers = res;
                     // this.form.get('customer').setValue(res[0].id)
                     this.page.customer = res[0].id
@@ -117,7 +117,6 @@ export class TestFeeComponent implements OnInit {
             const isColumnAllNull = colIndex => jsonData.every(row => row[colIndex] === null);
             jsonData = jsonData.map(row => row.filter((cell, colIndex) => !isColumnAllNull(colIndex)));
 
-            console.log(jsonData)
             if (jsonData.length === 0) {
                 this._alert.open({ type: 'warn', message: 'The Excel has no data.' });
                 return;
@@ -163,40 +162,8 @@ export class TestFeeComponent implements OnInit {
                     })
                 }
             }
-            console.log(this.page.data)
-
-            this._settingService.saveCustomers(this.page.data)
-                .subscribe({
-                    next: (res) => {
-                        console.log(res)
-
-                        // reset customer dropdown
-                        let selectedItem = this.page.customers.find(e => e.name == res.name && e.id == res.id);
-                        console.log(selectedItem)
-                        if (selectedItem) {
-                            // 將res assign給selectedItem, 不破壞原selectedItem變數指標
-                            Object.assign(selectedItem, res);
-                        }
-                        else {
-                            this.page.customers.push(res);
-                            selectedItem = this.page.customers[this.page.customer.length - 1]
-                        }
-                        console.log(selectedItem, this.page.customers)
-                        this.page.customer = selectedItem.id;
-
-                        this.page.data = res;
-                        this._alert.open({ message: 'Upload completed.' });
-                        this._changeDetectorRef.markForCheck();
-                    },
-                    error: e => {
-                        console.log(e)
-                        const dialogRef = this._fuseConfirmationService.open({
-                            title: 'Error',
-                            message: JSON.stringify(e.error),
-                            actions: { confirm: { color: 'warn', label: 'OK' }, cancel: { show: false } }
-                        });
-                    }
-                });
+            
+            this.save(this.page.data);
 
         }
         catch (e) {
@@ -204,7 +171,51 @@ export class TestFeeComponent implements OnInit {
         }
     }
 
-    onSave(): void { }
+    onSave(): void {
+        this.save(this.page.data);
+    }
+
+    private save(data: any) {
+        this._settingService.saveCustomers(data)
+            .subscribe({
+                next: (res) => {
+                    console.log(data)
+                    // reset customer dropdown
+                    let selectedItem = null;
+                    if (this.page.customers)
+                        selectedItem = this.page.customers.find(e => e.name == res.name && e.id == res.id);
+                    else
+                        this.page.customers = [];
+
+                    if (selectedItem) {
+                        // 將res assign給selectedItem, 不破壞原selectedItem變數指標
+                        Object.assign(selectedItem, res);
+                    }
+                    else {
+                        this.page.customers.push(res);
+                        selectedItem = this.page.customers[this.page.customers.length - 1]
+                    }
+
+                    // 更新services，避免OnInit還原舊資料
+                    this._settingService.customers = this.page.customers;
+
+                    this.page.customer = selectedItem.id;
+                    this.page.data = res;
+                    this._alert.open({ message: 'Upload completed.' });
+                    this._changeDetectorRef.markForCheck();
+                },
+                error: e => {
+                    console.log(e)
+                    const dialogRef = this._fuseConfirmationService.open({
+                        title: 'Error',
+                        message: JSON.stringify(e.error),
+                        actions: { confirm: { color: 'warn', label: 'OK' }, cancel: { show: false } }
+                    });
+                }
+            });
+
+    }
+
 
     onDownload(): void {
         const filename = 'nre_3rd_fee_template.xlsx'; // 下載的檔案名稱

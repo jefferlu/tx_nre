@@ -17,8 +17,16 @@ export class SettingsService {
         return this._customers.asObservable();
     }
 
+    set customers(values: any[]) {
+        this._customers.next(values);
+    }
+
     get items$(): Observable<any[]> {
         return this._items.asObservable();
+    }
+
+    set items(values: any[]) {
+        this._items.next(values);
     }
 
     getCustomers(): Observable<any> {

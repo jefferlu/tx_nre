@@ -10,7 +10,7 @@ class ChamberAdmin(admin.ModelAdmin):
 
 @admin.register(models.Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('no', 'name', 'man_working_hours', 'equip_working_hours', )
+    list_display = ('no', 'name', 'man_working_hours', 'equip_working_hours', 'order',)
 
 
 @admin.register(models.Customer)

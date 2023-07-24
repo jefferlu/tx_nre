@@ -55,7 +55,6 @@ export class DefaultItemsComponent implements OnInit {
 
                     this.elementPattern = res[0];
                     this.page.data = JSON.parse(JSON.stringify(res));
-                    // console.log('init', res)
 
                     // Mark for check
                     this._changeDetectorRef.markForCheck();
@@ -64,12 +63,10 @@ export class DefaultItemsComponent implements OnInit {
     }
 
     onSearch(value: string): void {
-        console.log(value)
         this._settingsService.queryItems({ query: value })
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 if (res) {
-                    console.log(res)
                     this.page.data = JSON.parse(JSON.stringify(res));
 
                     // Mark for check
@@ -150,6 +147,7 @@ export class DefaultItemsComponent implements OnInit {
                         'name': row[1],
                         'man_working_hours': parseFloat(row[2]).toFixed(2),
                         'equip_working_hours': parseFloat(row[3]).toFixed(2),
+                        'order': rowIndex
                     })
                 }
             };
@@ -163,22 +161,7 @@ export class DefaultItemsComponent implements OnInit {
                 return accumulator;
             }, []);
 
-            this._settingsService.saveItems(this.page.data)
-                .subscribe({
-                    next: (res) => {
-                        this.page.data = res;
-                        this._alert.open({ message: 'Upload completed.' });
-                        this._changeDetectorRef.markForCheck();
-                    },
-                    error: e => {
-                        console.log(e)
-                        const dialogRef = this._fuseConfirmationService.open({
-                            title: 'Error',
-                            message: JSON.stringify(e.error),
-                            actions: { confirm: { color: 'warn', label: 'OK' }, cancel: { show: false } }
-                        });
-                    }
-                });
+            this.save(this.page.data);
 
         }
         catch (e) {
@@ -216,11 +199,20 @@ export class DefaultItemsComponent implements OnInit {
 
     onSave(): void {
 
-        console.log(this.page.data)
-        this._settingsService.saveItems(this.page.data)
+        this.save(this.page.data);
+    }
+
+    private save(data: any) {
+        
+        this._settingsService.saveItems(data)
             .subscribe({
                 next: (res) => {
-                    this._alert.open({ message: 'Data has been saved.' });
+                    this.page.data = res;
+
+                    // 更新services，避免OnInit還原舊資料
+                    this._settingsService.items = res;
+
+                    this._alert.open({ message: 'Upload completed.' });
                     this._changeDetectorRef.markForCheck();
                 },
                 error: e => {

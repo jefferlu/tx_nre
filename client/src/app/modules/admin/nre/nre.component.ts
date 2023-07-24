@@ -517,7 +517,7 @@ export class NreComponent implements OnInit {
                     if (item.record.bu_need_test) {
                         item['bu_capacity'] = item.record.bu_test_uut * this.page.project.power_ratio;
                         if (func.name === 'Reliability') item['bu_capacity'] *= 0.8;
-                        item['bu_chambers'] = this.selectChambers(item['bu_capacity']);
+                        item['bu_chambers'] = this.selectChambers(item['bu_capacity'], item.record.walk_in);
                         if (item.record.bu_regression_rate != null) {
                             if (item.equip_working_hours != null) {
                                 item['bu_equip_hrs'] = parseFloat(item.record.bu_regression_rate) * item.equip_working_hours;
@@ -535,7 +535,7 @@ export class NreComponent implements OnInit {
                     if (item.record.ct_need_test) {
                         item['ct_capacity'] = item.record.ct_test_uut * this.page.project.power_ratio;
                         if (func.name === 'Reliability') item['ct_capacity'] *= 0.8;
-                        item['ct_chambers'] = this.selectChambers(item['ct_capacity']);
+                        item['ct_chambers'] = this.selectChambers(item['ct_capacity'], item.record.walk_in);
                         if (item.record.ct_regression_rate != null) {
 
                             if (item.equip_working_hours != null) {
@@ -554,7 +554,7 @@ export class NreComponent implements OnInit {
                     if (item.record.nt_need_test) {
                         item['nt_capacity'] = item.record.nt_test_uut * this.page.project.power_ratio;
                         if (func.name === 'Reliability') item['nt_capacity'] *= 0.8;
-                        item['nt_chambers'] = this.selectChambers(item['nt_capacity']);
+                        item['nt_chambers'] = this.selectChambers(item['nt_capacity'], item.record.walk_in);
                         if (item.record.nt_regression_rate != null) {
                             if (item.equip_working_hours != null) {
                                 item['nt_equip_hrs'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
@@ -572,7 +572,7 @@ export class NreComponent implements OnInit {
                     if (item.record.ot_need_test) {
                         item['ot_capacity'] = item.record.nt_test_uut * this.page.project.power_ratio;
                         if (func.name === 'Reliability') item['ot_capacity'] *= 0.8;
-                        item['ot_chambers'] = this.selectChambers(item['ot_capacity']);
+                        item['ot_chambers'] = this.selectChambers(item['ot_capacity'], item.record.walk_in);
                         if (item.record.ot_regression_rate != null) {
 
                             if (item.equip_working_hours != null) {
