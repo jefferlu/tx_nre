@@ -234,8 +234,7 @@ export class NreComponent implements OnInit {
             next: (res) => {
                 if (res) {
 
-                    this.manageData(res);
-                    this.page.tab.index = 0;
+                    this.manageData(res);                   
                 }
             },
             error: e => {
@@ -275,7 +274,7 @@ export class NreComponent implements OnInit {
             next: (res) => {
                 if (res) {
                     this._alert.open({ message: 'The project has been saved.' });
-                    this.manageData(res);
+                    this.manageData(res);                    
                 }
             },
             error: e => {
@@ -290,7 +289,7 @@ export class NreComponent implements OnInit {
             }
         });
     }
-   
+
     private manageData(res: any) {
 
         this.page.data = JSON.parse(JSON.stringify(this.page.dataset.customers.find((e: any) => e.id === this.form.value.customer)));
@@ -329,6 +328,8 @@ export class NreComponent implements OnInit {
 
         // this._nreService.page = this.page;        
 
+        this.page.tab.index = 0;
+        
         this._changeDetectorRef.markForCheck();
     }
 
@@ -556,6 +557,12 @@ export class NreComponent implements OnInit {
     }
 
     onExport(): void {
+
+        if (this.page.status.change || !this.page.project.version) { 
+            this._alert.open({ type: 'warn', duration: 5, message: 'The project has not been saved.' });
+            return;
+        }
+
         this.calculate();
 
         /* Manage Records */
@@ -624,7 +631,7 @@ export class NreComponent implements OnInit {
                 record.push(item.concept_equip_hrs);
                 record.push(item.concept_chambers ? item.concept_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.bu_equip_hrs);
-                record.push(item.bu_chambers_chambers ? item.bu_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                record.push(item.bu_chambers ? item.bu_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.ct_equip_hrs);
                 record.push(item.ct_chambers ? item.ct_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.nt_equip_hrs);
@@ -864,7 +871,7 @@ export class NreComponent implements OnInit {
             num = Math.floor(num / 26) - 1
         }
         return letters
-    }   
+    }
 
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
