@@ -59,7 +59,7 @@ export class NreService {
     getVersions(slug?: any): Observable<any> {
 
         return this._appService.get('project-versions', slug).pipe(
-            tap((response: any) => {
+            tap((response: any) => {                
                 this._versions.next(response);
             })
         );

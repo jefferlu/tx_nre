@@ -6,6 +6,7 @@ import { FormControl } from "@angular/forms";
 })
 export class VersionDuplicate {
     validator(control: FormControl, id: number, versions: any[]): { [key: string]: boolean } {
+                
         let duplicate = versions.findIndex(e => e.id != id && e.version === control.value);
 
         if (control.value && duplicate !== -1) {

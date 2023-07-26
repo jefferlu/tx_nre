@@ -157,7 +157,7 @@ export class NreComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 if (res) {
-                    this.page.dataset.versions = res;
+                    this.page.dataset.versions = res;                    
                     this._changeDetectorRef.markForCheck();
                 }
             });
@@ -171,9 +171,6 @@ export class NreComponent implements OnInit {
             this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
             // this.search();
         }
-
-        // console.log(this._nreService.project);
-
     }
 
     onSearchOpen(): void {
@@ -316,7 +313,7 @@ export class NreComponent implements OnInit {
         this.page.project.customer = this.form.value.customer;
         this.page.project.customer_name = this.page.dataset.customers.find((e: any) => e.id == this.form.value.customer).name;
 
-        this.formSave.get('version').setValue(this.page.project.version);
+
         this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
 
         this.page.status = {
@@ -326,7 +323,13 @@ export class NreComponent implements OnInit {
         }
 
         // refresh versions
-        this._nreService.getVersions({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe();
+        this._nreService.getVersions({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe({
+            next: () => {                
+                // 更新versions後才設定formSave.version，確保validate duplicate時是用最新的versions
+                this.formSave.get('version').setValue(this.page.project.version);
+            }
+        });
+        
 
         // this._nreService.page = this.page;        
 
@@ -470,7 +473,7 @@ export class NreComponent implements OnInit {
     }
 
     private selectChambers(capacity: number, walk_in: boolean = false) {
-        // console.log(walk_in)
+        
         // const chambers: any[] = [
         //     { name: '2K', capacity: 2000, 'amount': 10 },
         //     { name: '3K', capacity: 3000, 'amount': 1 },
