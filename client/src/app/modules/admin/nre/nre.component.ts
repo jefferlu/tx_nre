@@ -120,7 +120,13 @@ export class NreComponent implements OnInit {
             }),
             filter(value => value && value.length >= this.page.minLength)
         ).subscribe(_ => {
-            this._nreService.getProjects({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe()
+            this._nreService.getProjects({ 'customer': this.form.value.customer, 'name': this.form.value.project })
+                .subscribe((res: any) => {
+                    if (res) {
+                        this.page.dataset.projects = res;
+                        this._changeDetectorRef.markForCheck();
+                    }
+                });
         });
 
         // Get chambers
@@ -141,12 +147,12 @@ export class NreComponent implements OnInit {
                     this.form.get('customer').setValue(res[0].id);
                 }
             });
-
+      
         // Get versions
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                console.log('init versions',res)
+                console.log('init versions', res)
                 if (res) {
                     this.page.dataset.versions = res;
                     this._changeDetectorRef.markForCheck();
@@ -155,9 +161,9 @@ export class NreComponent implements OnInit {
 
         // reload saved page data
         if (this._nreService.page) {
-            
+
             this.page = this._nreService.page;
-            console.log('page',this.page)
+            console.log('page', this.page)
 
             this.form.get('project').setValue(this.page.project.name);
             this.form.get('customer').setValue(this.page.project.customer);
@@ -317,12 +323,12 @@ export class NreComponent implements OnInit {
 
         // refresh versions
         this._nreService.getVersions({ 'customer': this.form.value.customer, 'name': this.form.value.project }).subscribe({
-            next: () => {                
+            next: () => {
                 // 更新versions後才設定formSave.version，確保validate duplicate時是用最新的versions
                 this.formSave.get('version').setValue(this.page.project.version);
             }
         });
-        
+
 
         // this._nreService.page = this.page;        
 
@@ -466,7 +472,7 @@ export class NreComponent implements OnInit {
     }
 
     private selectChambers(capacity: number, walk_in: boolean = false) {
-        
+
         // const chambers: any[] = [
         //     { name: '2K', capacity: 2000, 'amount': 10 },
         //     { name: '3K', capacity: 3000, 'amount': 1 },
@@ -872,11 +878,10 @@ export class NreComponent implements OnInit {
     }
 
     ngOnDestroy(): void {
-        console.log('destroy')
-        this._nreService.versions = null;
-
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
+
+        this._nreService.versions = null;
     }
 }

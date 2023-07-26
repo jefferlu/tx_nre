@@ -16,6 +16,10 @@ export class NreService {
 
     constructor(private _appService: AppService) { }
 
+    get projects$(): Observable<any[]> {
+        return this._projects.asObservable();
+    }
+
     get versions$(): Observable<any[]> {
         return this._versions.asObservable();
     }
