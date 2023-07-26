@@ -291,10 +291,13 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
     def list(self, request):
 
         projects = models.Project.objects.all()
-        version_count_by_name = projects.values('name').annotate(version_count=Count('version'))
-
+        version_count_by_name = projects.values('name').annotate(count=Count('version'))
+        version_count = projects.count()
         instance = {
-            'project_update': version_count_by_name
+            'project_update': {
+                'total': version_count,
+                'data': version_count_by_name
+            }
         }
 
         return Response(instance)

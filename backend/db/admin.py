@@ -10,12 +10,12 @@ class ChamberAdmin(admin.ModelAdmin):
 
 @admin.register(models.Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('no', 'name', 'man_working_hours', 'equip_working_hours', 'order',)
+    list_display = ('no', 'name', 'man_working_hours', 'equip_working_hours', 'order', 'created_at', 'updated_at',)
 
 
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('name', 'created_at', 'updated_at', )
 
 
 @admin.register(models.Function)
@@ -35,7 +35,7 @@ class FeeAdmin(admin.ModelAdmin):
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'customer', 'version', 'power_ratio',)
+    list_display = ('id', 'name', 'customer', 'version', 'power_ratio', 'created_at', 'updated_at',)
 
 
 @admin.register(models.Record)
