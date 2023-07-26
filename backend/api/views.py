@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from rest_framework import viewsets, mixins, status, exceptions
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -39,25 +39,6 @@ Backend:
 class TokenObtainView(TokenObtainPairView):
     serializer_class = serializers.TokenObtainSerializer
 
-
-# class ChoicesViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
-#     if (not settings.DEBUG):
-#         permission_classes = (IsAuthenticated, )
-#     serializer_class = serializers.ChoicesSerializer
-
-#     def list(self, request):
-#         instance = {
-#             'lab_locations': self.Convert(models.TestItem.LAB_LOCATION),
-#         }
-
-#         serializer = serializers.ChoicesSerializer(instance=instance)
-#         return Response({'results': serializer.data})
-
-#     def Convert(self, tup):
-#         di = []
-#         for t in tup:
-#             di.append({'id': t[0], 'name': t[1]})
-#         return di
 
 class ChamberViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     if (not settings.DEBUG):
@@ -161,7 +142,7 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
             # 處理 test_items 資料
             for test_item_data in test_items_data:
                 item_name = test_item_data.get('item_name')
-                print('-->',item_name)
+                print('-->', item_name)
                 lab_location = test_item_data.get('lab_location')
                 fee = test_item_data.get('fee')
                 order = test_item_data.get('order')
@@ -282,3 +263,38 @@ class ProjectVersionsViewSet(
             qs = models.Project.objects.all().order_by('id')
             qs = qs.filter(customer=customer, name=name)
         return qs
+
+# class ChoicesViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
+#     if (not settings.DEBUG):
+#         permission_classes = (IsAuthenticated, )
+#     serializer_class = serializers.ChoicesSerializer
+
+#     def list(self, request):
+#         instance = {
+#             'lab_locations': self.Convert(models.TestItem.LAB_LOCATION),
+#         }
+
+#         serializer = serializers.ChoicesSerializer(instance=instance)
+#         return Response({'results': serializer.data})
+
+#     def Convert(self, tup):
+#         di = []
+#         for t in tup:
+#             di.append({'id': t[0], 'name': t[1]})
+#         return di
+
+
+class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
+    if (not settings.DEBUG):
+        permission_classes = (IsAuthenticated, )
+
+    def list(self, request):
+
+        projects = models.Project.objects.all()
+        version_count_by_name = projects.values('name').annotate(version_count=Count('version'))
+
+        instance = {
+            'project_update': version_count_by_name
+        }
+
+        return Response(instance)

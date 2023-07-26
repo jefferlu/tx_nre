@@ -16,12 +16,12 @@ export class NreService {
 
     constructor(private _appService: AppService) { }
 
-    get projects$(): Observable<any[]> {
-        return this._projects.asObservable();
-    }
-
     get versions$(): Observable<any[]> {
         return this._versions.asObservable();
+    }
+
+    set versions(value: any) {
+        this._versions.next(value);
     }
 
     get customers$(): Observable<any[]> {
@@ -59,7 +59,7 @@ export class NreService {
     getVersions(slug?: any): Observable<any> {
 
         return this._appService.get('project-versions', slug).pipe(
-            tap((response: any) => {                
+            tap((response: any) => {
                 this._versions.next(response);
             })
         );

@@ -142,29 +142,22 @@ export class NreComponent implements OnInit {
                 }
             });
 
-        // Get projects
-        this._nreService.projects$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((res: any) => {
-                if (res) {
-                    this.page.dataset.projects = res;
-                    this._changeDetectorRef.markForCheck();
-                }
-            });
-
         // Get versions
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
+                console.log('init versions',res)
                 if (res) {
-                    this.page.dataset.versions = res;                    
+                    this.page.dataset.versions = res;
                     this._changeDetectorRef.markForCheck();
                 }
             });
 
         // reload saved page data
         if (this._nreService.page) {
+            
             this.page = this._nreService.page;
+            console.log('page',this.page)
 
             this.form.get('project').setValue(this.page.project.name);
             this.form.get('customer').setValue(this.page.project.customer);
@@ -879,6 +872,9 @@ export class NreComponent implements OnInit {
     }
 
     ngOnDestroy(): void {
+        console.log('destroy')
+        this._nreService.versions = null;
+
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();

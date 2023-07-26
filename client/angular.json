@@ -26,10 +26,11 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "allowedCommonJsDependencies": [
+                            "apexcharts",
                             "flat",
                             "dayjs",
                             "exceljs",
-                            "file-saver"                            
+                            "file-saver"
                         ],
                         "assets": [
                             "src/favicon.ico",
