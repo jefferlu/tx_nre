@@ -5,6 +5,7 @@ import { authGuard } from './core/auth/guards/auth.guard';
 import { LayoutComponent } from './layout/layout.component';
 import { nreResolver } from './modules/admin/nre/nre.resolver';
 import { settingsResolver } from './modules/admin/settings/settings.resolver';
+import { dashboardResolver } from './modules/admin/dashboard/dashboard.resolver';
 
 const routerConfig: ExtraOptions = {
     preloadingStrategy: PreloadAllModules,
@@ -37,7 +38,7 @@ const routes: Routes = [
             { path: 'nre', resolve: { data: nreResolver }, loadChildren: () => import('app/modules/admin/nre/nre.module').then(m => m.NreModule) },
 
             // Dashboard
-            { path: 'dashboard', loadChildren: () => import('app/modules/admin/dashboard/dashboard.module').then(m => m.DashboardModule) },
+            { path: 'dashboard', resolve: { data: dashboardResolver }, loadChildren: () => import('app/modules/admin/dashboard/dashboard.module').then(m => m.DashboardModule) },
 
             // Settings
             { path: 'settings', resolve: { data: settingsResolver }, loadChildren: () => import('app/modules/admin/settings/settings.module').then(m => m.SettingsModule) },

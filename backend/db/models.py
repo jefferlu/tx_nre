@@ -15,8 +15,8 @@ class Item(models.Model):
     man_working_hours = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_working_hours')
     order = models.IntegerField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True,verbose_name='crated at')
-    updated_at = models.DateTimeField(auto_now=True,verbose_name='updated at')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
 
     class Meta:
         db_table = 'nre_item'
@@ -27,8 +27,8 @@ class Item(models.Model):
 
 class Customer(models.Model):
     name = models.CharField(max_length=120, verbose_name='name', unique=True)
-    created_at = models.DateTimeField(auto_now_add=True,verbose_name='crated at')
-    updated_at = models.DateTimeField(auto_now=True,verbose_name='updated at')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
 
     class Meta:
         db_table = 'nre_customer'
@@ -84,6 +84,10 @@ class Project(models.Model):
         Customer, on_delete=models.CASCADE, verbose_name='customer')
     power_ratio = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True,  verbose_name='power ratio')
+    man_hrs = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_hours')
+    equip_hrs = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_hours')    
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
 
@@ -145,6 +149,16 @@ class Record(models.Model):
     def __str__(self):
         return '%s-%s-%s' % (self.test_item.function.customer.name, self.test_item.function.name, self.test_item.item.name)
 
+
+# class Summary(models.Model):
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE,
+#                                 verbose_name='project', related_name='summarys', null=True, blank=True)
+#     man_hrs = models.DecimalField(
+#         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_hours')
+#     equip_hrs = models.DecimalField(
+#         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_hours')
+#     created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
+#     updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
 
 # class ManPower(models.Model):
 #     code = models.CharField(max_length=120, verbose_name='code')

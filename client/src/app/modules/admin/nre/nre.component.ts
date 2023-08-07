@@ -57,6 +57,8 @@ export class NreComponent implements OnInit {
             customer_name: null,
             version: null,
             power_ratio: null,
+            equip_hrs: null,
+            man_hrs: null,
             records: []
         },
         status: {
@@ -147,7 +149,7 @@ export class NreComponent implements OnInit {
                     this.form.get('customer').setValue(res[0].id);
                 }
             });
-      
+
         // Get versions
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -258,12 +260,18 @@ export class NreComponent implements OnInit {
             return;
         }
 
+        this.calculate();
+
         this.page.project.version = this.formSave.value.version;
         this.page.project.power_ratio = this.formSave.value.power_ratio;
+        this.page.project.man_hrs = parseFloat(this.page.data.proj_man_hrs).toFixed(2);
+        this.page.project.equip_hrs = parseFloat(this.page.data.proj_equip_hrs).toFixed(2);
+        
         this.page.project.records = [];
+
         for (let func of this.page.data.functions) {
             for (let item of func.test_items) {
-                item.record.test_item = item.id;    //new record from api doesn't have item id                
+                item.record.test_item = item.id;    //new record from api doesn't have item id
                 this.page.project.records.push(item.record)
             }
         }
@@ -340,6 +348,9 @@ export class NreComponent implements OnInit {
     calculate(): void {
 
         if (this.page.data) {
+            this.page.data['proj_equip_hrs'] = 0;
+            this.page.data['proj_man_hrs'] = 0;
+
             for (let i in this.page.data.functions) {
                 let func = this.page.data.functions[i];
 
@@ -367,7 +378,7 @@ export class NreComponent implements OnInit {
                     item['ot_equip_hrs'] = null;
                     item['ot_capacity'] = null;
                     item['ot_chambers'] = null;
-                    item['sub_total'] = 0;
+                    item['sub_total'] = null;
 
                     // Concept
                     if (item.record.concept_need_test) {
@@ -380,12 +391,19 @@ export class NreComponent implements OnInit {
 
                             if (item.equip_working_hours != null) {
                                 item['concept_equip_hrs'] = parseFloat(item.record.concept_regression_rate) * item.equip_working_hours;
+                                if (item['sub_total'] == null) item['sub_total'] = 0;
                                 item['sub_total'] += item['concept_equip_hrs'];
+
+                                // 專案總設備工時
+                                this.page.data['proj_equip_hrs'] += item['concept_equip_hrs'];
                             }
 
                             if (item.man_working_hours != null) {
-                                if (func['concept_man_hrs_sum'] == null) func['concept_man_hrs_sum'] = 0
+                                if (func['concept_man_hrs_sum'] == null) func['concept_man_hrs_sum'] = 0;
                                 func['concept_man_hrs_sum'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
+
+                                // 專案總人力工時
+                                this.page.data['proj_man_hrs'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
                             }
                         }
                     }
@@ -398,12 +416,19 @@ export class NreComponent implements OnInit {
                         if (item.record.bu_regression_rate != null) {
                             if (item.equip_working_hours != null) {
                                 item['bu_equip_hrs'] = parseFloat(item.record.bu_regression_rate) * item.equip_working_hours;
+                                if (item['sub_total'] == null) item['sub_total'] = 0;
                                 item['sub_total'] += item['bu_equip_hrs'];
+
+                                // 專案總設備工時
+                                this.page.data['proj_equip_hrs'] += item['bu_equip_hrs'];
                             }
 
                             if (item.man_working_hours != null) {
-                                if (func['bu_man_hrs_sum'] == null) func['bu_man_hrs_sum'] = 0
+                                if (func['bu_man_hrs_sum'] == null) func['bu_man_hrs_sum'] = 0;
                                 func['bu_man_hrs_sum'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
+
+                                // 專案總人力工時
+                                this.page.data['proj_man_hrs'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
                             }
                         }
                     }
@@ -417,12 +442,19 @@ export class NreComponent implements OnInit {
 
                             if (item.equip_working_hours != null) {
                                 item['ct_equip_hrs'] = parseFloat(item.record.ct_regression_rate) * item.equip_working_hours;
+                                if (item['sub_total'] == null) item['sub_total'] = 0;
                                 item['sub_total'] += item['ct_equip_hrs'];
+
+                                // 專案總設備工時
+                                this.page.data['proj_equip_hrs'] += item['ct_equip_hrs'];
                             }
 
                             if (item.man_working_hours != null) {
-                                if (func['ct_man_hrs_sum'] == null) func['ct_man_hrs_sum'] = 0
+                                if (func['ct_man_hrs_sum'] == null) func['ct_man_hrs_sum'] = 0;
                                 func['ct_man_hrs_sum'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
+
+                                // 專案總人力工時
+                                this.page.data['proj_man_hrs'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
                             }
                         }
                     }
@@ -435,12 +467,19 @@ export class NreComponent implements OnInit {
                         if (item.record.nt_regression_rate != null) {
                             if (item.equip_working_hours != null) {
                                 item['nt_equip_hrs'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
+                                if (item['sub_total'] == null) item['sub_total'] = 0;
                                 item['sub_total'] += item['nt_equip_hrs'];
+
+                                // 專案總設備工時
+                                this.page.data['proj_equip_hrs'] += item['nt_equip_hrs'];
                             }
 
                             if (item.man_working_hours != null) {
                                 if (func['nt_man_hrs_sum'] == null) func['nt_man_hrs_sum'] = 0
                                 func['nt_man_hrs_sum'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
+
+                                // 專案總人力工時
+                                this.page.data['proj_man_hrs'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
                             }
                         }
                     }
@@ -454,19 +493,27 @@ export class NreComponent implements OnInit {
 
                             if (item.equip_working_hours != null) {
                                 item['ot_equip_hrs'] = parseFloat(item.record.ot_regression_rate) * item.equip_working_hours;
+                                if (item['sub_total'] == null) item['sub_total'] = 0;
                                 item['sub_total'] += item['ot_equip_hrs'];
+
+                                // 專案總設備工時
+                                this.page.data['proj_equip_hrs'] += item['ot_equip_hrs'];
                             }
 
                             if (item.man_working_hours != null) {
                                 if (func['ot_man_hrs_sum'] == null) func['ot_man_hrs_sum'] = 0
                                 func['ot_man_hrs_sum'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
+
+                                // 專案總人力工時
+                                this.page.data['proj_man_hrs'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
                             }
                         }
                     }
                 }
             }
-
+            console.log(this.page.data)
         }
+
 
         // console.log(this.selectChambers(20200, true))
     }

@@ -35,7 +35,7 @@ class FeeAdmin(admin.ModelAdmin):
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'customer', 'version', 'power_ratio', 'created_at', 'updated_at',)
+    list_display = ('id', 'name', 'customer', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'created_at', 'updated_at',)
 
 
 @admin.register(models.Record)

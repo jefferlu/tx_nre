@@ -1,10 +1,11 @@
-import datetime
+from datetime import datetime
 
 from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, Count
+from django.db.models import Q, F, Count, Max, OuterRef, Subquery
+from django.db.models.functions import ExtractYear
 
 from rest_framework import viewsets, mixins, status, exceptions
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -185,8 +186,13 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         version = data.get('version')
         power_ratio = data.get('power_ratio')
 
+        man_hrs = data.get('man_hrs')
+        equip_hrs = data.get('equip_hrs')
+
+        print(man_hrs, equip_hrs)
+
         # 檢查 專案版本 是否存在
-        project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={'power_ratio': power_ratio})
+        project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={'power_ratio': power_ratio, 'man_hrs': man_hrs, 'equip_hrs': equip_hrs})
 
         for record_data in records_data:
             record_id = record_data.pop('id', None)
@@ -289,15 +295,53 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
         permission_classes = (IsAuthenticated, )
 
     def list(self, request):
+        year = self.request.query_params.get('year')
+        if year is None:
+            year = datetime.now().year
 
-        projects = models.Project.objects.all()
-        version_count_by_name = projects.values('name').annotate(count=Count('version'))
-        version_count = projects.count()
         instance = {
-            'project_update': {
-                'total': version_count,
-                'data': version_count_by_name
-            }
+            'year': year,
+            'nre_updates': self.get_project_version(year=year),
+            'hrs': self.get_project_hrs(year=year),
         }
 
         return Response(instance)
+
+    def get_project_version(self, year):
+
+        queryset = models.Project.objects.filter(created_at__year=year).values('name').annotate(version_count=Count('version'))
+
+        version_sum = 0
+        for entry in queryset:
+            version_sum += entry['version_count']
+
+        return {
+            'count': version_sum,
+            'data': queryset
+        }
+
+    def get_project_hrs(self, year):
+
+        latest_versions_subquery = models.Project.objects.filter(
+            name=OuterRef('name'),
+            created_at__year=year
+        ).order_by('-created_at').values('id')[:1]
+
+        queryset = models.Project.objects.filter(
+            created_at__year=year,
+            id=Subquery(latest_versions_subquery),
+            man_hrs__isnull=False,
+            equip_hrs__isnull=False
+        ).values('name', 'version', 'man_hrs', 'equip_hrs')
+
+        man_hrs_sum = 0
+        equip_hrs_sum = 0
+        for entry in queryset:
+            man_hrs_sum += entry['man_hrs']
+            equip_hrs_sum += entry['equip_hrs']
+
+        return {
+            'man_hrs_sum': man_hrs_sum,
+            'equip_hrs_sum': equip_hrs_sum,
+            'data': queryset
+        }
