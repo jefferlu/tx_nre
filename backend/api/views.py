@@ -309,7 +309,7 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
 
     def get_project_version(self, year):
 
-        queryset = models.Project.objects.filter(created_at__year=year).values('name').annotate(version_count=Count('version'))
+        queryset = models.Project.objects.filter(created_at__year=year).order_by('name').values('name').annotate(version_count=Count('version'))
 
         version_sum = 0
         for entry in queryset:
@@ -325,14 +325,14 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
         latest_versions_subquery = models.Project.objects.filter(
             name=OuterRef('name'),
             created_at__year=year
-        ).order_by('-created_at').values('id')[:1]
+        ).order_by('-created_at').values('id')[:1]  # id比created_at精準
 
         queryset = models.Project.objects.filter(
             created_at__year=year,
             id=Subquery(latest_versions_subquery),
             man_hrs__isnull=False,
             equip_hrs__isnull=False
-        ).values('name', 'version', 'man_hrs', 'equip_hrs')
+        ).order_by('name').values('name', 'version', 'man_hrs', 'equip_hrs')
 
         man_hrs_sum = 0
         equip_hrs_sum = 0
