@@ -127,7 +127,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 width: [0]
             },
             tooltip: {
-                followCursor: true,
+                // followCursor: true,
                 theme: 'dark'
             },
             xaxis: {
@@ -148,7 +148,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             },
             yaxis: {
                 labels: {
-                    // offsetX: -16,
+                    offsetX: -16,
                     style: {
                         colors: 'var(--fuse-text-secondary)'
                     }
