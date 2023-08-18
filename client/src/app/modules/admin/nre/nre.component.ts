@@ -248,7 +248,7 @@ export class NreComponent implements OnInit {
         });
     }
 
-    save(): void {
+    onSave(): void {
         // check version and project.id is in 'version' FormControl
         if (this.formSave.invalid) return;
 
@@ -259,6 +259,23 @@ export class NreComponent implements OnInit {
             this._changeDetectorRef.markForCheck();
             return;
         }
+
+        let dialogRef = this._fuseConfirmationService.open({
+            message: 'Are you sure to save?',
+            icon: { color: 'primary' },
+            actions: { confirm: { label: 'Save' } }
+
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result === 'confirmed') {
+                this.save();
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
+
+    save(): void {
 
         this.calculate();
 
@@ -407,7 +424,7 @@ export class NreComponent implements OnInit {
                                 // 專案總人力工時
                                 this.page.data['proj_man_hrs'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
                             }
-                        }                        
+                        }
                     }
 
                     // BU        

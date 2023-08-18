@@ -14,7 +14,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
     panels: any[] = [];
-    selectedPanel: string = 'default-items';
+    selectedPanel: string = 'account';
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -46,10 +46,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
                 id: 'test-fee',
                 title: '3rd party Test fee'
             },
-            // {
-            //     id: 'account',
-            //     title: 'Account Management',
-            // }
+            {
+                id: 'account',
+                title: 'Account Management',
+            }
         ];
 
         // Subscribe to media changes
