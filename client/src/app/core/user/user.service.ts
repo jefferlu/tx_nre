@@ -32,7 +32,6 @@ export class UserService {
     set user(value: User) {
         // Store the value
         localStorage.setItem(USER_KEY, JSON.stringify(value));
-        console.log('set user')
         // this._user.next(value);
 
     }

@@ -73,7 +73,8 @@ export class AuthService {
      * @param password
      */
     resetPassword(password: string): Observable<any> {
-        return this._httpClient.post('api/auth/reset-password', password);
+
+        return this._httpClient.post(`${endpoint}/reset_password`, { 'password': password });
     }
 
     /**
@@ -200,7 +201,7 @@ export class AuthService {
         if (!this._cookieService.get('access')) {
             return of(false);
         }
-        
+
         // Check the access token expire date
         if (AuthUtils.isTokenExpired(this._cookieService.get('access'))) {
             return of(false);

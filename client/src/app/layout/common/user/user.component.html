@@ -1,24 +1,32 @@
 <!-- Button -->
-<button  mat-icon-button routerLink="">
-    <span class="relative">
-        <mat-icon [svgIcon]="'heroicons_outline:home'"></mat-icon>
-    </span>
-</button> 
 
-<button mat-icon-button routerLink="dashboard">
-    <span class="relative">        
-        <mat-icon [svgIcon]="'heroicons_outline:trending-up'"></mat-icon>        
-    </span>
-</button>
 
-<button  mat-icon-button routerLink="settings">
-    <span class="relative">
-        <mat-icon [svgIcon]="'heroicons_outline:cog'"></mat-icon>
-    </span>
-</button> 
-
-<button mat-icon-button (click)="signOut()">
+<!-- <button mat-icon-button (click)="signOut()">
     <span class="relative">
         <mat-icon [svgIcon]="'heroicons_outline:logout'"></mat-icon>    
     </span>    
+</button> -->
+
+<button mat-icon-button [matMenuTriggerFor]="userActions">
+    <span class="relative">
+        <mat-icon [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+    </span>
 </button>
+
+<mat-menu [xPosition]="'before'" #userActions="matMenu">
+    <button mat-menu-item>
+        <span class="flex flex-col leading-none">
+            <span>Signed in as</span>
+            <span class="mt-1.5 text-md font-medium">{{user.email}}</span>
+        </span>
+    </button>
+    <mat-divider class="my-2"></mat-divider>
+    <button mat-menu-item (click)="resetPassword()">
+        <mat-icon [svgIcon]="'heroicons_outline:key'"></mat-icon>
+        <span>Reset password</span>
+    </button>
+    <button mat-menu-item (click)="signOut()">
+        <mat-icon [svgIcon]="'heroicons_outline:logout'"></mat-icon>
+        <span>Sign out</span>
+    </button>
+</mat-menu>

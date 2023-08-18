@@ -41,28 +41,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
                             "labels": res.nre_updates.data.map(e => e.name),
                         },
                         "man_hrs": {
-                            "count": res.hrs.man_hrs_sum,
-                            "series": res.hrs.data.map(e => e.man_hrs),
-                            "labels": res.hrs.data.map(e => e.name),
+                            "count": res.hrs.man.total,
+                            "series": res.hrs.man.data.map(e => e.man_hrs),
+                            "labels": res.hrs.man.data.map(e => e.name),
                         },
                         "equip_hrs": {
-                            "count": res.hrs.equip_hrs_sum,
-                            "series": res.hrs.data.map(e => e.equip_hrs),
-                            "labels": res.hrs.data.map(e => e.name),
+                            "count": res.hrs.equip.total,
+                            "series": res.hrs.equip.data.map(e => e.equip_hrs),
+                            "labels": res.hrs.equip.data.map(e => e.name),
                         },
                         "equip_fee": {
-                            "count": 100,
-                            "series": [20, 30, 50],
-                            "labels": ['A', 'B', 'C']
+                            "count": res.hrs.fee.total,
+                            "series": res.hrs.fee.data.map(e => e.fees),
+                            "labels": res.hrs.fee.data.map(e => e.name),
                         },
                         "equip_fee_year": {
-                            "count": 100,
                             "series": [{
                                 "name": "USD",
                                 "type": "column",
-                                "data": [73000, 52500, 65200, 42200]
+                                "data": res.fee_years.map(e => e.total_fees)
                             }],
-                            "labels": [2023, 2024, 2025, 2026]
+                            "labels": res.fee_years.map(e => e.year)
                         },
                     }
 
@@ -94,7 +93,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     enabled: false
                 }
             },
-            colors: ['#64748B', '#94A3B8'],
+            colors: ['#319795'],
             dataLabels: {
                 enabled: false,
                 enabledOnSeries: [0],

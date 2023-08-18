@@ -87,7 +87,9 @@ class Project(models.Model):
     man_hrs = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_hours')
     equip_hrs = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_hours')    
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_hours')
+    fees = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True,  verbose_name='fees')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
 

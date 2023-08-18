@@ -4,13 +4,16 @@ from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, F, Count, Max, OuterRef, Subquery
+from django.db.models import Q, F, Count, Sum, OuterRef, Subquery
 from django.db.models.functions import ExtractYear
 
 from rest_framework import viewsets, mixins, status, exceptions
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from django_auto_prefetching import AutoPrefetchViewSetMixin
 
@@ -39,6 +42,26 @@ Backend:
 
 class TokenObtainView(TokenObtainPairView):
     serializer_class = serializers.TokenObtainSerializer
+
+
+class PasswordResetView(APIView):
+    def post(self, request):
+        user = request.user
+        password = request.data.get('password')
+
+        if user and password:
+            user.set_password(password)
+            user.save()
+
+            # 創建新的JWT刷新令牌
+            refresh = RefreshToken.for_user(user)
+            print(refresh)
+            access_token = str(refresh.access_token)
+
+            print(user, password)
+            return Response({'access_token': access_token}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChamberViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -188,11 +211,13 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
         man_hrs = data.get('man_hrs')
         equip_hrs = data.get('equip_hrs')
+        fees = data.get('fees')
 
-        print(man_hrs, equip_hrs)
+        print(man_hrs, equip_hrs, fees)
 
         # 檢查 專案版本 是否存在
-        project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={'power_ratio': power_ratio, 'man_hrs': man_hrs, 'equip_hrs': equip_hrs})
+        project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={
+                                                                   'power_ratio': power_ratio, 'man_hrs': man_hrs, 'equip_hrs': equip_hrs, 'fees': fees})
 
         for record_data in records_data:
             record_id = record_data.pop('id', None)
@@ -300,9 +325,9 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
             year = datetime.now().year
 
         instance = {
-            'year': year,
             'nre_updates': self.get_project_version(year=year),
             'hrs': self.get_project_hrs(year=year),
+            'fee_years': self.get_project_fees_by_year(year=year)
         }
 
         return Response(instance)
@@ -316,6 +341,7 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
             version_sum += entry['version_count']
 
         return {
+            'year': year,
             'count': version_sum,
             'data': queryset
         }
@@ -327,21 +353,59 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
             created_at__year=year
         ).order_by('-created_at').values('id')[:1]  # id比created_at精準
 
-        queryset = models.Project.objects.filter(
+        man_hrs_qs = models.Project.objects.filter(
             created_at__year=year,
             id=Subquery(latest_versions_subquery),
             man_hrs__isnull=False,
-            equip_hrs__isnull=False
-        ).order_by('name').values('name', 'version', 'man_hrs', 'equip_hrs')
+        ).order_by('name').values('name', 'version', 'man_hrs')
+
+        equip_hrs_qs = models.Project.objects.filter(
+            created_at__year=year,
+            id=Subquery(latest_versions_subquery),
+            equip_hrs__isnull=False,
+        ).order_by('name').values('name', 'version', 'equip_hrs')
+
+        fees_qs = models.Project.objects.filter(
+            created_at__year=year,
+            id=Subquery(latest_versions_subquery),
+            fees__isnull=False,
+        ).order_by('name').values('name', 'version', 'fees')
 
         man_hrs_sum = 0
         equip_hrs_sum = 0
-        for entry in queryset:
+        fees_sum = 0
+
+        for entry in man_hrs_qs:
             man_hrs_sum += entry['man_hrs']
+
+        for entry in equip_hrs_qs:
             equip_hrs_sum += entry['equip_hrs']
 
+        for entry in fees_qs:
+            fees_sum += entry['fees']
+
         return {
-            'man_hrs_sum': man_hrs_sum,
-            'equip_hrs_sum': equip_hrs_sum,
-            'data': queryset
+            'year': year,
+            'man': {
+                'total': man_hrs_sum,
+                'data': man_hrs_qs
+            },
+            'equip': {
+                'total': equip_hrs_sum,
+                'data': equip_hrs_qs
+            },
+            'fee': {
+                'total': fees_sum,
+                'data': fees_qs
+            },
         }
+
+    def get_project_fees_by_year(self, year):
+
+        qs = models.Project.objects.filter(
+            created_at__year__gte=year-5
+        ).annotate(
+            year=ExtractYear('created_at')
+        ).values('year').annotate(total_fees=Sum('fees'))
+
+        return qs

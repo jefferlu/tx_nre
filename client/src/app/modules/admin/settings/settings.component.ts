@@ -48,7 +48,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
             },
             // {
             //     id: 'account',
-            //     title: 'Account',
+            //     title: 'Account Management',
             // }
         ];
 

@@ -25,6 +25,7 @@ router.register(r'analytics', views.AnalyticsViewSet, basename='analytics')
 
 urlpatterns = [
     path('login', views.TokenObtainView.as_view(), name='token_obtain_pair'),
+    path('reset_password', views.PasswordResetView.as_view(), name='reset_password'),
     path('token/refresh', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
     path('', include(router.urls)),

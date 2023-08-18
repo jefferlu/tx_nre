@@ -33,7 +33,7 @@
                 <!-- Password field -->
                 <mat-form-field class="w-full fuse-mat-dense">
                     <mat-label>Password</mat-label>
-                    <input id="password" matInput type="password" [formControlName]="'password'" #passwordField>
+                    <input id="password" matInput type="password" [formControlName]="'password'" #passwordField autocomplete="password">
                     <button mat-icon-button type="button"
                         (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'" matSuffix>
                         <mat-icon class="icon-size-5" *ngIf="passwordField.type === 'password'" [svgIcon]="'heroicons_solid:eye'"></mat-icon>

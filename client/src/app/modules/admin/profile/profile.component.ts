@@ -1,17 +1,15 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
-    selector       : 'profile',
-    templateUrl    : './profile.component.html',
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'profile',
+    templateUrl: './profile.component.html',
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProfileComponent
-{
+export class ProfileComponent {
     /**
      * Constructor
      */
-    constructor()
-    {
+    constructor() {
     }
 }

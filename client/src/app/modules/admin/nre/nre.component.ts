@@ -59,6 +59,7 @@ export class NreComponent implements OnInit {
             power_ratio: null,
             equip_hrs: null,
             man_hrs: null,
+            fees: null,
             records: []
         },
         status: {
@@ -154,7 +155,6 @@ export class NreComponent implements OnInit {
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
-                console.log('init versions', res)
                 if (res) {
                     this.page.dataset.versions = res;
                     this._changeDetectorRef.markForCheck();
@@ -266,7 +266,8 @@ export class NreComponent implements OnInit {
         this.page.project.power_ratio = this.formSave.value.power_ratio;
         this.page.project.man_hrs = parseFloat(this.page.data.proj_man_hrs).toFixed(2);
         this.page.project.equip_hrs = parseFloat(this.page.data.proj_equip_hrs).toFixed(2);
-        
+        this.page.project.fees = parseFloat(this.page.data.proj_fees).toFixed(2);
+
         this.page.project.records = [];
 
         for (let func of this.page.data.functions) {
@@ -275,7 +276,7 @@ export class NreComponent implements OnInit {
                 this.page.project.records.push(item.record)
             }
         }
-
+        console.log(this.page.project)
         this._nreService.createProject(this.page.project).subscribe({
             next: (res) => {
                 if (res) {
@@ -350,6 +351,7 @@ export class NreComponent implements OnInit {
         if (this.page.data) {
             this.page.data['proj_equip_hrs'] = 0;
             this.page.data['proj_man_hrs'] = 0;
+            this.page.data['proj_fees'] = 0;
 
             for (let i in this.page.data.functions) {
                 let func = this.page.data.functions[i];
@@ -405,7 +407,7 @@ export class NreComponent implements OnInit {
                                 // 專案總人力工時
                                 this.page.data['proj_man_hrs'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
                             }
-                        }
+                        }                        
                     }
 
                     // BU        
@@ -509,13 +511,15 @@ export class NreComponent implements OnInit {
                             }
                         }
                     }
+
+                    // 設備使用費
+                    if (item.fee && item.sub_total) {
+                        this.page.data['proj_fees'] += item.fee * item.sub_total;
+                    }
                 }
             }
-            console.log(this.page.data)
         }
 
-
-        // console.log(this.selectChambers(20200, true))
     }
 
     private selectChambers(capacity: number, walk_in: boolean = false) {

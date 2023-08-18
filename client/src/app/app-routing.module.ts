@@ -43,6 +43,9 @@ const routes: Routes = [
             // Settings
             { path: 'settings', resolve: { data: settingsResolver }, loadChildren: () => import('app/modules/admin/settings/settings.module').then(m => m.SettingsModule) },
 
+            // reset-password
+            { path: 'reset-password', loadChildren: () => import('app/modules/auth/reset-password/reset-password.module').then(m => m.ResetPasswordModule) },
+
             // 404 & Catch all
             { path: '404', pathMatch: 'full', loadChildren: () => import('app/modules/auth/error-404/error-404.module').then(m => m.Error404Module) },
             { path: '**', redirectTo: '404' }

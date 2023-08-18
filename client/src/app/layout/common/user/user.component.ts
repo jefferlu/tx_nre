@@ -56,7 +56,7 @@ export class UserComponent implements OnInit, OnDestroy {
                 //     "avatar": "https://inventory.giantcld.com/web/image?model=res.users&field=avatar_128&id=2",
                 //     "status": "online"
                 // }
-                
+
                 this.avatar = this._sanitizer.bypassSecurityTrustResourceUrl(`data:image/png;base64, ${user.avatar}`);
                 this.user = user;
 
@@ -94,6 +94,10 @@ export class UserComponent implements OnInit, OnDestroy {
             ...this.user,
             status
         }).subscribe();
+    }
+
+    resetPassword(): void {
+        this._router.navigate(['/reset-password']);
     }
 
     /**

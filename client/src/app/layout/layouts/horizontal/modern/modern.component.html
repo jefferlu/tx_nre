@@ -12,12 +12,30 @@
                 <div class="mt-1.5 sm:mt-2.5 sm:ml-2 text-center text-3xl font-extrabold tracking-tight leading-tight">
                     NRE <span class="hidden sm:inline">System</span>
                 </div>
-                
+
             </div>
         </div>
 
         <!-- Components -->
         <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
+            <button mat-icon-button routerLink="">
+                <span class="relative">
+                    <mat-icon [svgIcon]="'heroicons_outline:home'"></mat-icon>
+                </span>
+            </button>
+
+            <button mat-icon-button routerLink="dashboard">
+                <span class="relative">
+                    <mat-icon [svgIcon]="'heroicons_outline:trending-up'"></mat-icon>
+                </span>
+            </button>
+
+            <button mat-icon-button routerLink="settings">
+                <span class="relative">
+                    <mat-icon [svgIcon]="'heroicons_outline:cog'"></mat-icon>
+                </span>
+            </button>
+            
             <user></user>
         </div>
     </div>
