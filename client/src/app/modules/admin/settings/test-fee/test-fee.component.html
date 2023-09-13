@@ -11,7 +11,7 @@
             </mat-form-field>
 
         </div>
-        <div>            
+        <div>
             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onDownload()">
                 <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-down-tray'"></mat-icon>
                 <span class="ml-2 mr-1">Download Template</span>
@@ -23,32 +23,36 @@
                     <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
                     <span class="ml-2 mr-1">Import</span>
                 </button>
-            </div>                  
+            </div>
             <!-- <button mat-icon-button class="ml-2 sm:ml-4" (click)="onUpload()">
                  <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
                  <span class="ml-2 mr-1">Import</span>
             </button> -->
         </div>
-        <div>           
-             <!-- Save button-->
-             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()"  *ngIf="page.data && page.data.length>0">
+        <div>
+            <!-- Save button-->
+            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()" *ngIf="page.data && page.data.length>0">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
         </div>
     </div>
 
-    <table class="table-auto w-full border-2 border-slate-500 fee-table">
+    <table class="fee-table">
 
         <thead>
             <tr>
-                <th colspan="4">Reliability/S&V Test</th>
+                <th colspan="5">Reliability/S&V Test</th>
             </tr>
             <tr>
-                <th>Function</th>
-                <th>Test Item</th>
-                <th>Lab Location</th>
-                <th>2023</th>
+                <th rowspan="2">Function</th>
+                <th rowspan="2">Test Item</th>
+                <th rowspan="2">Lab Location</th>
+                <th colspan="2">{{currentYear}}</th>
+            </tr>
+            <tr>
+                <th>2K</th>
+                <th>Walk-in</th>
             </tr>
         </thead>
 
@@ -56,25 +60,33 @@
             <ng-container *ngFor="let func of page.data?.functions">
                 <ng-container *ngFor="let item of func.test_items;let idx=index">
 
-                    <tr *ngIf="idx==0">
-                        <td class="text-center w-32" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                        <td class="edit-item"><input [(ngModel)]="item.item_name" (change)="change()"></td>
-                        <td class="edit-str"><input [(ngModel)]="item.lab_location" (change)="change()"></td>
-                        <td class="edit-numeric"><input [(ngModel)]="item.fee" (change)="change()" numeric-two-digit></td>
+                    <tr>
+                        <td *ngIf="idx==0" class="text-center w-32" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                        <td class="px-2">{{item.item_name}}</td>
+                        <td class="text-center">{{item.lab_location}}</td>
+                        <ng-container *ngFor="let fee of item.fee; let idx=index">
+                            <ng-container *ngIf="fee.chamber==='2K' && idx==0">
+                                <td class="px-2">{{fee.amount}}</td>
+                                <ng-container *ngIf="item.fee.length==1"><td></td></ng-container>
+                            </ng-container>                            
+                            <ng-container *ngIf="fee.chamber==='WALKIN' && idx==1">
+                                <td class="px-2">{{fee.amount}}</td>
+                            </ng-container>                            
+                            <ng-container *ngIf="fee.chamber==='WALKIN' && idx==0">
+                                <td></td>                                
+                                <td class="px-2">{{fee.amount}}</td>
+                            </ng-container>                            
+                        </ng-container>
+                       
                     </tr>
 
-                    <tr *ngIf="idx>0">
+
+                    <!-- <tr *ngIf="idx>0">
                         <td class="edit-item"><input [(ngModel)]="item.item_name" (change)="change()"></td>
                         <td class="edit-str"><input [(ngModel)]="item.lab_location" (change)="change()"></td>
+                        <td class="edit-str"><input [(ngModel)]="item.lab_location" (change)="change()"></td>
                         <td class="edit-numeric"><input [(ngModel)]="item.fee" (change)="change()" numeric-two-digit></td>
-                        <!-- <td class="edit-select">
-                            <select>
-                                <option>Compal PCP</option>
-                                <option>Outsourcing</option>
-                            </select>
-                        </td> -->
-
-                    </tr>
+                    </tr> -->
 
                 </ng-container>
                 <tr>

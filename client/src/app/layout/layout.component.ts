@@ -92,10 +92,10 @@ export class LayoutComponent implements OnInit, OnDestroy {
         });
 
         // Set the app version
-        this._renderer2.setAttribute(this._document.querySelector('[ng-version]'), 'fuse-version', FUSE_VERSION);
+        // this._renderer2.setAttribute(this._document.querySelector('[ng-version]'), 'fuse-version', FUSE_VERSION);
 
         // Set the OS name
-        this._renderer2.addClass(this._document.body, this._fusePlatformService.osName);
+        // this._renderer2.addClass(this._document.body, this._fusePlatformService.osName);
     }
 
     private _updateLayout(): void {

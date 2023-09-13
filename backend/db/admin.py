@@ -30,7 +30,7 @@ class TestItemAdmin(admin.ModelAdmin):
 
 @admin.register(models.Fee)
 class FeeAdmin(admin.ModelAdmin):
-    list_display = ('test_item', 'year', 'amount',)
+    list_display = ('test_item', 'chamber', 'year', 'amount',)
 
 
 @admin.register(models.Project)

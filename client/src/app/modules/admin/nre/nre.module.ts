@@ -11,13 +11,19 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatSidenavModule } from '@angular/material/sidenav';
+
 
 import { SharedModule } from 'app/shared/shared.module';
 import { NreComponent } from './nre.component';
+import { NreListComponent } from './nre-list/nre-list.component';
+import { NreDetailComponent } from './nre-detail/nre-detail.component';
 
 
 @NgModule({
-    declarations: [NreComponent],
+    declarations: [NreComponent, NreListComponent, NreDetailComponent],
     imports: [
         RouterModule.forChild([{ path: '', component: NreComponent }]),
         AsyncPipe,
@@ -30,6 +36,9 @@ import { NreComponent } from './nre.component';
         MatAutocompleteModule,
         MatMenuModule,
         MatTooltipModule,
+        MatTableModule,
+        MatSortModule,
+        MatSidenavModule,
         SharedModule
     ]
 })

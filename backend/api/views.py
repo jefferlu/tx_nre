@@ -1,10 +1,10 @@
-from datetime import datetime
+import datetime
 
 from django.http import Http404
 from django.shortcuts import render
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, F, Count, Sum, OuterRef, Subquery
+from django.db.models import Q, F, Max, Count, Sum, OuterRef, Subquery
 from django.db.models.functions import ExtractYear
 
 from rest_framework import viewsets, mixins, status, exceptions
@@ -55,10 +55,8 @@ class PasswordResetView(APIView):
 
             # 創建新的JWT刷新令牌
             refresh = RefreshToken.for_user(user)
-            print(refresh)
             access_token = str(refresh.access_token)
 
-            print(user, password)
             return Response({'access_token': access_token}, status=status.HTTP_200_OK)
         else:
             return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -143,11 +141,12 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     if (not settings.DEBUG):
         permission_classes = (IsAuthenticated, )
     serializer_class = serializers.CustomerSerializer
-    queryset = models.Customer.objects.all()
+    queryset = models.Customer.objects.all().order_by('name')
     # pagination_class = None
 
     def create(self, request, *args, **kwargs):
         data = request.data
+        year = datetime.date.today().year
 
         customer_name = data.get('name')
         functions_data = data.get('functions', [])
@@ -166,26 +165,26 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
             # 處理 test_items 資料
             for test_item_data in test_items_data:
                 item_name = test_item_data.get('item_name')
-                print('-->', item_name)
                 lab_location = test_item_data.get('lab_location')
+                chamber = test_item_data.get('chamber')
                 fee = test_item_data.get('fee')
                 order = test_item_data.get('order')
 
             # 檢查 TestItem 是否存在
                 try:
-                    item = models.Item.objects.get(no=item_name.split()[0])
+                    item = models.Item.objects.get(no__iexact=item_name.split()[0])
                 except models.Item.DoesNotExist:
                     item = None
 
                 if not item:
                     continue
 
-                test_item, _ = models.TestItem.objects.update_or_create(function=function, item=item, lab_location=lab_location, defaults={'order': order})
+                print(function, item, lab_location, chamber)
+                test_item, _ = models.TestItem.objects.update_or_create(function=function, item=item,
+                                                                        defaults={'lab_location': lab_location, 'order': order})
 
                 # Fee
-                year = datetime.date.today().year
-                fee, _ = models.Fee.objects.update_or_create(test_item=test_item, defaults={'year': year, 'amount': fee})
-                print(test_item, test_item.order), test_item.lab_location
+                fee, _ = models.Fee.objects.update_or_create(test_item=test_item, chamber=chamber, defaults={'year': year, 'amount': fee})
 
         # 返回新增的資料
         serializer = self.get_serializer(customer)
@@ -213,11 +212,48 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         equip_hrs = data.get('equip_hrs')
         fees = data.get('fees')
 
-        print(man_hrs, equip_hrs, fees)
+        rel_concept_duration = data.get('rel_concept_duration')
+        rel_bu_duration = data.get('rel_bu_duration')
+        rel_ct_duration = data.get('rel_ct_duration')
+        rel_nt_duration = data.get('rel_nt_duration')
+        rel_ot_duration = data.get('rel_ot_duration')
+        rel_concept_duty_rate = data.get('rel_concept_duty_rate')
+        rel_bu_duty_rate = data.get('rel_bu_duty_rate')
+        rel_ct_duty_rate = data.get('rel_ct_duty_rate')
+        rel_nt_duty_rate = data.get('rel_nt_duty_rate')
+        rel_ot_duty_rate = data.get('rel_ot_duty_rate')
+
+        sv_concept_duration = data.get('sv_concept_duration')
+        sv_bu_duration = data.get('sv_bu_duration')
+        sv_ct_duration = data.get('sv_ct_duration')
+        sv_nt_duration = data.get('sv_nt_duration')
+        sv_ot_duration = data.get('sv_ot_duration')
+        sv_concept_duty_rate = data.get('sv_concept_duty_rate')
+        sv_bu_duty_rate = data.get('sv_bu_duty_rate')
+        sv_ct_duty_rate = data.get('sv_ct_duty_rate')
+        sv_nt_duty_rate = data.get('sv_nt_duty_rate')
+        sv_ot_duty_rate = data.get('sv_ot_duty_rate')
+
+        pkg_concept_duration = data.get('pkg_concept_duration')
+        pkg_bu_duration = data.get('pkg_bu_duration')
+        pkg_ct_duration = data.get('pkg_ct_duration')
+        pkg_nt_duration = data.get('pkg_nt_duration')
+        pkg_ot_duration = data.get('pkg_ot_duration')
+        pkg_concept_duty_rate = data.get('pkg_concept_duty_rate')
+        pkg_bu_duty_rate = data.get('pkg_bu_duty_rate')
+        pkg_ct_duty_rate = data.get('pkg_ct_duty_rate')
+        pkg_nt_duty_rate = data.get('pkg_nt_duty_rate')
+        pkg_ot_duty_rate = data.get('pkg_ot_duty_rate')
 
         # 檢查 專案版本 是否存在
         project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={
-                                                                   'power_ratio': power_ratio, 'man_hrs': man_hrs, 'equip_hrs': equip_hrs, 'fees': fees})
+                                                                   'power_ratio': power_ratio, 'man_hrs': man_hrs, 'equip_hrs': equip_hrs, 'fees': fees,
+                                                                   'rel_concept_duration': rel_concept_duration, 'rel_bu_duration': rel_bu_duration, 'rel_ct_duration': rel_ct_duration, 'rel_nt_duration': rel_nt_duration, 'rel_ot_duration': rel_ot_duration,
+                                                                   'rel_concept_duty_rate': rel_concept_duty_rate, 'rel_bu_duty_rate': rel_bu_duty_rate, 'rel_ct_duty_rate': rel_ct_duty_rate, 'rel_nt_duty_rate': rel_nt_duty_rate, 'rel_ot_duty_rate': rel_ot_duty_rate,
+                                                                   'sv_concept_duration': sv_concept_duration, 'sv_bu_duration': sv_bu_duration, 'sv_ct_duration': sv_ct_duration, 'sv_nt_duration': sv_nt_duration, 'sv_ot_duration': sv_ot_duration,
+                                                                   'sv_concept_duty_rate': sv_concept_duty_rate, 'sv_bu_duty_rate': sv_bu_duty_rate, 'sv_ct_duty_rate': sv_ct_duty_rate, 'sv_nt_duty_rate': sv_nt_duty_rate, 'sv_ot_duty_rate': sv_ot_duty_rate,
+                                                                   'pkg_concept_duration': pkg_concept_duration, 'pkg_bu_duration': pkg_bu_duration, 'pkg_ct_duration': pkg_ct_duration, 'pkg_nt_duration': pkg_nt_duration, 'pkg_ot_duration': pkg_ot_duration,
+                                                                   'pkg_concept_duty_rate': pkg_concept_duty_rate, 'pkg_bu_duty_rate': pkg_bu_duty_rate, 'pkg_ct_duty_rate': pkg_ct_duty_rate, 'pkg_nt_duty_rate': pkg_nt_duty_rate, 'pkg_ot_duty_rate': pkg_ot_duty_rate, })
 
         for record_data in records_data:
             record_id = record_data.pop('id', None)
@@ -265,15 +301,37 @@ class ProjectDistinctViewSet(
         customer = self.request.query_params.get('customer')
         name = self.request.query_params.get('name')
 
-        qs = []
-        if customer and name:
-            qs = models.Project.objects.all().distinct('name', 'customer').order_by('name')
-            qs = qs.filter(customer=customer, name__icontains=name)
-        return qs
+        # qs = []
+        # if customer and name:
+        #     qs = models.Project.objects.all().distinct('name', 'customer').order_by('name')
+        #     qs = qs.filter(customer=customer, name__icontains=name)
+        # elif customer:
+        #     qs = models.Project.objects.all().distinct('name', 'customer').order_by('name')
+        #     qs = qs.filter(customer=customer)
+        # return qs
 
-    def list(self, request, *args, **kwargs):
-        print('list')
-        return super().list(request, *args, **kwargs)
+        # 找到每个不同 name 的最新 created_at
+        latest_created_at_subquery = models.Project.objects.filter(
+            name=OuterRef('name')
+        ).order_by('-created_at').values('created_at')[:1]
+
+        if customer and name:
+            latest_projects = models.Project.objects.annotate(
+                latest_created_at=Subquery(latest_created_at_subquery)
+            ).filter(
+                customer=customer,
+                name__icontains=name,
+                created_at=F('latest_created_at')
+            )
+        elif customer:
+            latest_projects = models.Project.objects.annotate(
+                latest_created_at=Subquery(latest_created_at_subquery)
+            ).filter(
+                customer=customer,
+                created_at=F('latest_created_at')
+            )
+
+        return latest_projects
 
 
 class ProjectVersionsViewSet(
@@ -322,7 +380,7 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
     def list(self, request):
         year = self.request.query_params.get('year')
         if year is None:
-            year = datetime.now().year
+            year = datetime.date.today().year
 
         instance = {
             'nre_updates': self.get_project_version(year=year),

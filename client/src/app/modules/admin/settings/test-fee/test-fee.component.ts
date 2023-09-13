@@ -19,6 +19,7 @@ import { SettingsService } from '../settings.service';
 export class TestFeeComponent implements OnInit {
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    currentYear = new Date().getFullYear();
 
     page = {
         customers: null,
@@ -147,8 +148,9 @@ export class TestFeeComponent implements OnInit {
                         'name': row[0],
                         'test_items': [{
                             'item_name': row[1],
-                            'lab_location': row[2],
-                            'fee': row[3],
+                            'lab_location': row[2] ? row[2].toUpperCase() : null,
+                            'chamber': row[3] ? row[3].toUpperCase() : '2K',
+                            'fee': row[4] ?? 0,
                             'order': rowIndex
                         }]
                     })
@@ -156,13 +158,14 @@ export class TestFeeComponent implements OnInit {
                 else {
                     funcItem.test_items.push({
                         'item_name': row[1],
-                        'lab_location': row[2],
-                        'fee': row[3],
+                        'lab_location': row[2] ? row[2].toUpperCase() : null,
+                        'chamber': row[3] ? row[3].toUpperCase() : '2K',
+                        'fee': row[4] ?? 0,
                         'order': rowIndex
                     })
                 }
             }
-            
+
             this.save(this.page.data);
 
         }
@@ -208,7 +211,7 @@ export class TestFeeComponent implements OnInit {
                     console.log(e)
                     const dialogRef = this._fuseConfirmationService.open({
                         title: 'Error',
-                        message: JSON.stringify(e.error),
+                        message: JSON.stringify(e.message),
                         actions: { confirm: { color: 'warn', label: 'OK' }, cancel: { show: false } }
                     });
                 }

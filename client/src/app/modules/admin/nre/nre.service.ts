@@ -77,13 +77,21 @@ export class NreService {
         );
     }
 
-    getProject(name: string, kwargs?: any): Observable<any> {
-        return this._appService.get(`project/${name}`, kwargs).pipe(
+    getProject(id: number, kwargs?: any): Observable<any> {
+        return this._appService.get(`project/${id}`, kwargs).pipe(
             switchMap((response: any) => {
                 return of(response);
             })
         );
     }
+
+    // getProject(name: string, kwargs?: any): Observable<any> {
+    //     return this._appService.get(`project/${name}`, kwargs).pipe(
+    //         switchMap((response: any) => {
+    //             return of(response);
+    //         })
+    //     );
+    // }
 
     saveProject(request: any): Observable<any> {
         return this._appService.post('project', request).pipe(

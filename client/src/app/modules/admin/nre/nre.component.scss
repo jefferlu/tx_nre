@@ -1,10 +1,22 @@
 table.cust-table {
+    @apply table-auto w-full;
+    @apply border-l border-slate-500;
+    border-collapse: separate;
+    border-spacing: 0;
+
+    thead {
+        @apply sticky top-0 bg-slate-50;
+    }
+
     th {
-        @apply border-2 border-slate-500 p-0.5;
+        @apply border-r border-b border-slate-500 p-0.5;
+    }
+    tr:first-child th {
+        @apply border-t;
     }
 
     td {
-        @apply border border-slate-500 p-0.5;
+        @apply border-b border-r border-slate-500 p-0.5;
 
         .checkbox {
             @apply w-4 h-4 mt-1;
@@ -24,6 +36,34 @@ table.cust-table {
     }
 }
 
+table.result-table {
+    @apply border;
+
+    thead {
+        @apply bg-slate-50;
+    }
+
+    th {
+        @apply border border-slate-500 p-0.5;
+    }
+
+    td {
+        @apply border border-slate-500 p-0.5;
+    }
+
+    .edit {
+        @apply text-center bg-blue-100 whitespace-nowrap w-18;
+
+        input {
+            @apply w-full text-center truncate;
+        }
+    }
+    
+    .view {
+        @apply min-w-16 text-center;
+    }
+}
+
 .show-error {
     display: block;
     color: red;
@@ -38,4 +78,23 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
     -moz-appearance: textfield; /* Firefox 隱藏上下箭頭 */
+}
+
+.mat-mdc-tab-body-wrapper {
+    overflow: unset !important;
+}
+
+.mat-mdc-tab-body.mat-mdc-tab-body-active {
+    overflow: unset !important;
+}
+
+.mat-mdc-tab-body-content {
+    overflow: unset !important;
+}
+
+:host ::ng-deep .mat-tab-header {
+    top: 0;
+    z-index: 1000; 
+    position: sticky;
+    position: -webkit-sticky; /* macOS/iOS Safari */    
 }

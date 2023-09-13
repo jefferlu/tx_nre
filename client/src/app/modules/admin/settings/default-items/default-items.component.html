@@ -20,16 +20,16 @@
                 <span class="ml-2 mr-1">Import</span>
             </button>
         </div>
-        <div>
-            <!-- Save button-->
+        <!-- Save button-->
+        <!-- <div>            
             <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onSave()" *ngIf="page.data && page.data.length>0">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
-        </div>
+        </div> -->
     </div>
 
-    <table class="table-auto w-full border-2 border-slate-500 default-item-table">
+    <table class="default-item-table">
         <thead>
             <tr>
                 <th rowspan="2" class="text-center">NO</th>
@@ -48,10 +48,16 @@
             <ng-container *ngFor="let item of page.data;let no=index;">
                 <tr>
                     <td class="text-center">{{no+1}}</td>
-                    <td class="edit-str w-50"><input [(ngModel)]="item.no" (change)="onChange()"></td>
+                    <td class="">{{item.no}}</td>
+                    <td class="">{{item.name}}</td>
+                    <td class="">{{item.man_working_hours}}</td>
+                    <td class="">{{item.equip_working_hours}}</td>
+                    
+                    <!-- <td class="edit-str w-50"><input [(ngModel)]="item.no" (change)="onChange()"></td>
                     <td class="edit-str"><input [(ngModel)]="item.name" (change)="onChange()"></td>
                     <td class="edit-numeric"><input [(ngModel)]="item.man_working_hours" (change)="onChange()" numeric-two-digit></td>
                     <td class="edit-numeric"><input [(ngModel)]="item.equip_working_hours" (change)="onChange()" numeric-two-digit></td>
+                     -->
                 </tr>
             </ng-container>
         </tbody>

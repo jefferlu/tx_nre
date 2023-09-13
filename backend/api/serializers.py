@@ -109,7 +109,6 @@ class TestItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TestItem
         fields = '__all__'
-        order_by = ['order']
 
     # def get_lab_location(self, obj):
     #     return dict(models.TestItem.LAB_LOCATION).get(obj.lab_location)
@@ -117,20 +116,26 @@ class TestItemSerializer(serializers.ModelSerializer):
     def get_fee(self, test_item):
         year = datetime.date.today().year
         try:
-            q = models.Fee.objects.get(test_item=test_item, year=year)
-            serializer = FeeSerializer(instance=q)
-            return serializer.data['amount']
+            q = models.Fee.objects.filter(test_item=test_item, year=year)
+            serializer = FeeSerializer(instance=q, many=True)
+            return serializer.data
         except ObjectDoesNotExist:
             return None
 
 
 class FunctionSerializer(serializers.ModelSerializer):
 
-    test_items = TestItemSerializer(many=True)
+    # test_items = TestItemSerializer(many=True)
+    test_items = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Function
         fields = '__all__'
+
+    def get_test_items(self, function):
+        qs = models.TestItem.objects.filter(function=function).order_by('order')
+        serializer = TestItemSerializer(instance=qs, many=True, read_only=True)
+        return serializer.data
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -197,6 +202,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ProjectDistinctSerializer(serializers.ModelSerializer):
-    class Meta:
+   class Meta:
         model = models.Project
         fields = '__all__'

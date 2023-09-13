@@ -1,0 +1,98 @@
+<form [formGroup]="form">
+    <!-- Customer -->
+    <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
+        <mat-label>Customer</mat-label>
+        <mat-select [formControlName]="'customer'">
+            <ng-container *ngFor="let cust of page.dataset.customers;">
+                <mat-option [value]="cust.id">{{cust.name}}</mat-option>
+            </ng-container>
+        </mat-select>
+    </mat-form-field>
+
+    <!-- Project -->
+    <mat-form-field class="w-full sm:w-72 mt-2 sm:mt-0 sm:ml-4 fuse-mat-dense">
+        <mat-label>Project</mat-label>
+        <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'">
+    </mat-form-field>
+
+    <!-- Search button -->
+    <button class="w-full sm:w-auto sm:ml-4 mt-4 sm:-mt-1 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
+        <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
+        <span class="ml-2 mr-1">Search</span>
+    </button>
+</form>
+
+<!-- Overview -->
+<table mat-table [dataSource]="dataSource" matSort class="mt-4">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- No Column -->
+    <ng-container matColumnDef="no">
+        <th mat-header-cell *matHeaderCellDef> No. </th>
+        <td mat-cell *matCellDef="let idx=index"> {{ idx+1}} </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+        <td mat-cell *matCellDef="let element">
+            <a class="text-blue-600 hover:text-blue-400 hover:cursor-pointer" (click)="selectProject(element)">{{element.name}} </a>
+        </td>
+    </ng-container>
+
+    <!-- Version Column -->
+    <ng-container matColumnDef="version">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Version </th>
+        <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+    </ng-container>
+
+    <!-- Power Ratio Column -->
+    <ng-container matColumnDef="power_ratio">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Power Ratio </th>
+        <td mat-cell *matCellDef="let element"> {{element.power_ratio}} </td>
+    </ng-container>
+
+    <!-- Man Hours Column -->
+    <ng-container matColumnDef="man_hrs">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Man Hours </th>
+        <td mat-cell *matCellDef="let element"> {{element.man_hrs}} </td>
+    </ng-container>
+
+    <!-- Man Hours Column -->
+    <ng-container matColumnDef="equip_hrs">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Equip Hours </th>
+        <td mat-cell *matCellDef="let element"> {{element.equip_hrs}} </td>
+    </ng-container>
+
+    <!-- Fees Column -->
+    <ng-container matColumnDef="fees">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Fees </th>
+        <td mat-cell *matCellDef="let element"> {{element.fees}} </td>
+    </ng-container>
+
+    <!-- Updated At Column -->
+    <ng-container matColumnDef="updated_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Updated At </th>
+        <td mat-cell *matCellDef="let element"> {{element.updated_at | date: 'yyyy/MM/dd hh:mm:ss'}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+<!-- <table class="table-auto w-full result-table mt-4">
+    <thead>
+        <tr>
+            <th class="w-20">No</th>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Power Ratio</th>
+            <th>Man Hours</th>
+            <th>Equip Hours</th>
+            <th>Fees</th>
+            <th>Update At</th>
+        </tr>
+    </thead>
+</table> -->

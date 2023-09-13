@@ -47,6 +47,7 @@ export class DefaultItemsComponent implements OnInit {
      */
     ngOnInit(): void {
         // Get the items
+        console.log('default')
         this._settingsService.items$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
@@ -219,7 +220,7 @@ export class DefaultItemsComponent implements OnInit {
                     console.log(e)
                     const dialogRef = this._fuseConfirmationService.open({
                         title: 'Error',
-                        message: JSON.stringify(e.error),
+                        message: JSON.stringify(e.message),
                         actions: { confirm: { color: 'warn', label: 'OK' }, cancel: { show: false } }
                     });
                 }
