@@ -508,7 +508,7 @@
                                             <td *ngIf="n.k!=='_hr'" class="view">{{page.project['rel_'+ m + n.k]}}</td>
                                             <td *ngIf="n.k==='_hr'" class="view">{{page.project['rel_'+ m
                                                 +'_duration']===null||page.project['rel_'+ m+ '_duty_rate']===null?null:page.project['rel_'+ m
-                                                +'_duration']/5*page.project['rel_'+ m+ '_duty_rate'] }}</td>
+                                                +'_duration']/5*page.project['rel_'+ m+ '_duty_rate'] |number:'1.0-2'}}</td>
                                         </ng-container>
                                     </tr>
                                 </ng-container>
