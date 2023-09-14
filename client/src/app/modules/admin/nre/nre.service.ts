@@ -12,9 +12,28 @@ export class NreService {
     private _customers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _versions: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _chambers: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
+
+    private _query: any;
     private _page: any;
 
+
     constructor(private _appService: AppService) { }
+
+    set page(data: any) {
+        this._page = data;
+    }
+
+    get page() {
+        return this._page;
+    }
+
+    set query(data: any) {
+        this._query = data;
+    }
+
+    get query() {
+        return this._query;
+    }
 
     get projects$(): Observable<any[]> {
         return this._projects.asObservable();
@@ -34,14 +53,6 @@ export class NreService {
 
     get chambers$(): Observable<any[]> {
         return this._chambers.asObservable();
-    }
-
-    set page(data: any) {
-        this._page = data;
-    }
-
-    get page() {
-        return this._page;
     }
 
     getChambers(): Observable<any> {

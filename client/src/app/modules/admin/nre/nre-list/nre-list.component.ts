@@ -29,22 +29,8 @@ export class NreListComponent implements OnInit {
     }
 
     rowNumber: number = 1;
-    displayedColumns: string[] = ['no', 'name', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'updated_at'];
-
-    ELEMENT_DATA: any[] = [
-        { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-        { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-        { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-        { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-        { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-        { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-        { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-        { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-        { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-        { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-    ];
-    // dataSource = new MatTableDataSource(this.ELEMENT_DATA);
     dataSource = null;
+    displayedColumns: string[] = ['no', 'name', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'updated_at'];
 
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
@@ -54,7 +40,6 @@ export class NreListComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        console.log(this.dataSource)
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
             project: ['']
@@ -65,32 +50,48 @@ export class NreListComponent implements OnInit {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 if (res && res.length > 0) {
-                    console.log('init')
                     this.page.dataset.customers = res;
                     this.form.get('customer').setValue(res[0].id);
                 }
             });
-    }
 
-    ngAfterViewInit() { }
+        // reload saved page data
+        if (this._nreService.query) {
+
+            this.form.get('customer').setValue(this._nreService.query.customer);
+            this.form.get('project').setValue(this._nreService.query.project);
+            this.search();
+        }
+    }
 
     onSearch(): void {
         if (this.form.invalid) return;
-
         if (!this.page.dataset.customers) return;
+        this.search();
+    }
 
-        let slug: any = { 'customer': this.form.value.customer };
-        if (this.form.value.project) slug['name'] = this.form.value.project;
+    search(): void {
+
+        let slug: any = { 'customer': this.form.get('customer').value };
+        if (this.form.get('project').value) slug['name'] = this.form.get('project').value;
         this._nreService.getProjects(slug).subscribe({
             next: (res) => {
                 if (res) {
                     this.page.data = res;
 
+
                     // mat-table
                     this.dataSource = new MatTableDataSource(res)
                     this.dataSource.sort = this.sort;
+                    console.log(res)
+                    this._nreService.query = {
+                        customer: this.form.get('customer').value,
+                        project:this.form.get('project').value
+                    }
 
-                    if (res.length > 0) this.form.get('project').setValue(null);
+                    // 清空project
+                    // if (res.length > 0) this.form.get('project').setValue(null);
+
                     this._changeDetectorRef.markForCheck();
                 }
             },

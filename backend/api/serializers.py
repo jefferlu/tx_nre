@@ -202,6 +202,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class ProjectDistinctSerializer(serializers.ModelSerializer):
-   class Meta:
+    customer_name = serializers.ReadOnlyField(source='customer.name')
+
+    class Meta:
         model = models.Project
         fields = '__all__'

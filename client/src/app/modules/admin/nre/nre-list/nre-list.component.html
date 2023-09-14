@@ -1,27 +1,38 @@
-<form [formGroup]="form">
-    <!-- Customer -->
-    <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
-        <mat-label>Customer</mat-label>
-        <mat-select [formControlName]="'customer'">
-            <ng-container *ngFor="let cust of page.dataset.customers;">
-                <mat-option [value]="cust.id">{{cust.name}}</mat-option>
-            </ng-container>
-        </mat-select>
-    </mat-form-field>
+<div class="flex flex-row sm:flex-row sm:items-center min-w-0">
+    <div class="flex flex-col flex-wrap sm:w-auto">
+        <form [formGroup]="form">
+            <!-- Customer -->
+            <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
+                <mat-label>Customer</mat-label>
+                <mat-select [formControlName]="'customer'">
+                    <ng-container *ngFor="let cust of page.dataset.customers;">
+                        <mat-option [value]="cust.id">{{cust.name}}</mat-option>
+                    </ng-container>
+                </mat-select>
+            </mat-form-field>
 
-    <!-- Project -->
-    <mat-form-field class="w-full sm:w-72 mt-2 sm:mt-0 sm:ml-4 fuse-mat-dense">
-        <mat-label>Project</mat-label>
-        <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'">
-    </mat-form-field>
+            <!-- Project -->
+            <mat-form-field class="w-full sm:w-72 mt-2 sm:mt-0 sm:ml-4 fuse-mat-dense">
+                <mat-label>Project</mat-label>
+                <input type="search" matInput [formControlName]="'project'" [autocomplete]="'off'">
+            </mat-form-field>
 
-    <!-- Search button -->
-    <button class="w-full sm:w-auto sm:ml-4 mt-4 sm:-mt-1 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
-        <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
-        <span class="ml-2 mr-1">Search</span>
-    </button>
-</form>
+            <!-- Search button -->
+            <button class="w-full sm:w-auto sm:ml-4 mt-4 mr-auto sm:-mt-1 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
+                <mat-icon [svgIcon]="'heroicons_solid:search'"></mat-icon>
+                <span class="ml-2 mr-1">Search</span>
+            </button>
 
+        </form>
+    </div>
+    <div class="flex flex-col ml-auto">
+        <!-- Save button-->
+        <!-- <button class="w-full sm:w-auto sm:ml-4 mt-4 sm:mt-0 bg-accent" mat-flat-button [color]="'primary'">
+            <mat-icon [svgIcon]="'heroicons_solid:plus'"></mat-icon>
+            <span class="ml-2 mr-1">Create</span>
+        </button> -->
+    </div>
+</div>
 <!-- Overview -->
 <table mat-table [dataSource]="dataSource" matSort class="mt-4">
 
@@ -82,17 +93,3 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
 
-<!-- <table class="table-auto w-full result-table mt-4">
-    <thead>
-        <tr>
-            <th class="w-20">No</th>
-            <th>Name</th>
-            <th>Version</th>
-            <th>Power Ratio</th>
-            <th>Man Hours</th>
-            <th>Equip Hours</th>
-            <th>Fees</th>
-            <th>Update At</th>
-        </tr>
-    </thead>
-</table> -->

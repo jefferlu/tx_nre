@@ -20,10 +20,11 @@ import { SharedModule } from 'app/shared/shared.module';
 import { NreComponent } from './nre.component';
 import { NreListComponent } from './nre-list/nre-list.component';
 import { NreDetailComponent } from './nre-detail/nre-detail.component';
+import { NreCreateComponent } from './nre-create/nre-create.component';
 
 
 @NgModule({
-    declarations: [NreComponent, NreListComponent, NreDetailComponent],
+    declarations: [NreComponent, NreListComponent, NreDetailComponent, NreCreateComponent],
     imports: [
         RouterModule.forChild([{ path: '', component: NreComponent }]),
         AsyncPipe,

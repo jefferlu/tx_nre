@@ -93,59 +93,10 @@ export class NreDetailComponent implements OnInit {
         this.form = this._formBuilder.group({
             customer: [{ value: 0, disabled: true }, [Validators.required]],
             project: [{ value: this.page.project.name, disabled: true }, [Validators.required, this._specialApha.nameValidator]],
-            version: [0, [Validators.required, this._specialApha.nameValidator,
+            version: [null, [Validators.required, this._specialApha.nameValidator,
             control => this._versionDuplicate.validator(control, this.page.project.id, this.page.dataset.versions)]],
             power_ratio: [null, [Validators.required]]
         });
-
-        // this.formSave = this._formBuilder.group({
-        //     version: ['', [Validators.required, this._specialApha.nameValidator,
-        //     control => this._versionDuplicate.validator(control, this.page.project.id, this.page.dataset.versions)]],
-        //     power_ratio: [null, [Validators.required]]
-        // })
-
-
-        // FormControls Observable 
-
-        this.form.get('customer').valueChanges.pipe(
-            takeUntil(this._unsubscribeAll),
-            map(_ => {
-                this.page.dataset.projects = null;
-            })
-        ).subscribe()
-
-        // this.form.get('project').valueChanges.pipe(
-        //     debounceTime(this.page.debounce),
-        //     takeUntil(this._unsubscribeAll),
-        //     map(value => {
-
-        //         if (!value || value.length < this.page.minLength) {
-        //             this.page.dataset.projects = null;
-        //             this._changeDetectorRef.markForCheck();
-        //         }
-
-        //         // Continue
-        //         return value;
-        //     }),
-        //     filter(value => value && value.length >= this.page.minLength)
-        // ).subscribe(_ => {
-        //     this._nreService.getProjects({ 'customer': this.form.value.customer, 'name': this.form.value.project })
-        //         .subscribe((res: any) => {
-        //             if (res) {
-        //                 this.page.dataset.projects = res;
-        //                 this._changeDetectorRef.markForCheck();
-        //             }
-        //         });
-        // });
-
-        // Get chambers
-        this._nreService.chambers$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((res: any) => {
-                if (res) {
-                    this.page.dataset.chambers = res;
-                }
-            });
 
         // Get customers
         this._nreService.customers$
@@ -157,6 +108,15 @@ export class NreDetailComponent implements OnInit {
                 }
             });
 
+        // Get chambers
+        this._nreService.chambers$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                if (res) {
+                    this.page.dataset.chambers = res;
+                }
+            });
+            
         // Get versions
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -169,24 +129,17 @@ export class NreDetailComponent implements OnInit {
 
         this.search();
 
-        // reload saved page data
-        if (this._nreService.page) {
+        // // reload saved page data
+        // if (this._nreService.page) {
 
-            this.page = this._nreService.page;
+        //     this.page = this._nreService.page;
 
-            this.form.get('project').setValue(this.page.project.name);
-            this.form.get('customer').setValue(this.page.project.customer);
-            // this.formSave.get('power_ratio').setValue(this.page.project.power_ratio);
-            // 
-        }
+        //     this.form.get('project').setValue(this.page.project.name);
+        //     this.form.get('customer').setValue(this.page.project.customer);
+        // }
     }
 
     search(version?: any): void {
-
-        if (!this.page.dataset.customers) return;
-
-        this.page.status.label = undefined;
-        // this.page.data = JSON.parse(JSON.stringify(this.page.dataset.customers.find((e: any) => e.id === this.form.value.customer)));
 
         let slug: any = { 'customer': this.page.project.customer };
         if (version) slug.version = version;
@@ -215,8 +168,6 @@ export class NreDetailComponent implements OnInit {
         // check project is loaded
         if (!this.page.data) {
             this._alert.open({ type: 'warn', message: 'Project has not been loaded.' });
-            // this.onSearchOpen();
-            this._changeDetectorRef.markForCheck();
             return;
         }
 
@@ -238,10 +189,10 @@ export class NreDetailComponent implements OnInit {
     save(): void {
 
         this.calculate();
-
-        this.page.project.name = this.form.value.project;
-        this.page.project.version = this.form.value.version;
-        this.page.project.power_ratio = this.form.value.power_ratio;
+        
+        this.page.project.name = this.form.get('project').value;
+        this.page.project.version = this.form.get('version').value;
+        this.page.project.power_ratio = this.form.get('power_ratio').value;
 
         // 圖表用
         this.page.project.man_hrs = parseFloat(this.page.data.proj_man_hrs).toFixed(2);
@@ -297,21 +248,9 @@ export class NreDetailComponent implements OnInit {
             }
         }
 
-        // for (let m of ['rel_', 'sv_', 'pkg_'])
-        //     for (let n of ['concept', 'bu', 'ct', 'nt', 'ot'])
-        //         for (let o of ['_duration', '_duty_rate', '_hr']) {
-        //             this.page.data[m + n + o] = res[m + n + o];
-        //         }
-
         // fill this.page.project
         delete res.records;
         this.page.project = res;
-
-        // if (res.name == '') this.page.project.name = this.form.value.project;
-        // this.page.project.customer = this.form.value.customer;
-
-        this.page.project.customer_name = this.page.dataset.customers.find((e: any) => e.id == this.page.project.customer).name;
-
 
         this.form.get('power_ratio').setValue(this.page.project.power_ratio);
 
@@ -322,6 +261,7 @@ export class NreDetailComponent implements OnInit {
         }
 
         console.log('-->', this.page.dataset.versions, this.page.project.version)
+
         // refresh versions
         this._nreService.getVersions({ 'customer': this.page.project.customer, 'name': this.page.project.name }).subscribe({
             next: (res) => {
@@ -605,51 +545,6 @@ export class NreDetailComponent implements OnInit {
                 if (remainingRate > 0) count += 1;
 
                 selectedChambers.push({ name: chamber.name, count: count });
-                // for (let i in chambers) {
-                //     let chamber = chambers[i];
-                //     if (remainingRate > 0) {
-                //         // 商數找出滿足最大容量的chamber(降冪)
-                //         let count = Math.floor(remainingRate / chamber.capacity);
-
-                //         // 超過可用數量    
-                //         if (count > chamber.amount) {
-                //             remainingRate -= (chamber.amount * chamber.capacity);
-                //             selectedChambers.push({ name: chamber.name, count: chamber.amount });
-                //         }
-                //         // 未超過可用數量
-                //         else if (count > 0) {
-                //             selectedChambers.push({ name: chamber.name, count: count });
-                //             remainingRate -= count * chamber.capacity;
-                //         }
-
-                //         // 最後一個chamber
-                //         if (+i === (chambers.length - 1)) {
-
-                //             // 當remainingRate還是有商數時，表示所有的chamber都不夠用
-                //             count = Math.floor(remainingRate / chamber.capacity);
-                //             if (count > 0) {
-                //                 selectedChambers.push({ name: 'remain', count: remainingRate });
-                //             }
-                //             else {
-                //                 // 餘數找出滿足最小容量的chamber(升冪)
-                //                 remainingRate = remainingRate % chamber.capacity;
-                //                 if (remainingRate > 0) {
-                //                     for (let chamber of sortedChambers) {
-
-                //                         if (chamber.capacity >= remainingRate) {
-
-                //                             let index = selectedChambers.findIndex(e => e.name === chamber.name)
-
-                //                             if (index === -1) selectedChambers.push({ name: chamber.name, count: 1 });
-                //                             else selectedChambers[index].count += 1;
-                //                             break;
-                //                         }
-                //                     }
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
             }
         }
         return selectedChambers;
@@ -685,7 +580,7 @@ export class NreDetailComponent implements OnInit {
 
     }
 
-    delete():void{
+    delete(): void {
         console.log('delete')
     }
 
