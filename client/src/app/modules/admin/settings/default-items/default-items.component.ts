@@ -25,6 +25,7 @@ export class DefaultItemsComponent implements OnInit {
         items: null,
         data: null
     }
+    existingItems = null;
 
     /**
      * Constructor
@@ -154,16 +155,46 @@ export class DefaultItemsComponent implements OnInit {
             };
 
             // 檢查重複的no，並保留索引較大的項目
+            this.existingItems = [];
             this.page.data = this.page.data.reduceRight((accumulator, current) => {
                 const existingItem = accumulator.find(item => item.no === current.no);
                 if (!existingItem) {
                     accumulator.unshift(current);
+
+                }
+                else {
+                    // 記錄重複資訊
+                    let duplicated = this.existingItems.find(e => e.no === existingItem.no)
+                    if (duplicated) {
+                        duplicated.count++;
+                    }
+                    else {
+                        this.existingItems.push({ no: existingItem.no, count: 1 });
+                    }
+
                 }
                 return accumulator;
             }, []);
 
-            this.save(this.page.data);
-
+            // 顯示重複資訊並執行
+            if (this.existingItems.length > 0) {
+                let message = '';
+                for (let item of this.existingItems) {
+                    message += `${item.no}&emsp; 重複: ${item.count}<br/>`
+                }
+                const dialogRef = this._fuseConfirmationService.open({
+                    title: 'Info',
+                    message: message,
+                    icon: { color: 'info' },
+                    actions: { confirm: { color: 'primary', label: 'Continue' }, cancel: { show: false } }
+                });
+                dialogRef.afterClosed().subscribe(result => {
+                    if (result === 'confirmed') {
+                        this.save(this.page.data);
+                    }
+                });
+            }
+            else { this.save(this.page.data); }
         }
         catch (e) {
             this._alert.open({ type: 'warn', duration: 5, message: 'The format of the Excel data is wrong, please confirm whether the correct template is used.' });
@@ -204,7 +235,7 @@ export class DefaultItemsComponent implements OnInit {
     }
 
     private save(data: any) {
-        
+
         this._settingsService.saveItems(data)
             .subscribe({
                 next: (res) => {
