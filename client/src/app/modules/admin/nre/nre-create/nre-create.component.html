@@ -1,1 +1,78 @@
-<p>nre-create works!</p>
+<div class="flex flex-col flex-auto w-full pb-4">
+
+    <form [formGroup]="form" class="flex flex-col sm:flex-row items-center w-full max-w-xs sm:max-w-none">
+        <!-- Customer -->
+        <mat-form-field class="w-full sm:w-40 fuse-mat-dense">
+            <mat-label>Customer</mat-label>
+            <mat-select [formControlName]="'customer'">
+                <ng-container *ngFor="let cust of page.dataset.customers;">
+                    <mat-option [value]="cust.id">{{cust.name}}</mat-option>
+                </ng-container>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Project -->
+        <mat-form-field class="w-full sm:w-72 mt-2 sm:mt-0 sm:ml-4 fuse-mat-dense">
+            <mat-label>Project</mat-label>
+            <input type="text" matInput [formControlName]="'project'" [autocomplete]="'off'">
+            <mat-error *ngIf="form.get('project').hasError('required')">
+                Project is required.
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-auto mt-4 mr-3 sm:mt-0 sm:ml-4 fuse-mat-dense sm:w-40">
+            <mat-label>version</mat-label>
+            <input matInput [autocomplete]="'off'" [formControlName]="'version'">            
+            <mat-error *ngIf="form.get('version').hasError('required')">
+                Version is required. {{page.version_duplicate}}
+            </mat-error>           
+            <mat-error *ngIf="form.get('version').hasError('invalidName')">
+                Special characters are not allowed.
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Save button -->
+        <button class="w-full sm:w-auto mt-8 sm:mt-0 sm:ml-auto bg-accent" mat-flat-button [color]="'primary'" (click)="onCreate()">
+            <mat-icon fontIcon="done"></mat-icon>
+            <span class="ml-2 mr-1">Done</span>
+        </button>
+
+        <!-- Cancel button -->
+        <button class="w-full sm:w-auto sm:ml-4 mt-4 sm:-mt-1" mat-flat-button (click)="onClose()">
+            <mat-icon fontIcon="close"></mat-icon>
+            <span class="ml-2 mr-1">Cancel</span>
+        </button>
+
+        <!-- Close button -->
+        <!-- <button class="ml-auto" mat-icon-button (click)="onClose()">
+                <mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+            </button> -->
+    </form>
+</div>
+
+<table #table class="cust-table">
+    <thead>
+        <tr>
+            <th>Function</th>
+            <th>Test Item</th>
+            <th class="sm:min-w-30">Concept</th>
+            <th class="sm:min-w-30">BU</th>
+            <th class="sm:min-w-30">CT</th>
+            <th class="sm:min-w-30">NT</th>
+            <th class="sm:min-w-30">OT</th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let func of page.data?.functions">
+            <ng-container *ngFor="let item of func.test_items;let idx=index">
+                <tr class="hover:bg-gray-200">
+                    <td *ngIf="idx == 0" class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                    <td>{{item.item_name}}</td>
+                    <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                        <td class="edit"><input type="checkbox" class="hover:cursor-pointer" [(ngModel)]="item.record[n + '_need_test']"></td>
+                    </ng-container>
+                </tr>
+            </ng-container>
+        </ng-container>
+    </tbody>
+</table>

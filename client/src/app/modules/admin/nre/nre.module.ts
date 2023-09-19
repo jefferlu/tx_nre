@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 
 
 import { SharedModule } from 'app/shared/shared.module';
@@ -40,6 +41,7 @@ import { NreCreateComponent } from './nre-create/nre-create.component';
         MatTableModule,
         MatSortModule,
         MatSidenavModule,
+        MatListModule,
         SharedModule
     ]
 })

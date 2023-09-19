@@ -200,6 +200,7 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     lookup_field = 'name'
 
     def create(self, request, *args, **kwargs):
+        print('create')
         data = request.data
         records_data = data.pop('records', None)
 

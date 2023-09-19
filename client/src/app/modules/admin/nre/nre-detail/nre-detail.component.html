@@ -1,116 +1,65 @@
 <ng-container *ngIf="page.data">
-    <div class="flex flex-col sm:flex-row sm:items-center min-w-0">
-        <div class="flex flex-row flex-wrap sm:w-auto">
-            <form [formGroup]="form">
-                <!-- Customer -->
-                <mat-form-field class="w-full sm:w-30 fuse-mat-dense">
-                    <mat-label>Customer</mat-label>
-                    <input type="text" matInput [formControlName]="'customer'" [autocomplete]="'off'">
-                </mat-form-field>
+    <div class="flex flex-col flex-auto w-full pb-4">
 
-                <!-- Project -->
-                <mat-form-field class="w-full sm:w-50 mt-2 sm:mt-0 sm:ml-4 fuse-mat-dense">
-                    <mat-label>Project</mat-label>
-                    <input type="text" matInput [formControlName]="'project'" [autocomplete]="'off'">
-                    <mat-error *ngIf="form.get('project').hasError('required')">
-                        Project is required.
-                    </mat-error>
-                    <mat-error *ngIf="form.get('project').hasError('invalidName')">
-                        Special characters are not allowed.
-                    </mat-error>
-                </mat-form-field>
+        <form [formGroup]="form" class="flex flex-col sm:flex-row items-center w-full max-w-xs sm:max-w-none">
+            <!-- Customer -->
+            <mat-form-field class="w-full sm:w-30 fuse-mat-dense">
+                <mat-label>Customer</mat-label>
+                <input type="text" matInput [formControlName]="'customer'" [autocomplete]="'off'">
+            </mat-form-field>
 
-                <!-- version -->
-                <mat-form-field class="w-auto mt-4 mr-3 sm:mt-0 sm:ml-4 fuse-mat-dense sm:w-40">
-                    <mat-label>version</mat-label>
-                    <input matInput [autocomplete]="'off'" [placeholder]="'Version'" [formControlName]="'version'">
-                    <ng-container *ngIf="page.dataset.versions.length>0">
-                        <mat-icon class="ml-1.5 hover:cursor-pointer" fontSet="material-icons-outlined"
-                            [matMenuTriggerFor]="conversionMenu">arrow_drop_down</mat-icon>
-                        <mat-menu #conversionMenu="matMenu">
-                            <button mat-menu-item *ngFor="let ver of page.dataset.versions" (click)="search(ver.version)">{{ver.version}}</button>
-                        </mat-menu>
-                    </ng-container>
-                    <mat-error *ngIf="form.get('version').hasError('required')">
-                        Version is required. {{page.version_duplicate}}
-                    </mat-error>
-                    <mat-error *ngIf="form.get('version').hasError('duplicate')">
-                        Already exists.
-                    </mat-error>
-                    <mat-error *ngIf="form.get('version').hasError('invalidName')">
-                        Special characters are not allowed.
-                    </mat-error>
-                </mat-form-field>
+            <!-- Project -->
+            <mat-form-field class="w-full sm:w-50 mt-2 sm:mt-0 sm:ml-4 fuse-mat-dense">
+                <mat-label>Project</mat-label>
+                <input type="text" matInput [formControlName]="'project'" [autocomplete]="'off'">
+                <mat-error *ngIf="form.get('project').hasError('required')">
+                    Project is required.
+                </mat-error>
+                <mat-error *ngIf="form.get('project').hasError('invalidName')">
+                    Special characters are not allowed.
+                </mat-error>
+            </mat-form-field>
 
-                <!-- Power Ratio -->
-                <mat-form-field class="w-auto mt-4 mr-3 sm:mt-0 fuse-mat-dense sm:w-36">
-                    <mat-label>Power Ratio</mat-label>
-                    <input numeric-two-digit matInput [autocomplete]="'off'" [formControlName]="'power_ratio'">
-                    <span matSuffix class="ml-2">W</span>
-                    <mat-error *ngIf="form.get('power_ratio').hasError('required')">
-                        Rower Ratio is required.
-                    </mat-error>
-                </mat-form-field>
+            <!-- version -->
+            <mat-form-field class="w-auto mt-4 mr-3 sm:mt-0 sm:ml-4 fuse-mat-dense sm:w-40">
+                <mat-label>version</mat-label>
+                <input matInput [autocomplete]="'off'" [placeholder]="'Version'" [formControlName]="'version'">
+                <ng-container *ngIf="page.dataset.versions.length>0">
+                    <mat-icon class="ml-1.5 hover:cursor-pointer" fontSet="material-icons-outlined"
+                        [matMenuTriggerFor]="conversionMenu">arrow_drop_down</mat-icon>
+                    <mat-menu #conversionMenu="matMenu">
+                        <button mat-menu-item *ngFor="let ver of page.dataset.versions" (click)="search(ver.version)">{{ver.version}}</button>
+                    </mat-menu>
+                </ng-container>
+                <mat-error *ngIf="form.get('version').hasError('required')">
+                    Version is required. {{page.version_duplicate}}
+                </mat-error>
+                <mat-error *ngIf="form.get('version').hasError('duplicate')">
+                    Already exists.
+                </mat-error>
+                <mat-error *ngIf="form.get('version').hasError('invalidName')">
+                    Special characters are not allowed.
+                </mat-error>
+            </mat-form-field>
 
-            </form>
-        </div>
-        <div class="flex flex-col sm:ml-10">
-            <mat-icon class="icon-size-5 cursor-pointer hover:text-red-500 " [svgIcon]="'heroicons_outline:trash'"
-                (click)="onExecute('delete')"></mat-icon>
-        </div>
+            <!-- Power Ratio -->
+            <mat-form-field class="w-auto mt-4 mr-3 sm:mt-0 fuse-mat-dense sm:w-36">
+                <mat-label>Power Ratio</mat-label>
+                <input numeric-two-digit matInput [autocomplete]="'off'" [formControlName]="'power_ratio'">
+                <span matSuffix class="ml-2">W</span>
+                <mat-error *ngIf="form.get('power_ratio').hasError('required')">
+                    Rower Ratio is required.
+                </mat-error>
+            </mat-form-field>
 
-        <!-- Project and Status -->
-        <ng-container *ngIf="false">
-            <div class="flex flex-row flex-wrap sm:w-full">
-                <!-- customer -->
-                <div class="flex flex-col mx-6 my-3">
-                    <div class="text-sm font-medium leading-none text-secondary">Customer</div>
-                    <div class="mt-2 text-lg leading-none">{{page.project.customer_name}}</div>
-                </div>
-                <!-- project -->
-                <div class="flex flex-col mx-6 my-3">
-                    <div class="text-sm font-medium leading-none text-secondary">Project</div>
-                    <div class="mt-2 text-lg leading-none">{{page.project.name}}</div>
-                </div>
-                <!-- version -->
-                <div class="flex flex-col mx-6 my-3">
-                    <div class="text-sm font-medium leading-none text-secondary">Version</div>
-                    <div class="mt-2 text-lg leading-none" *ngIf="page.project.version">{{page.project.version}}</div>
-                </div>
-                <!-- power ratio -->
-                <div class="flex flex-col mx-6 my-3">
-                    <div class="text-sm font-medium leading-none text-secondary">Power Ratio</div>
-                    <div class="mt-2 text-lg leading-none" *ngIf="page.project.power_ratio">{{page.project.power_ratio}}</div>
-                </div>
-                <!-- status -->
-                <!-- <div class="flex flex-col mx-4 my-3">
-                            <div *ngIf="page.status.label" class="flex items-end py-1 px-3 rounded-full leading-normal sm:mt-1"
-                                [ngClass]="'text-'+ page.status.color + '-600 bg-' + page.status.color+'-100'">
-                                <span class="text-sm font-medium whitespace-nowrap">{{page.status.label}}</span>
-                            </div>
-                        </div> -->
-
-                <div class="flex flex-col mx-6 my-3">
-                    <!-- <button mat-icon-button class="mr-2 sm:mr-4" (click)="onExport()">
-                                <mat-icon class="icon-size-7" [svgIcon]="'heroicons_outline:excel'"></mat-icon>
-                            </button> -->
-
-                    <!-- <button class="sm:w-auto -ml-6 -mt-2 sm:-mt-1 text-indigo-500" mat-flat-button
-                                (click)="onExport()">
-                                <mat-icon fontSet="material-icons-outlined">cloud_download</mat-icon>
-                                <span class="ml-2 mr-1">Export</span>
-                            </button> -->
-                    <button class="ml-3" mat-flat-button color="success" (click)="onExport()">
-                        <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
-                    </button>
-                </div>
-            </div>
-        </ng-container>
-
-        <div class="flex flex-row sm:ml-auto">
-
+            <!-- Delete -->
+            <button class="ml-4" mat-flat-button color="success" (click)="onDelete()">
+                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+            </button>
+            <!-- <mat-icon class="icon-size-5 cursor-pointer hover:text-red-500 " [svgIcon]="'heroicons_outline:trash'"(click)="onDelete()"></mat-icon> -->
+            
             <!-- Export button-->
-            <button class="ml-3" mat-flat-button color="success" (click)="onExecute('delete')">
+            <button class="ml-auto" mat-flat-button color="success" (click)="onExport()">
                 <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:arrow-down-tray'"></mat-icon>
             </button>
 
@@ -119,6 +68,14 @@
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
+        </form>
+
+        <div class="flex flex-col sm:ml-10">
+
+        </div>
+
+        <div class="flex flex-row sm:ml-auto">
+
         </div>
 
     </div>
@@ -229,7 +186,7 @@
                 </div>
 
                 <!-- Reliability/S&V Test -->
-                <table #table class="cust-table">
+                <table class="cust-table">
                     <thead>
                         <tr>
                             <th colspan="18">Reliability/S&V Test</th>
@@ -271,7 +228,7 @@
                     <tbody>
                         <ng-container *ngFor="let func of page.data?.functions">
                             <ng-container *ngFor="let item of func.test_items;let idx=index">
-                                <tr>
+                                <tr class="hover:bg-gray-200">
                                     <td *ngIf="idx == 0" class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                     <td>{{item.item_name}}</td>
                                     <td class="edit"><input type="checkbox" class="hover:cursor-pointer" [(ngModel)]="item.record.walk_in"

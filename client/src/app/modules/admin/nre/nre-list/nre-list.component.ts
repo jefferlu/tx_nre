@@ -14,7 +14,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NreListComponent implements OnInit {
-    @Output() projectEvent = new EventEmitter<number>();
+    @Output() projectEvent = new EventEmitter<any>();
     @ViewChild(MatSort) sort: MatSort;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -28,6 +28,7 @@ export class NreListComponent implements OnInit {
         data: []
     }
 
+    isCreate: boolean = false;
     rowNumber: number = 1;
     dataSource = null;
     displayedColumns: string[] = ['no', 'name', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'updated_at'];
@@ -83,10 +84,10 @@ export class NreListComponent implements OnInit {
                     // mat-table
                     this.dataSource = new MatTableDataSource(res)
                     this.dataSource.sort = this.sort;
-                    console.log(res)
+                    
                     this._nreService.query = {
                         customer: this.form.get('customer').value,
-                        project:this.form.get('project').value
+                        project: this.form.get('project').value
                     }
 
                     // 清空project
@@ -108,9 +109,16 @@ export class NreListComponent implements OnInit {
 
     }
 
+    onCreate(): void {
+        this.isCreate = true;
+    }
+
+    onCloseCreate(): void {
+        this.isCreate = false;
+    }
+
     selectProject(project: any): void {
         this.projectEvent.emit(project);
-        console.log('list', project)
     }
 
     ngOnDestroy(): void {

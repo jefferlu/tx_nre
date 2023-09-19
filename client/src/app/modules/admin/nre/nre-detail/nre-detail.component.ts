@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Observable, Subject, debounceTime, filter, map, startWith, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 import { Workbook, Worksheet } from 'exceljs';
 import * as fs from 'file-saver';
@@ -24,8 +24,6 @@ import { AlertService } from 'app/layout/common/alert/alert.service';
 })
 export class NreDetailComponent implements OnInit {
     @Input() project: any;
-
-    @ViewChild('table', { static: false }) table: ElementRef;
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -116,7 +114,7 @@ export class NreDetailComponent implements OnInit {
                     this.page.dataset.chambers = res;
                 }
             });
-            
+
         // Get versions
         this._nreService.versions$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -189,7 +187,7 @@ export class NreDetailComponent implements OnInit {
     save(): void {
 
         this.calculate();
-        
+
         this.page.project.name = this.form.get('project').value;
         this.page.project.version = this.form.get('version').value;
         this.page.project.power_ratio = this.form.get('power_ratio').value;
@@ -260,8 +258,6 @@ export class NreDetailComponent implements OnInit {
             color: res.id ? 'green' : 'blue'
         }
 
-        console.log('-->', this.page.dataset.versions, this.page.project.version)
-
         // refresh versions
         this._nreService.getVersions({ 'customer': this.page.project.customer, 'name': this.page.project.name }).subscribe({
             next: (res) => {
@@ -287,7 +283,6 @@ export class NreDetailComponent implements OnInit {
     }
 
     calculate(): void {
-        console.log('calcuate')
 
         if (this.page.data) {
             this.page.data['proj_equip_hrs'] = 0;
@@ -558,31 +553,49 @@ export class NreDetailComponent implements OnInit {
         }
     }
 
-    onExecute(action: string): void {
+    // onExecute(action: string): void {
+    //     if (this.page.status.change || !this.page.project.version) {
+    //         this._alert.open({ type: 'warn', duration: 5, message: 'The project has not been saved.' });
+    //         return;
+    //     }
+
+    //     let dialogRef = this._fuseConfirmationService.open({
+    //         message: `Are you sure to ${action}?`,
+    //         icon: { color: 'warn' },
+    //         actions: { confirm: { label: action.charAt(0).toUpperCase() + action.slice(1), color: 'warn' } }
+
+    //     });
+
+    //     dialogRef.afterClosed().subscribe(result => {
+    //         if (result === 'confirmed') {
+    //             this[action]();
+    //             this._changeDetectorRef.markForCheck();
+    //         }
+    //     });
+
+    // }
+
+    onExport(): void {
         if (this.page.status.change || !this.page.project.version) {
             this._alert.open({ type: 'warn', duration: 5, message: 'The project has not been saved.' });
             return;
         }
 
         let dialogRef = this._fuseConfirmationService.open({
-            message: `Are you sure to ${action}?`,
+            message: `Are you sure to export?`,
             icon: { color: 'primary' },
-            actions: { confirm: { label: action.charAt(0).toUpperCase() + action.slice(1), color: 'primary' } }
+            actions: { confirm: { label: 'Export', color: 'primary' } }
 
         });
 
         dialogRef.afterClosed().subscribe(result => {
             if (result === 'confirmed') {
-                this[action]();
+                this.export();
                 this._changeDetectorRef.markForCheck();
             }
         });
 
-    }
-
-    delete(): void {
-        console.log('delete')
-    }
+    }    
 
     export(): void {
 
@@ -1071,6 +1084,27 @@ export class NreDetailComponent implements OnInit {
             let datetime: any = dayjs().format('YYYYMMDDHHmmss');
             fs.saveAs(blob, `${this.page.project.customer_name}_${this.page.project.name}_${this.page.project.version}_${datetime}.xlsx`);
         });
+    }
+
+    onDelete(): void {       
+        let dialogRef = this._fuseConfirmationService.open({
+            message: `Are you sure to delete?`,
+            icon: { color: 'warn' },
+            actions: { confirm: { label: 'Delete', color: 'warn' } }
+
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result === 'confirmed') {
+                this.delete();
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
+
+
+    delete(): void {
+        console.log('delete')
     }
 
     private adjustWidth(worksheet: Worksheet) {
