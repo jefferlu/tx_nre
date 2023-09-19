@@ -145,6 +145,9 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     # pagination_class = None
 
     def create(self, request, *args, **kwargs):
+
+        notExistingItems = []
+
         data = request.data
         year = datetime.date.today().year
 
@@ -174,12 +177,12 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
                 try:
                     item = models.Item.objects.get(no__iexact=item_name.split()[0])
                 except models.Item.DoesNotExist:
+                    notExistingItems.append({'no': item_name.split()[0]})
                     item = None
 
                 if not item:
                     continue
 
-                print(function, item, lab_location, chamber)
                 test_item, _ = models.TestItem.objects.update_or_create(function=function, item=item,
                                                                         defaults={'lab_location': lab_location, 'order': order})
 
@@ -188,7 +191,11 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
         # 返回新增的資料
         serializer = self.get_serializer(customer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # 移除重复的元素
+        notExistingItems = [dict(t) for t in {tuple(d.items()) for d in notExistingItems}]
+        
+        return Response({'data': serializer.data, 'not_exist_items': notExistingItems}, status=status.HTTP_201_CREATED)
 
 
 class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
@@ -200,7 +207,6 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     lookup_field = 'name'
 
     def create(self, request, *args, **kwargs):
-        print('create')
         data = request.data
         records_data = data.pop('records', None)
 

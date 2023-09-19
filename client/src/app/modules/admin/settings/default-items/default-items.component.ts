@@ -24,8 +24,7 @@ export class DefaultItemsComponent implements OnInit {
     page = {
         items: null,
         data: null
-    }
-    existingItems = null;
+    }    
 
     /**
      * Constructor
@@ -48,7 +47,6 @@ export class DefaultItemsComponent implements OnInit {
      */
     ngOnInit(): void {
         // Get the items
-        console.log('default')
         this._settingsService.items$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
@@ -155,7 +153,7 @@ export class DefaultItemsComponent implements OnInit {
             };
 
             // 檢查重複的no，並保留索引較大的項目
-            this.existingItems = [];
+            let existingItems = [];
             this.page.data = this.page.data.reduceRight((accumulator, current) => {
                 const existingItem = accumulator.find(item => item.no === current.no);
                 if (!existingItem) {
@@ -164,12 +162,12 @@ export class DefaultItemsComponent implements OnInit {
                 }
                 else {
                     // 記錄重複資訊
-                    let duplicated = this.existingItems.find(e => e.no === existingItem.no)
+                    let duplicated = existingItems.find(e => e.no === existingItem.no)
                     if (duplicated) {
                         duplicated.count++;
                     }
                     else {
-                        this.existingItems.push({ no: existingItem.no, count: 1 });
+                        existingItems.push({ no: existingItem.no, count: 1 });
                     }
 
                 }
@@ -177,9 +175,9 @@ export class DefaultItemsComponent implements OnInit {
             }, []);
 
             // 顯示重複資訊並執行
-            if (this.existingItems.length > 0) {
+            if (existingItems.length > 0) {
                 let message = '';
-                for (let item of this.existingItems) {
+                for (let item of existingItems) {
                     message += `${item.no}&emsp; 重複: ${item.count}<br/>`
                 }
                 const dialogRef = this._fuseConfirmationService.open({

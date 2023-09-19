@@ -19,6 +19,8 @@ import { SettingsService } from '../settings.service';
 export class TestFeeComponent implements OnInit {
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+    existingItems = null;
     currentYear = new Date().getFullYear();
 
     page = {
@@ -137,6 +139,9 @@ export class TestFeeComponent implements OnInit {
                 'name': jsonData[0][0],
                 'functions': []
             }
+
+            let checkItems = [];
+
             for (let rowIndex = 3; rowIndex < jsonData.length; rowIndex++) {
                 const row = jsonData[rowIndex];
 
@@ -164,7 +169,33 @@ export class TestFeeComponent implements OnInit {
                         'order': rowIndex
                     })
                 }
+
+                // 檢查重複用
+                checkItems.push({
+                    'no': row[1].split(' ')[0],
+                    'item_name': row[1]
+                })
             }
+
+            // 記錄重複資訊
+            this.existingItems = [];
+            checkItems.reduceRight((accumulator, current) => {
+                let existingItem = accumulator.find(item => item.no === current.no);
+                if (!existingItem) {
+                    accumulator.unshift(current);
+                }
+                else {
+                    // 記錄重複資訊
+                    let duplicated = this.existingItems.find(e => e.no === existingItem.no)
+                    if (duplicated) {
+                        duplicated.count++;
+                    }
+                    else {
+                        this.existingItems.push({ no: existingItem.no, count: 1 });
+                    }
+                }
+                return accumulator;
+            }, []);
 
             this.save(this.page.data);
 
@@ -181,8 +212,11 @@ export class TestFeeComponent implements OnInit {
     private save(data: any) {
         this._settingService.saveCustomers(data)
             .subscribe({
-                next: (res) => {
+                next: (result) => {
 
+                    let res = result.data
+
+                    console.log(result.not_exist_items)
                     // reset customer dropdown
                     let selectedItem = null;
                     if (this.page.customers)
@@ -204,8 +238,35 @@ export class TestFeeComponent implements OnInit {
 
                     this.page.customer = selectedItem.id;
                     this.page.data = res;
-                    this._alert.open({ message: 'Upload completed.' });
-                    this._changeDetectorRef.markForCheck();
+
+
+                    // 顯示重複資訊並執行
+                    if (this.existingItems.length > 0) {
+                        let message = '';
+                        for (let item of this.existingItems) {
+                            message += `${item.no}&emsp; 重複: ${item.count}<br/>`
+                        }
+
+                        if (result.not_exist_items.length > 0) {
+                            message +=`<br/>無法對應項目:<br/>`;
+                            for (let item of result.not_exist_items) {
+                                message += `${item.no}、`
+                            }
+                        }
+
+                        const dialogRef = this._fuseConfirmationService.open({
+                            title: 'Info',
+                            message: message,
+                            icon: { color: 'info' },
+                            actions: { confirm: { color: 'primary', label: 'Continue' }, cancel: { show: false } }
+                        });
+                        dialogRef.afterClosed().subscribe(result => {
+                            if (result === 'confirmed') {
+                                this._alert.open({ message: 'Upload completed.' });
+                                this._changeDetectorRef.markForCheck();
+                            }
+                        });
+                    }
                 },
                 error: e => {
                     console.log(e)
