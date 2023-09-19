@@ -53,18 +53,19 @@
             </mat-form-field>
 
             <!-- Delete -->
-            <button class="ml-auto" mat-flat-button color="success" (click)="onDelete()">
+            <!-- <button class="ml-auto" mat-flat-button color="success" (click)="onDelete()">
                 <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
-            </button>
-            <!-- <mat-icon class="icon-size-5 cursor-pointer hover:text-red-500 " [svgIcon]="'heroicons_outline:trash'"(click)="onDelete()"></mat-icon> -->
+            </button> -->
+            <mat-icon class="icon-size-5 cursor-pointer hover:text-red-500 ml-auto " [svgIcon]="'heroicons_outline:trash'"(click)="onDelete()"></mat-icon>
 
             <!-- Export button-->
-            <button class="ml-4" mat-flat-button color="success" (click)="onExport()">
-                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:arrow-down-tray'"></mat-icon>
-            </button>
+            <!-- <button class="ml-4" mat-flat-button color="success" (click)="onExport()">
+                
+            </button> -->
+            <mat-icon class="icon-size-5 cursor-pointer hover:text-slate-900 ml-10" [svgIcon]="'heroicons_outline:arrow-down-tray'" (click)="onExport()"></mat-icon>
 
             <!-- Save button-->
-            <button class="w-full sm:w-auto sm:ml-4 bg-accent" mat-flat-button [color]="'primary'" (click)="onSave()">
+            <button class="w-full sm:w-auto sm:ml-10 bg-accent" mat-flat-button [color]="'primary'" (click)="onSave()">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
