@@ -18,16 +18,10 @@
             </button>
         </div>
         <div class="ml-auto">
-            <div class="ml-auto">
-                <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onImport()">
-                    <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
-                    <span class="ml-2 mr-1">Import</span>
-                </button>
-            </div>
-            <!-- <button mat-icon-button class="ml-2 sm:ml-4" (click)="onUpload()">
-                 <mat-icon class="icon-size-4" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
-                 <span class="ml-2 mr-1">Import</span>
-            </button> -->
+            <button class="ml-3" mat-flat-button [color]="'basic'" (click)="onImport()">
+                <mat-icon class="icon-size-5 text-black" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
+                <span class="ml-2 mr-1">Import</span>
+            </button>
         </div>
         <div>
             <!-- Save button-->
@@ -63,21 +57,23 @@
                     <tr>
                         <td *ngIf="idx==0" class="text-center w-32" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                         <td class="px-2">{{item.item_name}}</td>
-                        <td class="text-center">{{item.lab_location}}</td>
+                        <td class="px-2">{{item.lab_location}}</td>
                         <ng-container *ngFor="let fee of item.fee; let idx=index">
                             <ng-container *ngIf="fee.chamber==='2K' && idx==0">
                                 <td class="px-2">{{fee.amount}}</td>
-                                <ng-container *ngIf="item.fee.length==1"><td></td></ng-container>
-                            </ng-container>                            
+                                <ng-container *ngIf="item.fee.length==1">
+                                    <td></td>
+                                </ng-container>
+                            </ng-container>
                             <ng-container *ngIf="fee.chamber==='WALKIN' && idx==1">
                                 <td class="px-2">{{fee.amount}}</td>
-                            </ng-container>                            
+                            </ng-container>
                             <ng-container *ngIf="fee.chamber==='WALKIN' && idx==0">
-                                <td></td>                                
+                                <td></td>
                                 <td class="px-2">{{fee.amount}}</td>
-                            </ng-container>                            
+                            </ng-container>
                         </ng-container>
-                       
+
                     </tr>
 
 
