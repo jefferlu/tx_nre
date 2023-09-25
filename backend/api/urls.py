@@ -14,6 +14,7 @@ class OptionalSlashRouter(DefaultRouter):
 
 router = OptionalSlashRouter()
 # router.register(r'choices', views.ChoicesViewSet, basename='choices')
+router.register(r'users', views.UserViewSet)
 router.register(r'chambers', views.ChamberViewSet)
 router.register(r'items', views.ItemViewSet)
 router.register(r'customers', views.CustomerViewSet)
@@ -27,6 +28,6 @@ urlpatterns = [
     path('login', views.TokenObtainView.as_view(), name='token_obtain_pair'),
     path('reset_password', views.PasswordResetView.as_view(), name='reset_password'),
     path('token/refresh', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-
+    
     path('', include(router.urls)),
 ]

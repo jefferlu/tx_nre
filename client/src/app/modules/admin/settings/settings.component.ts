@@ -14,7 +14,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
     panels: any[] = [];
-    selectedPanel: string = 'default-items';
+    selectedPanel: string = 'account';
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -48,7 +48,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
             },
             {
                 id: 'account',
-                title: 'Account Management',
+                title: 'Account',
             }
         ];
 

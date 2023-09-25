@@ -1,0 +1,98 @@
+<div class="flex flex-col min-w-72 flex-auto md:w-160 md:min-w-160 -m-6">
+    <div class="m-8">
+        <form [formGroup]="form">
+
+            <!-- Title -->
+            <div>
+                <span class="w-full text-2xl">
+                    <ng-container *ngIf="!user.id">Create User</ng-container>
+                    <ng-container *ngIf="user.id">Edit User</ng-container>
+                </span>
+            </div>
+
+            <!-- Email -->
+            <div class="mt-6">
+                <mat-form-field class="w-full fuse-mat-dense">
+                    <mat-label>Email</mat-label>
+                    <mat-icon matPrefix class="hidden sm:flex icon-size-5" [svgIcon]="'heroicons_solid:mail'"></mat-icon>
+                    <input matInput [formControlName]="'email'">
+                    <mat-error *ngIf="form.get('email').hasError('required')">
+                        Email is required.
+                    </mat-error>
+                    <mat-error *ngIf="form.get('email').hasError('email')">
+                        Email format error.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <!-- Name & Role -->
+            <div class="mt-1">
+                <div class="flex">
+                    <mat-form-field class="flex-auto w-full fuse-mat-dense">
+                        <mat-label>User Name</mat-label>
+                        <mat-icon matPrefix class="hidden sm:flex icon-size-5" [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
+                        <input matInput [formControlName]="'username'" [spellcheck]="false">
+                        <mat-error *ngIf="form.get('username').hasError('required')">
+                            User Name is required.
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="flex-auto w-full max-w-24 sm:max-w-40 ml-2 sm:ml-4 fuse-mat-dense">
+                        <mat-label>Role {{user.is_staff}}</mat-label>
+                        <mat-select [panelClass]="'h-auto max-h-none'" [formControlName]="'is_staff'" disableOptionCentering #roleSelect="matSelect">
+                            
+                            <ng-container *ngFor="let role of roles">
+                                <mat-option class="h-auto py-4 leading-none" [value]="role.value">
+                                    <div class="font-medium">{{role.label}}</div>
+                                    <div class="mt-1.5 text-sm whitespace-normal leading-normal text-secondary">{{role.description}}</div>
+                                </mat-option>
+                            </ng-container>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mt-1">
+                <div class="flex">
+                    <mat-form-field class="flex-1 fuse-mat-dense">
+                        <mat-label>Password</mat-label>
+                        <mat-icon matPrefix class="hidden sm:flex icon-size-5" [svgIcon]="'heroicons_solid:key'"></mat-icon>
+                        <input type="password" matInput [formControlName]="'password'" autocomplete="password">
+                        <mat-error *ngIf="form.get('password').hasError('required')">
+                            Password is required.
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="flex-1 w-full ml-2 sm:ml-4 fuse-mat-dense">
+                        <mat-label>Password (Confirm)</mat-label>
+                        <mat-icon matPrefix class="hidden sm:flex icon-size-5" [svgIcon]="'heroicons_solid:key'"></mat-icon>
+                        <input type="password" matInput [formControlName]="'password2'" autocomplete="password">
+                        <mat-error *ngIf="form.get('password2').hasError('required')">
+                            Password confirmation is required.
+                        </mat-error>
+                        <mat-error *ngIf="form.get('password2').hasError('mustMatch')">
+                            Passwords must match
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <!-- Edit Actions -->
+            <div class="flex items-center justify-between mt-4 mb-2">
+
+                <!-- Delete -->
+                <div class="flex items-center space-x-2">
+                    <button *ngIf="user.id" type="button" mat-icon-button (click)="onDelete()">
+                        <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                    </button>
+                </div>
+
+                <!-- Save -->
+                <div>
+                    <button mat-flat-button class="bg-accent mr-2" color="primary" (click)="onSave()">Save</button>
+                    <button mat-flat-button matDialogClose>Close</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>

@@ -84,7 +84,7 @@ export class AppService {
         }
 
         let url = `${endpoint}/${method}/${queryString}`;
-
+        console.log('-->',request)
         return this._httpClient.put(url, request).pipe(
             switchMap((response: any) => {
                 return of(response);
@@ -102,6 +102,16 @@ export class AppService {
             //     // Return false
             //     return of(false)
             // })
+        );
+    }
+
+    delete(method: string, pk: number): Observable<any> {
+        let url = `${endpoint}/${method}/${pk}`;
+
+        return this._httpClient.delete(url).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            })
         );
     }
 

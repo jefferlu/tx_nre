@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { AlertService } from 'app/layout/common/alert/alert.service';
+import { SettingsService } from '../settings.service';
+import { Subject, takeUntil } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { AccountDialogComponent } from './dialog/dialog.component';
 
 @Component({
     selector: 'settings-account',
@@ -7,6 +13,11 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsAccountComponent implements OnInit {
+
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+
+    users: any = null;
+
     members: any[];
     roles: any[];
 
@@ -14,18 +25,34 @@ export class SettingsAccountComponent implements OnInit {
      * Constructor
      */
     constructor(
-
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _matDialog: MatDialog,
+        private _fuseConfirmationService: FuseConfirmationService,
+        private _alert: AlertService,
+        private _settingService: SettingsService
     ) {
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * On init
-     */
     ngOnInit(): void {
+        this._settingService.users$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res: any) => {
+                this.users = res;
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Setup the roles
+        this.roles = [
+            {
+                label: 'User',
+                value: false,
+            },
+            {
+                label: 'Admin',
+                value: true,
+            }
+        ];
+
         // Setup the team members
         this.members = [
             {
@@ -72,20 +99,24 @@ export class SettingsAccountComponent implements OnInit {
             }
         ];
 
-        // Setup the roles
-        this.roles = [           
-            {
-                label: 'User',
-                value: 'user',
-            },
-            {
-                label: 'Admin',
-                value: 'admin',
+    }
+
+    openDialog(user: any = {}): void {
+        this._matDialog.open(AccountDialogComponent, {
+            autoFocus: false,
+            data: {
+                user: user
             }
-        ];
+        });
     }
 
     trackByFn(index: number, item: any): any {
         return item.id || index;
+    }
+
+    ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
     }
 }

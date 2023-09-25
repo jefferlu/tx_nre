@@ -8,19 +8,22 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDialogModule } from '@angular/material/dialog';
 import { FuseAlertModule } from '@fuse/components/alert';
 import { SharedModule } from 'app/shared/shared.module';
 import { SettingsComponent } from './settings.component';
 import { SettingsAccountComponent } from './account/account.component';
 import { DefaultItemsComponent } from './default-items/default-items.component';
 import { TestFeeComponent } from './test-fee/test-fee.component';
+import { AccountDialogComponent } from './account/dialog/dialog.component';
 
 @NgModule({
     declarations: [
         SettingsComponent,
         SettingsAccountComponent,
         TestFeeComponent,
-        DefaultItemsComponent
+        DefaultItemsComponent,
+        AccountDialogComponent
     ],
     imports: [
         RouterModule.forChild([{ path: '', component: SettingsComponent }]),
@@ -32,6 +35,7 @@ import { TestFeeComponent } from './test-fee/test-fee.component';
         MatSelectModule,
         MatSidenavModule,
         MatSlideToggleModule,
+        MatDialogModule,
         FuseAlertModule,
         SharedModule
     ]

@@ -8,6 +8,7 @@ import { SettingsService } from './settings.service';
 export const settingsResolver: ResolveFn<any> = (route, state) => {
     return forkJoin([
         inject(SettingsService).getItems(),
-        inject(SettingsService).getCustomers()
+        inject(SettingsService).getCustomers(),
+        inject(SettingsService).getUsers(),
     ]);
 };

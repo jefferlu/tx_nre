@@ -216,7 +216,6 @@ export class TestFeeComponent implements OnInit {
 
                     let res = result.data
 
-                    console.log(result.not_exist_items)
                     // reset customer dropdown
                     let selectedItem = null;
                     if (this.page.customers)
@@ -238,7 +237,6 @@ export class TestFeeComponent implements OnInit {
 
                     this.page.customer = selectedItem.id;
                     this.page.data = res;
-
 
                     // 顯示重複資訊並執行
                     if (this.existingItems.length > 0) {

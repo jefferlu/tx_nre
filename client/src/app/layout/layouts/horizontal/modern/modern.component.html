@@ -30,12 +30,12 @@
                 </span>
             </button>
 
-            <button mat-icon-button routerLink="settings">
+            <button *ngIf="user.is_staff" mat-icon-button routerLink="settings">
                 <span class="relative">
                     <mat-icon [svgIcon]="'heroicons_outline:cog'"></mat-icon>
                 </span>
             </button>
-            
+
             <user></user>
         </div>
     </div>

@@ -380,7 +380,6 @@ export class NreComponent implements OnInit {
     }
 
     calculate(): void {
-        console.log('calcuate')
 
         if (this.page.data) {
             this.page.data['proj_equip_hrs'] = 0;
@@ -1197,7 +1196,6 @@ export class NreComponent implements OnInit {
             }
 
             // let res = this.getEndColumn(108);
-            // console.log('res', res)
         }
 
         // Save to File

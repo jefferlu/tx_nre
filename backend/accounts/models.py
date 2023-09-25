@@ -7,9 +7,7 @@ from .managers import CustomUserManager
 
 class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
-    username = models.CharField(max_length=30, blank=True, null=True, verbose_name='使用者名稱')
-    db = models.CharField(max_length=10)
-    session_id = models.CharField(max_length=30, blank=True, null=True)
+    username = models.CharField(max_length=30, verbose_name='使用者名稱')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

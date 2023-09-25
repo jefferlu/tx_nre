@@ -1,15 +1,18 @@
 import datetime
 
 from django.http import Http404
+from django.utils import timezone
 from django.shortcuts import render
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from django.db.models import Q, F, Max, Count, Sum, OuterRef, Subquery
 from django.db.models.functions import ExtractYear
 
 from rest_framework import viewsets, mixins, status, exceptions
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import permissions
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -20,6 +23,8 @@ from django_auto_prefetching import AutoPrefetchViewSetMixin
 from utils.utils import Utils
 from db import models
 from . import serializers
+
+User = get_user_model()
 
 '''
 UI:
@@ -60,6 +65,13 @@ class PasswordResetView(APIView):
             return Response({'access_token': access_token}, status=status.HTTP_200_OK)
         else:
             return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
+    # if (not settings.DEBUG):
+    permission_classes = (IsAdminUser, )
+    serializer_class = serializers.UserSerializer
+    queryset = User.objects.all().order_by('id')
 
 
 class ChamberViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -194,7 +206,7 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
         # 移除重复的元素
         notExistingItems = [dict(t) for t in {tuple(d.items()) for d in notExistingItems}]
-        
+
         return Response({'data': serializer.data, 'not_exist_items': notExistingItems}, status=status.HTTP_201_CREATED)
 
 

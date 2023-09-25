@@ -1,12 +1,15 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 
 from db import models
+
+User = get_user_model()
 
 
 class TokenObtainSerializer(TokenObtainPairSerializer):
@@ -24,14 +27,51 @@ class TokenObtainSerializer(TokenObtainPairSerializer):
 
         data = super().validate(attrs)
         data['user'] = {
-            "name": self.user.email,
+            "name": self.user.username,
             "email": self.user.email,
+            "is_staff": self.user.is_staff
         }
         return data
 
 
 # class ChoicesSerializer(serializers.Serializer):
 #     lab_locations = serializers.ReadOnlyField()
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False},
+            'email': {'required': False}
+        }
+
+    def create(self, validated_data):
+        print('create')
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            is_staff=validated_data['is_staff']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.is_staff = validated_data.get('is_staff', instance.is_staff)
+
+        # 檢查是否提供了新密碼，如果是，則更新密碼
+        password = validated_data.get('password')
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
+
+        # return super().update(instance, validated_data)
+
 
 class ChamberSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,58 +1,57 @@
-<div class="w-full max-w-3xl">
+<div class="w-full max-w-5xl" *ngIf="users">
 
-    <!-- Add team member -->
-    <div class="w-full">
-        <mat-form-field class="w-full fuse-mat-dense" [subscriptSizing]="'dynamic'">
-            <mat-label>Add team members</mat-label>            
-            <input matInput [placeholder]="'Email address'">
-            <button mat-icon-button matSuffix>
-                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
-            </button>
-        </mat-form-field>
+    <!-- Create Button -->
+    <div class="flex items-center">
+        <div class="flex items-center flex-auto"></div>
+        <!-- New note -->
+        <button class="ml-4 px-1 sm:px-4 min-w-10 bg-accent" mat-flat-button [color]="'primary'" (click)="openDialog()">
+            <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
+            <span class="hidden sm:inline-block ml-2">Create</span>
+        </button>
     </div>
 
-    <!-- Team members -->
+    <!-- Users -->
     <div class="flex flex-col mt-8 divide-y border-t border-b">
-        <ng-container *ngFor="let member of members; trackBy: trackByFn;">
+        <ng-container *ngFor="let user of users; trackBy: trackByFn;">
             <div class="flex flex-col sm:flex-row sm:items-center py-6">
-                <div class="flex items-center">
+                <!-- Email & Username -->
+                <div class="flex items-center sm:w-full">
                     <div class="flex flex-0 items-center justify-center w-10 h-10 rounded-full overflow-hidden">
                         <ng-container>
                             <div
                                 class="flex items-center justify-center w-full h-full rounded-full text-lg uppercase bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-200">
-                                {{member.name.charAt(0)}}
+                                {{user.username.charAt(0)}}
                             </div>
                         </ng-container>
                     </div>
                     <div class="ml-4">
-                        <div class="font-medium">{{member.name}}</div>
-                        <div class="text-secondary">{{member.email}}</div>
+                        <div class="font-medium">{{user.email}}</div>
+                        <div class="text-secondary">{{user.username}}</div>
                     </div>
                 </div>
-                <div class="flex items-center mt-4 sm:mt-0 sm:ml-auto">
+
+                <!-- Date Joined -->
+                <div class="flex items-center mt-4 sm:mt-0 sm:w-1/2">
                     <div class="order-2 sm:order-1 ml-4 sm:ml-0">
-                        <mat-form-field class="fuse-mat-dense w-32" [subscriptSizing]="'dynamic'">
-                            <mat-select [panelClass]="'h-auto max-h-none'" [value]="member.role" disableOptionCentering
-                                #roleSelect="matSelect">
-                                <mat-select-trigger class="text-md">
-                                    <span>Role:</span>
-                                    <span class="ml-1 font-medium">{{roleSelect.value | titlecase}}</span>
-                                </mat-select-trigger>
-                                <ng-container *ngFor="let role of roles">
-                                    <mat-option class="h-auto py-4 leading-none" [value]="role.value">
-                                        <div class="font-medium">{{role.label}}</div>
-                                        <div class="mt-1.5 text-sm whitespace-normal leading-normal text-secondary">{{role.description}}</div>
-                                    </mat-option>
-                                </ng-container>
-                            </mat-select>
-                        </mat-form-field>
+                        <div class="font-medium">Date Joined</div>
+                        <div class="text-secondary">{{user.date_joined | date: 'yyyy/MM/dd HH:mm:ss'}}</div>
                     </div>
-                    <div class="order-1 sm:order-2 sm:ml-3">
-                        <button mat-icon-button>
+                </div>
+
+                <!-- Role -->
+                <div class="flex items-center mt-4 sm:mt-0 sm:w-1/2">
+                    <div class="order-2 sm:order-1 ml-4 sm:ml-0">
+                        <div class="font-medium">Role</div>
+                        <div class="text-secondary" [ngClass]="{'text-blue-500 font-semibold':user.is_staff}">
+                            {{user.is_staff?'Admin':'User'}}</div>
+                    </div>
+                </div>
+
+                <!-- Edit -->
+                <div class="flex items-center mt-4 sm:mt-0 sm:ml-auto">
+                    <div class="order-2 sm:order-2 sm:ml-16">
+                        <button mat-icon-button (click)="openDialog(user)">
                             <mat-icon class="text-hint" [svgIcon]="'heroicons_outline:pencil-alt'"></mat-icon>
-                        </button>
-                        <button mat-icon-button>
-                            <mat-icon class="text-red-400" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
                         </button>
                     </div>
                 </div>
