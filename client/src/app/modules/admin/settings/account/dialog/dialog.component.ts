@@ -104,7 +104,7 @@ export class AccountDialogComponent implements OnInit {
         } else {
             // Create
             request = this.form.value;
-            request.
+            
                 this._settingService.createUser(this.form.value).subscribe({
                     next: (res) => {
                         if (res) {
