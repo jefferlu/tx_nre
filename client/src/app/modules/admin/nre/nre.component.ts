@@ -78,13 +78,18 @@ export class NreComponent implements OnInit {
 
         if (this.panels.length == 1) {
             // this.panels.push({ id: 'project', title: project.name, })
-            this.panels.push({ id: 'project', title: 'Project', });           
+            this.panels.push({ id: 'project', title: 'Project', });
         }
         // else {
         //     this.panels[1].title = project.name;
         // }
 
         this.goToPanel('project');
+    }
+
+    goToPanelByChild(panel: string): void {
+        this.selectedPanel = panel;
+        this.panels.pop();
     }
 
     goToPanel(panel: string): void {

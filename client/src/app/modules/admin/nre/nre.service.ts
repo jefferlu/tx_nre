@@ -120,4 +120,12 @@ export class NreService {
             })
         );
     }
+
+    deleteProject(pk: number): Observable<any> {
+        return this._appService.delete('project_delete', pk).pipe(
+            tap((response: any) => {
+
+            })
+        );
+    }
 }

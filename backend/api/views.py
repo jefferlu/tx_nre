@@ -268,7 +268,6 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         # 檢查新增時是否已存在
         if (id is None):
             qs = models.Project.objects.filter(name=name, customer=customer, version=version)
-            print(qs,len(qs))
             if (len(qs) > 0):
                 return HttpResponse(status=409, content="資料已存在")
 
@@ -311,6 +310,13 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
             q = models.Project.objects.all().filter(name=name, customer=customer).order_by('-id').first()
         # q = get_object_or_404(models.Project, name=name, customer=customer)
         return q
+
+
+class ProjectDeleteViewSet(AutoPrefetchViewSetMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    if (not settings.DEBUG):
+        permission_classes = (IsAdminUser, )
+    serializer_class = serializers.ProjectSerializer
+    queryset = models.Project.objects.all()
 
 
 class ProjectDistinctViewSet(

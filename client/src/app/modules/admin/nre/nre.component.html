@@ -55,7 +55,7 @@
                         </ng-container>
                         <!-- Project -->
                         <ng-container *ngSwitchCase="'project'">
-                            <nre-detail [project]="project"></nre-detail>
+                            <nre-detail [project]="project" (goToPanelEvent)="goToPanelByChild($event)"></nre-detail>
                         </ng-container>                                                
                     </ng-container>
                 </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, Input, Output, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Observable, Subject, takeUntil } from 'rxjs';
 
@@ -12,6 +12,8 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { fuseAnimations } from '@fuse/animations';
 import { VersionDuplicate } from 'app/core/validators/version-duplicate';
 import { AlertService } from 'app/layout/common/alert/alert.service';
+import { UserService } from 'app/core/user/user.service';
+import { User } from 'app/core/user/user.types';
 
 
 @Component({
@@ -24,8 +26,10 @@ import { AlertService } from 'app/layout/common/alert/alert.service';
 })
 export class NreDetailComponent implements OnInit {
     @Input() project: any;
+    @Output() goToPanelEvent = new EventEmitter<any>();
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    user: User;
 
     form: UntypedFormGroup;
     // formSave: UntypedFormGroup;
@@ -79,6 +83,7 @@ export class NreDetailComponent implements OnInit {
         private _fuseConfirmationService: FuseConfirmationService,
         private _specialApha: SpecialAlpha,
         private _versionDuplicate: VersionDuplicate,
+        private _userService: UserService,
         private _nreService: NreService,
         private _alert: AlertService
 
@@ -95,6 +100,13 @@ export class NreDetailComponent implements OnInit {
             control => this._versionDuplicate.validator(control, this.page.project.id, this.page.dataset.versions)]],
             power_ratio: [null, [Validators.required]]
         });
+
+        // get user
+        this._userService.user$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((user: User) => {
+                this.user = user;
+            });
 
         // Get customers
         this._nreService.customers$
@@ -227,7 +239,7 @@ export class NreDetailComponent implements OnInit {
                 console.log(e)
                 let message = JSON.stringify(e.message);
                 if (e.error) message = e.error
-                
+
                 const dialogRef = this._fuseConfirmationService.open({
                     icon: { color: 'warn' },
                     title: `Error`,
@@ -1128,9 +1140,24 @@ export class NreDetailComponent implements OnInit {
         });
     }
 
-
     delete(): void {
-        console.log('delete')
+        this._nreService.deleteProject(this.page.project.id).subscribe({
+            next: (res) => {
+                this._alert.open({ message: 'The user has been deleted.' });
+                this.goToPanelEvent.emit('overview');
+            },
+            error: e => {
+                console.log(e)
+                let message = JSON.stringify(e.message);
+                if (e.error) message = e.error
+                const dialogRef = this._fuseConfirmationService.open({
+                    icon: { color: 'warn' },
+                    title: `Error`,
+                    message: message,
+                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
+                });
+            }
+        });
     }
 
     private adjustWidth(worksheet: Worksheet) {

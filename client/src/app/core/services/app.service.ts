@@ -84,7 +84,7 @@ export class AppService {
         }
 
         let url = `${endpoint}/${method}/${queryString}`;
-        console.log('-->',request)
+
         return this._httpClient.put(url, request).pipe(
             switchMap((response: any) => {
                 return of(response);
