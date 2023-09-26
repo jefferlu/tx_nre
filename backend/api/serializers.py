@@ -138,6 +138,7 @@ class TestItemSerializer(serializers.ModelSerializer):
     })
 
     item_name = serializers.ReadOnlyField(source='item.name')
+    item_no = serializers.ReadOnlyField(source='item.no')
     equip_working_hours = serializers.ReadOnlyField(source='item.equip_working_hours')
     man_working_hours = serializers.ReadOnlyField(source='item.man_working_hours')
 

@@ -233,7 +233,7 @@
                                     <td *ngIf="idx == 0" class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
                                     <td>{{item.item_name}}</td>
                                     <td class="edit"><input type="checkbox" class="hover:cursor-pointer" [(ngModel)]="item.record.walk_in"
-                                            (change)="change()"></td>
+                                            (change)="change()" [disabled]="item.item_no.includes('0968')"></td>
 
                                     <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
                                         <td class="edit"><input type="checkbox" class="hover:cursor-pointer"

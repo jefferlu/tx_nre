@@ -320,37 +320,39 @@ class ProjectDistinctViewSet(
         customer = self.request.query_params.get('customer')
         name = self.request.query_params.get('name')
 
-        # qs = []
-        # if customer and name:
-        #     qs = models.Project.objects.all().distinct('name', 'customer').order_by('name')
-        #     qs = qs.filter(customer=customer, name__icontains=name)
-        # elif customer:
-        #     qs = models.Project.objects.all().distinct('name', 'customer').order_by('name')
-        #     qs = qs.filter(customer=customer)
-        # return qs
-
-        # 找到每个不同 name 的最新 created_at
-        latest_created_at_subquery = models.Project.objects.filter(
-            name=OuterRef('name')
-        ).order_by('-created_at').values('created_at')[:1]
-
         if customer and name:
-            latest_projects = models.Project.objects.annotate(
-                latest_created_at=Subquery(latest_created_at_subquery)
-            ).filter(
+            qs = models.Project.objects.filter(
                 customer=customer,
-                name__icontains=name,
-                created_at=F('latest_created_at')
+                name=name
             )
         elif customer:
-            latest_projects = models.Project.objects.annotate(
-                latest_created_at=Subquery(latest_created_at_subquery)
-            ).filter(
-                customer=customer,
-                created_at=F('latest_created_at')
+            qs = models.Project.objects.filter(
+                customer=customer
             )
 
-        return latest_projects
+        return qs.order_by('version')
+
+        # 找到每个不同 name 的最新 created_at
+        # latest_created_at_subquery = models.Project.objects.filter(
+        #     name=OuterRef('name')
+        # ).order_by('-created_at').values('created_at')[:1]
+
+        # if customer and name:
+        #     latest_projects = models.Project.objects.annotate(
+        #         latest_created_at=Subquery(latest_created_at_subquery)
+        #     ).filter(
+        #         customer=customer,
+        #         name__icontains=name,
+        #         created_at=F('latest_created_at')
+        #     )
+        # elif customer:
+        #     latest_projects = models.Project.objects.annotate(
+        #         latest_created_at=Subquery(latest_created_at_subquery)
+        #     ).filter(
+        #         customer=customer,
+        #         created_at=F('latest_created_at')
+        #     )
+        # return latest_projects
 
 
 class ProjectVersionsViewSet(

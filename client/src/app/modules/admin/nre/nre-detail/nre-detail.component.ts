@@ -139,8 +139,13 @@ export class NreDetailComponent implements OnInit {
 
     search(version?: any): void {
 
-        let slug: any = { 'customer': this.page.project.customer };
-        if (version) slug.version = version;
+        let slug: any = { 'customer': this.page.project.customer, 'version': this.page.project.version };
+        if (version) {
+            slug.version = version;
+
+            //修改parent參數
+            this.project.version = version;
+        }
 
         this._nreService.getProject(this.page.project.name, slug).subscribe({
             next: (res) => {
@@ -240,6 +245,13 @@ export class NreDetailComponent implements OnInit {
             for (let j in func.test_items) {
                 let item = func.test_items[j];
                 let record = res.records.find(e => e.test_item === item.id)
+
+                // 0968一律用Walk-in(自動勾選)
+                if (item.item_no.includes('0968')) {
+                    item.record.walk_in = true;
+                    if (record) record.walk_in = true;
+                }
+
                 if (record) {
                     this.page.data.functions[i].test_items[j].record = record;
                 }
@@ -595,7 +607,7 @@ export class NreDetailComponent implements OnInit {
             }
         });
 
-    }    
+    }
 
     export(): void {
 
@@ -607,8 +619,8 @@ export class NreDetailComponent implements OnInit {
                 name: '使用者填入',
                 headers: [
                     ["Reliability/S&V Test"],
-                    ["Function", "Test Item", "Walk-in", "Concept", null, null, "BU", null, null, "CT", null, null, "NT", null, null, "OT"],
-                    [null, null, null, "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate", "Need Test", "Test UUT", "Regression Rate"]
+                    ["Function", "Test Item", "Walk-in", "Concept", null, null, null, "BU", null, null, null, "CT", null, null, null, "NT", null, null, null, "OT"],
+                    [null, null, null, "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment"]
                 ],
                 records: []
             },
@@ -616,8 +628,8 @@ export class NreDetailComponent implements OnInit {
                 name: '成果_Equipment',
                 headers: [
                     ["Reliability/S&V Test"],
-                    ["Function", "Test Item", "Lab Location", "Lab Rate", "Concept", null, "BU", null, "CT", null, "NT", null, null, "OT", "Sub Total"],
-                    [null, null, null, null, "HRS", "Equipment", "HRS", "Equipment", "HRS", "Equipment", "HRS", "Equipment", "HRS", "Equipment", null]
+                    ["Function", "Test Item", "Lab Location", "Lab Rate", "Concept", "BU", "CT", "NT", "OT", "Sub Total"],
+                    [null, null, null, null, "HRS", "HRS", "HRS", "HRS", "HRS", null]
                 ],
                 records: []
             },
@@ -645,21 +657,31 @@ export class NreDetailComponent implements OnInit {
                 record.push(func.name);
                 record.push(item.item_name);
                 record.push(item.record.walk_in ? '✔' : '');
-                record.push(item.record.concept_need_test ? '✔' : '');
+                // record.push(item.record.concept_need_test ? '✔' : '');
                 record.push(item.record.concept_test_uut);
                 record.push(item.record.concept_regression_rate);
-                record.push(item.record.bu_need_test ? '✔' : '');
+                record.push(item.concept_equip_hrs);
+                record.push(item.concept_chambers ? item.concept_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.record.bu_need_test ? '✔' : '');
                 record.push(item.record.bu_test_uut);
                 record.push(item.record.bu_regression_rate);
-                record.push(item.record.ct_need_test ? '✔' : '');
+                record.push(item.bu_equip_hrs);
+                record.push(item.bu_chambers ? item.bu_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.record.ct_need_test ? '✔' : '');
                 record.push(item.record.ct_test_uut);
                 record.push(item.record.ct_regression_rate);
-                record.push(item.record.nt_need_test ? '✔' : '');
+                record.push(item.ct_equip_hrs);
+                record.push(item.ct_chambers ? item.ct_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.record.nt_need_test ? '✔' : '');
                 record.push(item.record.nt_test_uut);
                 record.push(item.record.nt_regression_rate);
-                record.push(item.record.ot_need_test ? '✔' : '');
+                record.push(item.nt_equip_hrs);
+                record.push(item.nt_chambers ? item.nt_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.record.ot_need_test ? '✔' : '');
                 record.push(item.record.ot_test_uut);
                 record.push(item.record.ot_regression_rate);
+                record.push(item.ot_equip_hrs);
+                record.push(item.ot_chambers ? item.ot_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
 
                 sheets[0].records.push(record);
 
@@ -671,15 +693,15 @@ export class NreDetailComponent implements OnInit {
                 record.push(item.lab_location);
                 record.push(item.current_fee);
                 record.push(item.concept_equip_hrs);
-                record.push(item.concept_chambers ? item.concept_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.concept_chambers ? item.concept_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.bu_equip_hrs);
-                record.push(item.bu_chambers ? item.bu_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.bu_chambers ? item.bu_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.ct_equip_hrs);
-                record.push(item.ct_chambers ? item.ct_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.ct_chambers ? item.ct_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.nt_equip_hrs);
-                record.push(item.nt_chambers ? item.nt_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.nt_chambers ? item.nt_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.ot_equip_hrs);
-                record.push(item.ot_chambers ? item.ot_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
+                // record.push(item.ot_chambers ? item.ot_chambers.map(chamber => `${chamber.name}*${chamber.count}`).join(', ') : null);
                 record.push(item.sub_total);
 
                 sheets[1].records.push(record);
@@ -740,14 +762,14 @@ export class NreDetailComponent implements OnInit {
                     }
 
                     // Merge header 1
-                    worksheet.mergeCells('A1:R1');
+                    worksheet.mergeCells('A1:W1');
 
                     // Merge header 2
-                    worksheet.mergeCells('D2:F2');
-                    worksheet.mergeCells('G2:I2');
-                    worksheet.mergeCells('J2:L2');
-                    worksheet.mergeCells('M2:O2');
-                    worksheet.mergeCells('P2:R2');
+                    worksheet.mergeCells('D2:G2');
+                    worksheet.mergeCells('H2:K2');
+                    worksheet.mergeCells('L2:O2');
+                    worksheet.mergeCells('P2:S2');
+                    worksheet.mergeCells('T2:W2');
 
                     // Merge header columns
                     worksheet.mergeCells('A2:A3');
@@ -787,7 +809,8 @@ export class NreDetailComponent implements OnInit {
                             if (rowIndex > 3) {
                                 if (cellIndex === 2)
                                     cell.alignment = { horizontal: 'left', vertical: 'middle' };
-                                if ([3, 4, 7, 10, 13, 16].includes(cellIndex))
+                                // if ([3, 4, 7, 10, 13, 16].includes(cellIndex))
+                                if ([3].includes(cellIndex))
                                     cell.font = { name: 'Calibri', color: { argb: '00823B' } }
                             }
                         });
@@ -808,21 +831,21 @@ export class NreDetailComponent implements OnInit {
                     }
 
                     // Merge header 1
-                    worksheet.mergeCells('A1:O1');
+                    worksheet.mergeCells('A1:J1');
 
                     // Merge header 2
-                    worksheet.mergeCells('E2:F2');
-                    worksheet.mergeCells('G2:H2');
-                    worksheet.mergeCells('I2:J2');
-                    worksheet.mergeCells('K2:L2');
-                    worksheet.mergeCells('M2:N2');
+                    // worksheet.mergeCells('E2:F2');
+                    // worksheet.mergeCells('G2:H2');
+                    // worksheet.mergeCells('I2:J2');
+                    // worksheet.mergeCells('K2:L2');
+                    // worksheet.mergeCells('M2:N2');
 
                     // Merge header columns
                     worksheet.mergeCells('A2:A3');
                     worksheet.mergeCells('B2:B3');
                     worksheet.mergeCells('C2:C3');
                     worksheet.mergeCells('D2:D3');
-                    worksheet.mergeCells('O2:O3');
+                    worksheet.mergeCells('J2:J3');
 
                     // Fill records
                     for (let record of sheet.records) {
@@ -1086,7 +1109,7 @@ export class NreDetailComponent implements OnInit {
         });
     }
 
-    onDelete(): void {       
+    onDelete(): void {
         let dialogRef = this._fuseConfirmationService.open({
             message: `Are you sure to delete?`,
             icon: { color: 'warn' },

@@ -120,12 +120,4 @@ export class NreService {
             })
         );
     }
-
-    updateProject(name: string, kwargs: any, request: any): Observable<any> {
-        return this._appService.put(`project/${name}`, kwargs, request).pipe(
-            switchMap((response: any) => {
-                return of(response);
-            })
-        );
-    }
 }
