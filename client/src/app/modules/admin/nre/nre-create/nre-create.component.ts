@@ -41,7 +41,7 @@ export class NreCreateComponent implements OnInit, OnDestroy {
         this.form = this._formBuilder.group({
             customer: [0, [Validators.required]],
             project: [null, [Validators.required]],
-            version: [null, [Validators.required, this._specialApha.nameValidator]]           
+            version: [null, [Validators.required, this._specialApha.nameValidator]]
         });
 
         // Get customers
@@ -117,18 +117,21 @@ export class NreCreateComponent implements OnInit, OnDestroy {
             },
             error: e => {
                 console.log(e)
+                let message = JSON.stringify(e.message);
+                if (e.error) message = e.error
+
                 const dialogRef = this._fuseConfirmationService.open({
                     icon: { color: 'warn' },
                     title: `Error`,
-                    message: JSON.stringify(e.message),
-                    actions: { confirm: { color: 'primary' }, cancel: { show: false } }
+                    message: message,
+                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
                 });
             }
         });
     }
 
     selectProject(project: any): void {
-        this.projectEvent.emit(project);        
+        this.projectEvent.emit(project);
     }
 
     onClose(): void {

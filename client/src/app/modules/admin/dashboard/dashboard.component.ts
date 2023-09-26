@@ -65,8 +65,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                         },
                     }
 
-                    console.log(this.data)
-
                     this._prepareChartData();
                 }
             });

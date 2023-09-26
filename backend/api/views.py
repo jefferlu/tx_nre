@@ -1,6 +1,6 @@
 import datetime
 
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.utils import timezone
 from django.shortcuts import render
 from django.conf import settings
@@ -222,6 +222,7 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         data = request.data
         records_data = data.pop('records', None)
 
+        id = data.get('id')
         name = data.get('name')
         customer = get_object_or_404(models.Customer, id=data.get('customer'))  # 避免create時找不到，取得customer實體
         version = data.get('version')
@@ -263,6 +264,13 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         pkg_ct_duty_rate = data.get('pkg_ct_duty_rate')
         pkg_nt_duty_rate = data.get('pkg_nt_duty_rate')
         pkg_ot_duty_rate = data.get('pkg_ot_duty_rate')
+
+        # 檢查新增時是否已存在
+        if (id is None):
+            qs = models.Project.objects.filter(name=name, customer=customer, version=version)
+            print(qs,len(qs))
+            if (len(qs) > 0):
+                return HttpResponse(status=409, content="資料已存在")
 
         # 檢查 專案版本 是否存在
         project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={

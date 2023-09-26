@@ -91,12 +91,12 @@ export class AccountDialogComponent implements OnInit {
                 error: e => {
                     console.log(e)
                     let message = JSON.stringify(e.message);
-                    if (e.error) message = JSON.stringify(e.error);
+                    if (e.error) message = e.error
                     const dialogRef = this._fuseConfirmationService.open({
                         icon: { color: 'warn' },
                         title: `Error`,
                         message: message,
-                        actions: { confirm: { color: 'primary' }, cancel: { show: false } }
+                        actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
                     });
                 }
             });
@@ -104,26 +104,26 @@ export class AccountDialogComponent implements OnInit {
         } else {
             // Create
             request = this.form.value;
-            
-                this._settingService.createUser(this.form.value).subscribe({
-                    next: (res) => {
-                        if (res) {
-                            this._alert.open({ message: 'The user has been created.' });
-                            this._matDialogRef.close();
-                        }
-                    },
-                    error: e => {
-                        console.log(e)
-                        let message = JSON.stringify(e.message);
-                        if (e.error) message = JSON.stringify(e.error);
-                        const dialogRef = this._fuseConfirmationService.open({
-                            icon: { color: 'warn' },
-                            title: `Error`,
-                            message: message,
-                            actions: { confirm: { color: 'primary' }, cancel: { show: false } }
-                        });
+
+            this._settingService.createUser(this.form.value).subscribe({
+                next: (res) => {
+                    if (res) {
+                        this._alert.open({ message: 'The user has been created.' });
+                        this._matDialogRef.close();
                     }
-                });
+                },
+                error: e => {
+                    console.log(e)
+                    let message = JSON.stringify(e.message);
+                    if (e.error) message = JSON.stringify(e.error);
+                    const dialogRef = this._fuseConfirmationService.open({
+                        icon: { color: 'warn' },
+                        title: `Error`,
+                        message: message,
+                        actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
+                    });
+                }
+            });
         }
 
     }
@@ -155,12 +155,12 @@ export class AccountDialogComponent implements OnInit {
             error: e => {
                 console.log(e)
                 let message = JSON.stringify(e.message);
-                if (e.error) message = JSON.stringify(e.error);
+                if (e.error) message = e.error
                 const dialogRef = this._fuseConfirmationService.open({
                     icon: { color: 'warn' },
                     title: `Error`,
                     message: message,
-                    actions: { confirm: { color: 'primary' }, cancel: { show: false } }
+                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
                 });
             }
         });

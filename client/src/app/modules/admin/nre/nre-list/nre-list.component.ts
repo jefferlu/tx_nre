@@ -102,7 +102,7 @@ export class NreListComponent implements OnInit {
                     icon: { color: 'warn' },
                     title: `Error`,
                     message: JSON.stringify(e.message),
-                    actions: { confirm: { color: 'primary' }, cancel: { show: false } }
+                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
                 });
             }
         });

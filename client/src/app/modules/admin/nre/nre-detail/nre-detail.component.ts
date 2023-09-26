@@ -225,11 +225,14 @@ export class NreDetailComponent implements OnInit {
             },
             error: e => {
                 console.log(e)
+                let message = JSON.stringify(e.message);
+                if (e.error) message = e.error
+                
                 const dialogRef = this._fuseConfirmationService.open({
                     icon: { color: 'warn' },
                     title: `Error`,
-                    message: JSON.stringify(e.message),
-                    actions: { confirm: { color: 'primary' }, cancel: { show: false } }
+                    message: message,
+                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
                 });
             }
         });

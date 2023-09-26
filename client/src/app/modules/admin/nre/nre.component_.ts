@@ -313,7 +313,7 @@ export class NreComponent implements OnInit {
                     icon: { color: 'warn' },
                     title: `Error`,
                     message: message,
-                    actions: { confirm: { color: 'primary' }, cancel: { show: false } }
+                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
                 });
             }
         });
