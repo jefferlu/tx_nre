@@ -128,4 +128,20 @@ export class NreService {
             })
         );
     }
+
+    getHistorys(slug: any): Observable<any> {
+        return this._appService.get('project-history', slug).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            })
+        );
+    }
+
+    restoreHistory(id: number): Observable<any> {
+        return this._appService.get(`project-history/${id}`).pipe(
+            switchMap((response: any) => {
+                return of(response);
+            })
+        );
+    }
 }

@@ -35,6 +35,7 @@ export class NreDetailComponent implements OnInit {
     // formSave: UntypedFormGroup;
     versionCtrl: UntypedFormControl;
     originalVersionValue: string;
+    isHistory: boolean = false;
 
     filteredProjects: Observable<string[]>;
 
@@ -580,28 +581,6 @@ export class NreDetailComponent implements OnInit {
         }
     }
 
-    // onExecute(action: string): void {
-    //     if (this.page.status.change || !this.page.project.version) {
-    //         this._alert.open({ type: 'warn', duration: 5, message: 'The project has not been saved.' });
-    //         return;
-    //     }
-
-    //     let dialogRef = this._fuseConfirmationService.open({
-    //         message: `Are you sure to ${action}?`,
-    //         icon: { color: 'warn' },
-    //         actions: { confirm: { label: action.charAt(0).toUpperCase() + action.slice(1), color: 'warn' } }
-
-    //     });
-
-    //     dialogRef.afterClosed().subscribe(result => {
-    //         if (result === 'confirmed') {
-    //             this[action]();
-    //             this._changeDetectorRef.markForCheck();
-    //         }
-    //     });
-
-    // }
-
     onExport(): void {
         if (this.page.status.change || !this.page.project.version) {
             this._alert.open({ type: 'warn', duration: 5, message: 'The project has not been saved.' });
@@ -1141,6 +1120,7 @@ export class NreDetailComponent implements OnInit {
     }
 
     delete(): void {
+
         this._nreService.deleteProject(this.page.project.id).subscribe({
             next: (res) => {
                 this._alert.open({ message: 'The user has been deleted.' });
@@ -1158,6 +1138,10 @@ export class NreDetailComponent implements OnInit {
                 });
             }
         });
+    }
+
+    onHistory(): void {
+        this.isHistory = true;
     }
 
     private adjustWidth(worksheet: Worksheet) {
@@ -1179,6 +1163,12 @@ export class NreDetailComponent implements OnInit {
             num = Math.floor(num / 26) - 1
         }
         return letters
+    }
+
+    onCloseHistory(isRefresh: boolean = false): void {
+        console.log(isRefresh)
+        this.isHistory = false;
+        if (isRefresh) this.search()
     }
 
     ngOnDestroy(): void {

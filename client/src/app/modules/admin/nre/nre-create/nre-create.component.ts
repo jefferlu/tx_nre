@@ -4,6 +4,7 @@ import { Subject, map, takeUntil } from 'rxjs';
 import { NreService } from '../nre.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { SpecialAlpha } from 'app/core/validators/special-alpha';
+import { AlertService } from 'app/layout/common/alert/alert.service';
 
 @Component({
     selector: 'nre-create',
@@ -33,6 +34,7 @@ export class NreCreateComponent implements OnInit, OnDestroy {
         private _formBuilder: UntypedFormBuilder,
         private _fuseConfirmationService: FuseConfirmationService,
         private _specialApha: SpecialAlpha,
+        private _alert: AlertService,
         private _nreService: NreService,
     ) { }
 
@@ -120,12 +122,7 @@ export class NreCreateComponent implements OnInit, OnDestroy {
                 let message = JSON.stringify(e.message);
                 if (e.error) message = e.error
 
-                const dialogRef = this._fuseConfirmationService.open({
-                    icon: { color: 'warn' },
-                    title: `Error`,
-                    message: message,
-                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
-                });
+                this._alert.open({ type: 'warn',message: message });                   
             }
         });
     }

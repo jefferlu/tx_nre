@@ -42,3 +42,8 @@ class ProjectAdmin(admin.ModelAdmin):
 class RecordAdmin(admin.ModelAdmin):
     list_display = ('id', 'test_item', 'project', 'walk_in', 'concept_test_uut',
                     'concept_need_test', 'concept_regression_rate',)
+
+
+@admin.register(models.ProjectHistory)
+class ProjectHistoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'project', 'user', 'action', 'created_at', 'updated_at', )

@@ -179,24 +179,13 @@ class Record(models.Model):
         return '%s-%s-%s' % (self.test_item.function.customer.name, self.test_item.function.name, self.test_item.item.name)
 
 
-# class Summary(models.Model):
-#     project = models.ForeignKey(Project, on_delete=models.CASCADE,
-#                                 verbose_name='project', related_name='summarys', null=True, blank=True)
-#     man_hrs = models.DecimalField(
-#         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_hours')
-#     equip_hrs = models.DecimalField(
-#         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='equip_hours')
-#     created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
-#     updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
+class ProjectHistory(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='project')
+    data = models.JSONField()
+    user = models.ForeignKey(to='accounts.User', on_delete=models.CASCADE, verbose_name='user')
+    action = models.CharField(max_length=10, default='create')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
 
-# class ManPower(models.Model):
-#     code = models.CharField(max_length=120, verbose_name='code')
-#     name = models.CharField(max_length=120, verbose_name='name')
-#     man_hour = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='man_hour')
-#     equip_hour = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='equip_hour')
-
-#     class Meta:
-#         db_table = 'nre_man_power'
-
-#     def __str__(self):
-#         return '%s-%s-%s' % (self.function.customer.name, self.function.name, self.name)
+    class Meta:
+        db_table = 'nre_project_history'

@@ -21,8 +21,10 @@ router.register(r'customers', views.CustomerViewSet)
 router.register(r'projects', views.ProjectDistinctViewSet)
 router.register(r'project-versions', views.ProjectVersionsViewSet)
 router.register(r'project', views.ProjectViewSet)
+router.register(r'project-history', views.ProjectHistoryViewSet)
 router.register(r'project_delete', views.ProjectDeleteViewSet)
 router.register(r'analytics', views.AnalyticsViewSet, basename='analytics')
+
 # router.register(r'projects/(?P<project>\w+)/(?P<customer>\d+)/', views.ProjectViewSet)
 
 urlpatterns = [

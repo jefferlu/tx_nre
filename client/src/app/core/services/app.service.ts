@@ -17,7 +17,7 @@ export class AppService {
         private _fuseConfirmationService: FuseConfirmationService
     ) { }
 
-    get(method, kwargs?): Observable<any> {
+    get(method: string, kwargs?: any, request?: any): Observable<any> {
 
         let queryString = '';
         for (let key in kwargs) {
@@ -30,7 +30,7 @@ export class AppService {
 
         let url = `${endpoint}/${method}/${queryString}`;
 
-        return this._httpClient.get(url).pipe(
+        return this._httpClient.get(url, request).pipe(
             switchMap((response: any) => {
                 return of(response);
             }),
@@ -107,7 +107,7 @@ export class AppService {
 
     delete(method: string, pk: number): Observable<any> {
         let url = `${endpoint}/${method}/${pk}`;
-
+        console.log('-->url',url)
         return this._httpClient.delete(url).pipe(
             switchMap((response: any) => {
                 return of(response);

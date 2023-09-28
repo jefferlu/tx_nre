@@ -248,3 +248,14 @@ class ProjectDistinctSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
         fields = '__all__'
+
+
+class ProjectHistorySerializer(serializers.ModelSerializer):
+    customer_name = serializers.ReadOnlyField(source='project.customer.name')
+    project_name = serializers.ReadOnlyField(source='project.name')
+    version=serializers.ReadOnlyField(source='project.version')
+    email = serializers.ReadOnlyField(source='user.email')
+
+    class Meta:
+        model = models.ProjectHistory
+        fields = '__all__'

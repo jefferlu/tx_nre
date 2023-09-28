@@ -22,10 +22,11 @@ import { NreComponent } from './nre.component';
 import { NreListComponent } from './nre-list/nre-list.component';
 import { NreDetailComponent } from './nre-detail/nre-detail.component';
 import { NreCreateComponent } from './nre-create/nre-create.component';
+import { NreHistoryComponent } from './nre-history/nre-history.component';
 
 
 @NgModule({
-    declarations: [NreComponent, NreListComponent, NreDetailComponent, NreCreateComponent],
+    declarations: [NreComponent, NreListComponent, NreDetailComponent, NreCreateComponent, NreHistoryComponent],
     imports: [
         RouterModule.forChild([{ path: '', component: NreComponent }]),
         AsyncPipe,

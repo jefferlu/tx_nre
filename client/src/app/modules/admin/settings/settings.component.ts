@@ -47,8 +47,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
                 title: '3rd party Test fee'
             },
             {
+                id: 'recovery',
+                title: '資料恢復',
+            },
+            {
                 id: 'account',
-                title: 'Account',
+                title: '帳號管理',
             }
         ];
 

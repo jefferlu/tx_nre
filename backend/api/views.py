@@ -1,4 +1,5 @@
 import datetime
+import copy
 
 from django.http import Http404, HttpResponse
 from django.utils import timezone
@@ -210,6 +211,97 @@ class CustomerViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         return Response({'data': serializer.data, 'not_exist_items': notExistingItems}, status=status.HTTP_201_CREATED)
 
 
+def manageData(request_data, user, is_restore=False):
+    data = copy.deepcopy(request_data)  # history需要原始request_data
+    records_data = data.pop('records', None)
+
+    id = data.get('id')
+    name = data.get('name')
+    customer = get_object_or_404(models.Customer, id=data.get('customer'))  # 避免create時找不到，取得customer實體
+    version = data.get('version')
+    power_ratio = data.get('power_ratio')
+
+    man_hrs = data.get('man_hrs')
+    equip_hrs = data.get('equip_hrs')
+    fees = data.get('fees')
+
+    rel_concept_duration = data.get('rel_concept_duration')
+    rel_bu_duration = data.get('rel_bu_duration')
+    rel_ct_duration = data.get('rel_ct_duration')
+    rel_nt_duration = data.get('rel_nt_duration')
+    rel_ot_duration = data.get('rel_ot_duration')
+    rel_concept_duty_rate = data.get('rel_concept_duty_rate')
+    rel_bu_duty_rate = data.get('rel_bu_duty_rate')
+    rel_ct_duty_rate = data.get('rel_ct_duty_rate')
+    rel_nt_duty_rate = data.get('rel_nt_duty_rate')
+    rel_ot_duty_rate = data.get('rel_ot_duty_rate')
+
+    sv_concept_duration = data.get('sv_concept_duration')
+    sv_bu_duration = data.get('sv_bu_duration')
+    sv_ct_duration = data.get('sv_ct_duration')
+    sv_nt_duration = data.get('sv_nt_duration')
+    sv_ot_duration = data.get('sv_ot_duration')
+    sv_concept_duty_rate = data.get('sv_concept_duty_rate')
+    sv_bu_duty_rate = data.get('sv_bu_duty_rate')
+    sv_ct_duty_rate = data.get('sv_ct_duty_rate')
+    sv_nt_duty_rate = data.get('sv_nt_duty_rate')
+    sv_ot_duty_rate = data.get('sv_ot_duty_rate')
+
+    pkg_concept_duration = data.get('pkg_concept_duration')
+    pkg_bu_duration = data.get('pkg_bu_duration')
+    pkg_ct_duration = data.get('pkg_ct_duration')
+    pkg_nt_duration = data.get('pkg_nt_duration')
+    pkg_ot_duration = data.get('pkg_ot_duration')
+    pkg_concept_duty_rate = data.get('pkg_concept_duty_rate')
+    pkg_bu_duty_rate = data.get('pkg_bu_duty_rate')
+    pkg_ct_duty_rate = data.get('pkg_ct_duty_rate')
+    pkg_nt_duty_rate = data.get('pkg_nt_duty_rate')
+    pkg_ot_duty_rate = data.get('pkg_ot_duty_rate')
+
+    # 檢查新增時是否已存在
+    if (id is None):
+        qs = models.Project.objects.filter(name=name, customer=customer, version=version)
+        if (len(qs) > 0):
+            return HttpResponse(status=409, content="資料已存在")
+
+    # 檢查 專案版本 是否存在
+    project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={
+        'power_ratio': power_ratio, 'man_hrs': man_hrs, 'equip_hrs': equip_hrs, 'fees': fees,
+        'rel_concept_duration': rel_concept_duration, 'rel_bu_duration': rel_bu_duration, 'rel_ct_duration': rel_ct_duration, 'rel_nt_duration': rel_nt_duration, 'rel_ot_duration': rel_ot_duration,
+        'rel_concept_duty_rate': rel_concept_duty_rate, 'rel_bu_duty_rate': rel_bu_duty_rate, 'rel_ct_duty_rate': rel_ct_duty_rate, 'rel_nt_duty_rate': rel_nt_duty_rate, 'rel_ot_duty_rate': rel_ot_duty_rate,
+        'sv_concept_duration': sv_concept_duration, 'sv_bu_duration': sv_bu_duration, 'sv_ct_duration': sv_ct_duration, 'sv_nt_duration': sv_nt_duration, 'sv_ot_duration': sv_ot_duration,
+        'sv_concept_duty_rate': sv_concept_duty_rate, 'sv_bu_duty_rate': sv_bu_duty_rate, 'sv_ct_duty_rate': sv_ct_duty_rate, 'sv_nt_duty_rate': sv_nt_duty_rate, 'sv_ot_duty_rate': sv_ot_duty_rate,
+        'pkg_concept_duration': pkg_concept_duration, 'pkg_bu_duration': pkg_bu_duration, 'pkg_ct_duration': pkg_ct_duration, 'pkg_nt_duration': pkg_nt_duration, 'pkg_ot_duration': pkg_ot_duration,
+        'pkg_concept_duty_rate': pkg_concept_duty_rate, 'pkg_bu_duty_rate': pkg_bu_duty_rate, 'pkg_ct_duty_rate': pkg_ct_duty_rate, 'pkg_nt_duty_rate': pkg_nt_duty_rate, 'pkg_ot_duty_rate': pkg_ot_duty_rate, })
+
+    for record_data in records_data:
+        record_id = record_data.pop('id', None)
+
+        if created:
+            serializer = serializers.RecordSerializer(data=record_data)
+        else:
+            if record_id:
+                instance = models.Record.objects.get(id=record_id)
+                serializer = serializers.RecordSerializer(instance, data=record_data, partial=True)
+            else:
+                serializer = serializers.RecordSerializer(data=record_data)
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(project=project)  # 綁定project
+
+    # 記錄修改
+    print('-->', id, created)
+    if (not is_restore):
+        if (created):
+            models.ProjectHistory.objects.create(project=project, data=request_data, user=user, action='create')
+        else:
+            models.ProjectHistory.objects.create(project=project, data=request_data, user=user, action='modify')
+
+    serializer = serializers.ProjectSerializer(project)
+
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
 
     if (not settings.DEBUG):
@@ -219,85 +311,7 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
     lookup_field = 'name'
 
     def create(self, request, *args, **kwargs):
-        data = request.data
-        records_data = data.pop('records', None)
-
-        id = data.get('id')
-        name = data.get('name')
-        customer = get_object_or_404(models.Customer, id=data.get('customer'))  # 避免create時找不到，取得customer實體
-        version = data.get('version')
-        power_ratio = data.get('power_ratio')
-
-        man_hrs = data.get('man_hrs')
-        equip_hrs = data.get('equip_hrs')
-        fees = data.get('fees')
-
-        rel_concept_duration = data.get('rel_concept_duration')
-        rel_bu_duration = data.get('rel_bu_duration')
-        rel_ct_duration = data.get('rel_ct_duration')
-        rel_nt_duration = data.get('rel_nt_duration')
-        rel_ot_duration = data.get('rel_ot_duration')
-        rel_concept_duty_rate = data.get('rel_concept_duty_rate')
-        rel_bu_duty_rate = data.get('rel_bu_duty_rate')
-        rel_ct_duty_rate = data.get('rel_ct_duty_rate')
-        rel_nt_duty_rate = data.get('rel_nt_duty_rate')
-        rel_ot_duty_rate = data.get('rel_ot_duty_rate')
-
-        sv_concept_duration = data.get('sv_concept_duration')
-        sv_bu_duration = data.get('sv_bu_duration')
-        sv_ct_duration = data.get('sv_ct_duration')
-        sv_nt_duration = data.get('sv_nt_duration')
-        sv_ot_duration = data.get('sv_ot_duration')
-        sv_concept_duty_rate = data.get('sv_concept_duty_rate')
-        sv_bu_duty_rate = data.get('sv_bu_duty_rate')
-        sv_ct_duty_rate = data.get('sv_ct_duty_rate')
-        sv_nt_duty_rate = data.get('sv_nt_duty_rate')
-        sv_ot_duty_rate = data.get('sv_ot_duty_rate')
-
-        pkg_concept_duration = data.get('pkg_concept_duration')
-        pkg_bu_duration = data.get('pkg_bu_duration')
-        pkg_ct_duration = data.get('pkg_ct_duration')
-        pkg_nt_duration = data.get('pkg_nt_duration')
-        pkg_ot_duration = data.get('pkg_ot_duration')
-        pkg_concept_duty_rate = data.get('pkg_concept_duty_rate')
-        pkg_bu_duty_rate = data.get('pkg_bu_duty_rate')
-        pkg_ct_duty_rate = data.get('pkg_ct_duty_rate')
-        pkg_nt_duty_rate = data.get('pkg_nt_duty_rate')
-        pkg_ot_duty_rate = data.get('pkg_ot_duty_rate')
-
-        # 檢查新增時是否已存在
-        if (id is None):
-            qs = models.Project.objects.filter(name=name, customer=customer, version=version)
-            if (len(qs) > 0):
-                return HttpResponse(status=409, content="資料已存在")
-
-        # 檢查 專案版本 是否存在
-        project, created = models.Project.objects.update_or_create(name=name, customer=customer, version=version, defaults={
-                                                                   'power_ratio': power_ratio, 'man_hrs': man_hrs, 'equip_hrs': equip_hrs, 'fees': fees,
-                                                                   'rel_concept_duration': rel_concept_duration, 'rel_bu_duration': rel_bu_duration, 'rel_ct_duration': rel_ct_duration, 'rel_nt_duration': rel_nt_duration, 'rel_ot_duration': rel_ot_duration,
-                                                                   'rel_concept_duty_rate': rel_concept_duty_rate, 'rel_bu_duty_rate': rel_bu_duty_rate, 'rel_ct_duty_rate': rel_ct_duty_rate, 'rel_nt_duty_rate': rel_nt_duty_rate, 'rel_ot_duty_rate': rel_ot_duty_rate,
-                                                                   'sv_concept_duration': sv_concept_duration, 'sv_bu_duration': sv_bu_duration, 'sv_ct_duration': sv_ct_duration, 'sv_nt_duration': sv_nt_duration, 'sv_ot_duration': sv_ot_duration,
-                                                                   'sv_concept_duty_rate': sv_concept_duty_rate, 'sv_bu_duty_rate': sv_bu_duty_rate, 'sv_ct_duty_rate': sv_ct_duty_rate, 'sv_nt_duty_rate': sv_nt_duty_rate, 'sv_ot_duty_rate': sv_ot_duty_rate,
-                                                                   'pkg_concept_duration': pkg_concept_duration, 'pkg_bu_duration': pkg_bu_duration, 'pkg_ct_duration': pkg_ct_duration, 'pkg_nt_duration': pkg_nt_duration, 'pkg_ot_duration': pkg_ot_duration,
-                                                                   'pkg_concept_duty_rate': pkg_concept_duty_rate, 'pkg_bu_duty_rate': pkg_bu_duty_rate, 'pkg_ct_duty_rate': pkg_ct_duty_rate, 'pkg_nt_duty_rate': pkg_nt_duty_rate, 'pkg_ot_duty_rate': pkg_ot_duty_rate, })
-
-        for record_data in records_data:
-            record_id = record_data.pop('id', None)
-
-            if created:
-                serializer = serializers.RecordSerializer(data=record_data)
-            else:
-                if record_id:
-                    instance = models.Record.objects.get(id=record_id)
-                    serializer = serializers.RecordSerializer(instance, data=record_data, partial=True)
-                else:
-                    serializer = serializers.RecordSerializer(data=record_data)
-
-            if serializer.is_valid(raise_exception=True):
-                serializer.save(project=project)  # 綁定project
-
-        serializer = self.get_serializer(project)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return manageData(request.data, request.user)
 
     def get_object(self):
         customer = self.request.query_params.get('customer')
@@ -312,11 +326,53 @@ class ProjectViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
         return q
 
 
+class ProjectHistoryViewSet(
+        AutoPrefetchViewSetMixin,
+        mixins.ListModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    if (not settings.DEBUG):
+        permission_classes = (IsAdminUser, )
+    serializer_class = serializers.ProjectHistorySerializer
+    queryset = models.ProjectHistory.objects.all()
+
+    def get_queryset(self):
+        project_id = self.request.query_params.get('project_id')
+
+        qs = models.ProjectHistory.objects.all()
+        if (project_id):
+            qs = qs.filter(
+                project=project_id
+            )
+        return qs.order_by('-updated_at')
+
+    def retrieve(self, request, *args, **kwargs):
+        print('retrieve', kwargs.get('pk'))
+
+        q = get_object_or_404(models.ProjectHistory, id=kwargs['pk'])
+
+        return manageData(q.data, request.user, True)  # 重新執行create or update
+
+
 class ProjectDeleteViewSet(AutoPrefetchViewSetMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     if (not settings.DEBUG):
         permission_classes = (IsAdminUser, )
     serializer_class = serializers.ProjectSerializer
     queryset = models.Project.objects.all()
+
+    # def create(self, request, *args, **kwargs):
+
+    #     id = request.data.get('id')
+    #     project = models.Project.objects.get(pk=id)
+    #     project.delete()
+
+    #     models.ProjectHistory.objects.create(project=project, data=request.data, user=request.user, action='delete')
+    #     return Response({}, status=status.HTTP_200_OK)
+
+    # def destroy(self, request, *args, **kwargs):
+    #     print(request.data)
+    #     return Response({}, status=status.HTTP_200_OK)
+    #     # return super().destroy(request, *args, **kwargs)
 
 
 class ProjectDistinctViewSet(
@@ -387,25 +443,6 @@ class ProjectVersionsViewSet(
             qs = models.Project.objects.all().order_by('id')
             qs = qs.filter(customer=customer, name=name)
         return qs
-
-# class ChoicesViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
-#     if (not settings.DEBUG):
-#         permission_classes = (IsAuthenticated, )
-#     serializer_class = serializers.ChoicesSerializer
-
-#     def list(self, request):
-#         instance = {
-#             'lab_locations': self.Convert(models.TestItem.LAB_LOCATION),
-#         }
-
-#         serializer = serializers.ChoicesSerializer(instance=instance)
-#         return Response({'results': serializer.data})
-
-#     def Convert(self, tup):
-#         di = []
-#         for t in tup:
-#             di.append({'id': t[0], 'name': t[1]})
-#         return di
 
 
 class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):

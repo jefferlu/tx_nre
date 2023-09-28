@@ -1,0 +1,71 @@
+<div class="flex flex-col flex-auto w-full pb-4">
+    <div class="flex flex-col sm:flex-row items-center w-full max-w-xs sm:max-w-none">
+        <!-- Cancel button -->
+        <button class="w-full sm:w-auto mt-8 sm:mt-0 sm:ml-auto" mat-flat-button (click)="onClose()">
+            <mat-icon fontIcon="close"></mat-icon>
+            <span class="ml-2 mr-1">Close</span>
+        </button>
+    </div>
+
+
+    <!-- Overview -->
+    <table mat-table [dataSource]="dataSource" matSort class="mt-4">
+
+        <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- No Column -->
+        <ng-container matColumnDef="no">
+            <th mat-header-cell *matHeaderCellDef class="sticky top-0"> No. </th>
+            <td mat-cell *matCellDef="let idx=index"> {{ idx+1 }} </td>
+        </ng-container>
+
+        <!-- Project Column -->
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Project </th>
+            <td mat-cell *matCellDef="let element">{{element.project_name}}</td>
+        </ng-container>
+
+        <!-- Version Column -->
+        <ng-container matColumnDef="version">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Version </th>
+            <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+        </ng-container>
+
+        <!-- Updated By Column -->
+        <ng-container matColumnDef="updated_by">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Updated By </th>
+            <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+        </ng-container>
+
+        <!-- Updated By Column -->
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Updated By </th>
+            <td mat-cell *matCellDef="let element">
+                <span [ngClass]="{
+                    'text-green-600':element.action==='create',
+                    'text-blue-600':element.action==='modify',
+                    'text-red-600':element.action==='delete'}">
+                    {{element.action}}</span>
+            </td>
+        </ng-container>
+
+        <!-- Updated At Column -->
+        <ng-container matColumnDef="updated_at">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Updated At </th>
+            <td mat-cell *matCellDef="let element"> {{element.updated_at | date: 'yyyy/MM/dd HH:mm:ss'}} </td>
+        </ng-container>
+
+        <!-- Button Column -->
+        <ng-container matColumnDef="button">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"></th>
+            <td mat-cell *matCellDef="let element">
+                <mat-icon class="icon-size-5 cursor-pointer hover:text-blue-500" fontIcon="history" (click)="onRestore(element.id)"></mat-icon>
+                <!-- <a class="text-blue-600 hover:text-blue-400 hover:cursor-pointer" (click)="selectProject(element.id)">{{element.id}}</a> -->
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>
