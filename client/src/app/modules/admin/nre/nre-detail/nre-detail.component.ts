@@ -1123,7 +1123,7 @@ export class NreDetailComponent implements OnInit {
 
         this._nreService.deleteProject(this.page.project.id).subscribe({
             next: (res) => {
-                this._alert.open({ message: 'The user has been deleted.' });
+                this._alert.open({ message: 'The project has been deleted.' });
                 this.goToPanelEvent.emit('overview');
             },
             error: e => {
