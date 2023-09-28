@@ -66,7 +66,7 @@ export class NreHistoryComponent implements OnInit, OnDestroy {
 
     onRestore(history_id: any): void {
         let dialogRef = this._fuseConfirmationService.open({
-            message: `Are you sure to restore this version?`,
+            message: `Are you sure to restore this project?`,
             icon: { color: 'primary' },
             actions: { confirm: { label: 'Restore', color: 'primary' } }
 
