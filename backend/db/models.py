@@ -8,8 +8,8 @@ class Chamber(models.Model):
 
 
 class Item(models.Model):
-    no = models.CharField(max_length=120, verbose_name='no', unique=True)
-    name = models.CharField(max_length=120, verbose_name='name')
+    no = models.CharField(max_length=500, verbose_name='no', unique=True)
+    name = models.CharField(max_length=500, verbose_name='name')
     equip_working_hours = models.CharField(max_length=10, null=True, blank=True, verbose_name='equip_working_hours')
     man_working_hours = models.CharField(max_length=10, null=True, blank=True, verbose_name='man_working_hours')
     order = models.IntegerField(null=True, blank=True)
@@ -77,7 +77,7 @@ class Fee(models.Model):
 
 
 class Project(models.Model):
-    name = models.CharField(max_length=120, verbose_name='name')
+    name = models.CharField(max_length=520, verbose_name='name')
     version = models.CharField(max_length=120, verbose_name='version')
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE, verbose_name='customer')
