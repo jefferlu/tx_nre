@@ -1171,6 +1171,26 @@ export class NreDetailComponent implements OnInit {
         if (isRefresh) this.search()
     }
 
+    checkNeedTest(item: any) {
+
+        let need_test: boolean = false;
+        for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
+            if (item.record[n + '_need_test']) need_test = true;
+        }
+        return { 'need-test': need_test }
+    }
+
+    walkinDisable(item: any) {
+        let disable: boolean = true;
+
+        if (item.item_no.includes('0968')) return true;
+
+        for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
+            if (item.record[n + '_need_test']) disable = false;
+        }
+        return disable;
+    }
+
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);

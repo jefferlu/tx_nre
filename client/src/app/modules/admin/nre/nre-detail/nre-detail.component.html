@@ -244,19 +244,21 @@
                             <ng-container *ngFor="let func of page.data?.functions">
                                 <ng-container *ngFor="let item of func.test_items;let idx=index">
                                     <tr class="hover:bg-gray-200">
-                                        <td *ngIf="idx == 0" class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                        <td>{{item.item_name}}</td>
-                                        <td class="edit"><input type="checkbox" class="hover:cursor-pointer" [(ngModel)]="item.record.walk_in"
-                                                (change)="change()" [disabled]="item.item_no.includes('0968')"></td>
+                                        <td *ngIf="idx == 0" class="text-center px-2" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                                        <td class="px-2" [ngClass]="checkNeedTest(item)">{{item.item_name}}</td>
+                                        <td class="edit" [ngClass]="checkNeedTest(item)"><input type="checkbox" class="hover:cursor-pointer"
+                                                [(ngModel)]="item.record.walk_in" (change)="change()" [disabled]="walkinDisable(item)"></td>
 
                                         <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                            <td class="edit"><input type="checkbox" class="hover:cursor-pointer"
+                                            <td class="edit" [ngClass]="checkNeedTest(item)"><input type="checkbox" class="hover:cursor-pointer"
                                                     [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
-                                            <td class="edit"><input type="number" [(ngModel)]="item.record[n + '_test_uut']" (change)="change()"
-                                                    numeric-only>
+                                            <td class="edit" [ngClass]="checkNeedTest(item)"><input type="number"
+                                                    [(ngModel)]="item.record[n + '_test_uut']" (change)="change()" numeric-only
+                                                    [disabled]="!item.record[n + '_need_test']">
                                             </td>
-                                            <td class="edit"><input input type="number" [(ngModel)]="item.record[n + '_regression_rate']"
-                                                    (change)="change()" numeric-two-digit></td>
+                                            <td class="edit" [ngClass]="checkNeedTest(item)"><input input type="number"
+                                                    [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()" numeric-two-digit
+                                                    [disabled]="!item.record[n + '_need_test']"></td>
                                         </ng-container>
                                     </tr>
                                 </ng-container>
@@ -310,8 +312,8 @@
                             <ng-container *ngFor="let func of page.data?.functions">
                                 <ng-container *ngFor="let item of func.test_items;let idx=index">
                                     <tr>
-                                        <td *ngIf="idx == 0" class="text-center" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                        <td>{{item.item_name}}</td>
+                                        <td *ngIf="idx == 0" class="text-center px-2" [rowSpan]="func.test_items?.length">{{func.name}}</td>
+                                        <td class="px-2">{{item.item_name}}</td>
                                         <td class="view">{{item.lab_location}}</td>
                                         <td class="view" [ngClass]="{'text-red-600':item.current_fee==='no fee'}">{{item.current_fee}}</td>
                                         <td class="view">{{item.concept_equip_hrs | number:'1.0-2'}}</td>

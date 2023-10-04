@@ -24,11 +24,15 @@ table.cust-table {
     }
 
     .edit {
-        @apply text-center bg-blue-100 whitespace-nowrap w-18;
+        @apply text-center whitespace-nowrap w-18;
 
         input {
             @apply w-full text-center truncate;
         }
+    }
+
+    .need-test{
+        @apply  bg-blue-100
     }
 
     .view {
