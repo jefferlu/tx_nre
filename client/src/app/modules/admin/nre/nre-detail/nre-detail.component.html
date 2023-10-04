@@ -250,13 +250,13 @@
                                                 [(ngModel)]="item.record.walk_in" (change)="change()" [disabled]="walkinDisable(item)"></td>
 
                                         <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
-                                            <td class="edit" [ngClass]="checkNeedTest(item)"><input type="checkbox" class="hover:cursor-pointer"
+                                            <td class="edit" [ngClass]="{'need-test':item.record[n + '_need_test']}"><input type="checkbox" class="hover:cursor-pointer"
                                                     [(ngModel)]="item.record[n + '_need_test']" (change)="change()"></td>
-                                            <td class="edit" [ngClass]="checkNeedTest(item)"><input type="number"
+                                            <td class="edit" [ngClass]="{'need-test':item.record[n + '_need_test']}"><input type="number"
                                                     [(ngModel)]="item.record[n + '_test_uut']" (change)="change()" numeric-only
                                                     [disabled]="!item.record[n + '_need_test']">
                                             </td>
-                                            <td class="edit" [ngClass]="checkNeedTest(item)"><input input type="number"
+                                            <td class="edit" [ngClass]="{'need-test':item.record[n + '_need_test']}"><input input type="number"
                                                     [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()" numeric-two-digit
                                                     [disabled]="!item.record[n + '_need_test']"></td>
                                         </ng-container>
