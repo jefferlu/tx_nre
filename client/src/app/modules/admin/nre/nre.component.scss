@@ -24,7 +24,7 @@ table.cust-table {
     }
 
     .edit {
-        @apply text-center whitespace-nowrap w-18;
+        @apply text-center whitespace-nowrap w-18 bg-blue-100;
 
         input {
             @apply w-full text-center truncate;
@@ -32,7 +32,7 @@ table.cust-table {
     }
 
     .need-test{
-        @apply  bg-blue-100
+        @apply  bg-white;
     }
 
     .view {

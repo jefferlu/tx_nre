@@ -246,7 +246,7 @@
                                     <tr>
                                     <!-- <tr class="hover:bg-gray-200"> -->                                    
                                         <td *ngIf="idx == 0" class="text-center px-2" [rowSpan]="func.test_items?.length">{{func.name}}</td>
-                                        <td class="px-2" [ngClass]="checkNeedTest(item)">{{item.item_name}}</td>
+                                        <td class="px-2">{{item.item_name}}</td>
                                         <td class="edit" [ngClass]="checkNeedTest(item)"><input type="checkbox" class="hover:cursor-pointer"
                                                 [(ngModel)]="item.record.walk_in" (change)="change()" [disabled]="walkinDisable(item)"></td>
 
