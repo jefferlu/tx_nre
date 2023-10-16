@@ -289,8 +289,7 @@ def manageData(request_data, user, is_restore=False):
         if serializer.is_valid(raise_exception=True):
             serializer.save(project=project)  # 綁定project
 
-    # 記錄修改
-    print('-->', id, created)
+    # 記錄修改資料
     if (not is_restore):
         if (created):
             models.ProjectHistory.objects.create(project=project, data=request_data, user=user, action='create')
@@ -378,6 +377,7 @@ class ProjectDeleteViewSet(AutoPrefetchViewSetMixin, mixins.DestroyModelMixin, v
 class ProjectDistinctViewSet(
         AutoPrefetchViewSetMixin,
         mixins.ListModelMixin,
+        mixins.CreateModelMixin,
         viewsets.GenericViewSet):
 
     if (not settings.DEBUG):
@@ -387,20 +387,30 @@ class ProjectDistinctViewSet(
     queryset = models.Project.objects.all()
 
     def get_queryset(self):
+
+        user = self.request.user
+
         customer = self.request.query_params.get('customer')
         name = self.request.query_params.get('name')
 
+        qs = models.Project.objects.all().order_by('version')
+
+        if (not user.is_staff):
+            qs = qs.filter(hide=False)
+
+        print(user, user.is_staff)
+
         if customer and name:
-            qs = models.Project.objects.filter(
+            qs = qs.filter(
                 customer=customer,
                 name=name
             )
         elif customer:
-            qs = models.Project.objects.filter(
+            qs = qs.filter(
                 customer=customer
             )
 
-        return qs.order_by('version')
+        return qs
 
         # 找到每个不同 name 的最新 created_at
         # latest_created_at_subquery = models.Project.objects.filter(
@@ -424,6 +434,22 @@ class ProjectDistinctViewSet(
         #     )
         # return latest_projects
 
+    def create(self, request, *args, **kwargs):
+        print('create')
+
+        for data in request.data:
+            id = data.pop('id', None)
+            hide = data.pop('hide', None)
+            count = data.pop('count', None)
+
+            r = models.Project.objects.get(id=id)
+            r.hide = hide
+            r.count = count
+            r.save()
+
+        # return super().create(request, *args, **kwargs)
+        return Response({'message': 'succeed'}, status=status.HTTP_200_OK)
+
 
 class ProjectVersionsViewSet(
         AutoPrefetchViewSetMixin,
@@ -436,12 +462,20 @@ class ProjectVersionsViewSet(
     queryset = models.Project.objects.all()
 
     def get_queryset(self):
+
+        user = self.request.user
+
         customer = self.request.query_params.get('customer')
         name = self.request.query_params.get('name')
-        qs = []
+
+        qs = models.Project.objects.all().order_by('id')
+
+        if (not user.is_staff):
+            qs = qs.filter(hide=False)
+
         if customer and name:
-            qs = models.Project.objects.all().order_by('id')
             qs = qs.filter(customer=customer, name=name)
+
         return qs
 
 

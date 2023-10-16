@@ -573,14 +573,6 @@ export class NreDetailComponent implements OnInit {
         return selectedChambers;
     }
 
-    change(): void {
-        this.page.status = {
-            label: 'Modified',
-            color: 'red',
-            change: true
-        }
-    }
-
     onExport(): void {
         if (this.page.status.change || !this.page.project.version) {
             this._alert.open({ type: 'warn', duration: 5, message: 'The project has not been saved.' });
@@ -1144,6 +1136,87 @@ export class NreDetailComponent implements OnInit {
         this.isHistory = true;
     }
 
+    onCloseHistory(isRefresh: boolean = false): void {
+        console.log(isRefresh)
+        this.isHistory = false;
+        if (isRefresh) this.search()
+    }
+
+    change(item?: any): void {
+        this.page.status = {
+            label: 'Modified',
+            color: 'red',
+            change: true
+        }
+
+        if (item) {
+            let count: number = 0;
+            for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
+                if (item.record[n + '_need_test']) {
+                    count++;
+                }
+            }
+            item.record.all_need_test = (count == 5) ? true : false;
+        }
+    }
+
+    checkAllNeedTest(item: any) {
+
+        for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
+            item.record[n + '_need_test'] = item.record.all_need_test;
+        }
+
+    }
+
+    checkWalkin(event: any) {
+        for (let func of this.page.data.functions) {
+            for (let item of func.test_items) {
+                if (!item.item_no.includes('0968')) {
+                    item.record.walk_in = event.target.checked;
+                }
+            }
+        }
+    }
+
+    checkNeedTest(item: any) {
+
+        let need_test: boolean = false;
+        for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
+            if (item.record[n + '_need_test']) need_test = true;
+        }
+
+        return { 'need-test': need_test }
+    }
+
+    walkinDisable(item: any) {
+        let disable: boolean = true;
+
+        if (item.item_no.includes('0968')) return true;
+
+        for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
+            if (item.record[n + '_need_test']) disable = false;
+        }
+        return disable;
+    }
+
+    autoFill(event: any, categ: string, type: string) {
+
+        for (let func of this.page.data.functions) {
+            for (let item of func.test_items) {
+
+                item.record[categ + type] = event.target.value;
+            }
+        }
+    }
+
+    ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
+
+        this._nreService.versions = null;
+    }
+
     private adjustWidth(worksheet: Worksheet) {
         worksheet.columns.forEach((column, index) => {
             let maxCellLength = 0;
@@ -1163,39 +1236,5 @@ export class NreDetailComponent implements OnInit {
             num = Math.floor(num / 26) - 1
         }
         return letters
-    }
-
-    onCloseHistory(isRefresh: boolean = false): void {
-        console.log(isRefresh)
-        this.isHistory = false;
-        if (isRefresh) this.search()
-    }
-
-    checkNeedTest(item: any) {
-
-        let need_test: boolean = false;
-        for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
-            if (item.record[n + '_need_test']) need_test = true;
-        }
-        return { 'need-test': need_test }
-    }
-
-    walkinDisable(item: any) {
-        let disable: boolean = true;
-
-        if (item.item_no.includes('0968')) return true;
-
-        for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
-            if (item.record[n + '_need_test']) disable = false;
-        }
-        return disable;
-    }
-
-    ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
-
-        this._nreService.versions = null;
     }
 }

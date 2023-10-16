@@ -5,6 +5,7 @@ import { NreService } from '../nre.service';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { AlertService } from 'app/layout/common/alert/alert.service';
 
 @Component({
     selector: 'nre-list',
@@ -31,12 +32,13 @@ export class NreListComponent implements OnInit {
     isCreate: boolean = false;
     rowNumber: number = 1;
     dataSource = null;
-    displayedColumns: string[] = ['no', 'name', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'updated_at'];
+    displayedColumns: string[] = ['no', 'name', 'hide', 'count', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'updated_at'];
 
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: UntypedFormBuilder,
         private _fuseConfirmationService: FuseConfirmationService,
+        private _alert: AlertService,
         private _nreService: NreService,
     ) { }
 
@@ -84,7 +86,7 @@ export class NreListComponent implements OnInit {
                     // mat-table
                     this.dataSource = new MatTableDataSource(res)
                     this.dataSource.sort = this.sort;
-                    
+
                     this._nreService.query = {
                         customer: this.form.get('customer').value,
                         project: this.form.get('project').value
@@ -115,6 +117,54 @@ export class NreListComponent implements OnInit {
 
     onCloseCreate(): void {
         this.isCreate = false;
+    }
+
+    onSave(): void {
+        // check version and project.id is in 'version' FormControl
+        if (this.form.invalid) return;
+
+        // check project is loaded
+        if (!this.page.data) {
+            this._alert.open({ type: 'warn', message: 'Project has not been loaded.' });
+            return;
+        }
+
+        let dialogRef = this._fuseConfirmationService.open({
+            message: 'Are you sure to save?',
+            icon: { color: 'primary' },
+            actions: { confirm: { label: 'Save', color: 'primary' } }
+
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result === 'confirmed') {
+                this.save();
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
+
+    save(): void {
+        this._nreService.saveProjects(this.page.data).subscribe({
+            next: (res) => {
+                if (res) {
+                    this.search()
+                    this._alert.open({ message: 'The project has been saved.' });
+                }
+            },
+            error: e => {
+                console.log(e)
+                let message = JSON.stringify(e.message);
+                if (e.error) message = e.error
+
+                const dialogRef = this._fuseConfirmationService.open({
+                    icon: { color: 'warn' },
+                    title: `Error`,
+                    message: message,
+                    actions: { confirm: { label: 'Done', color: 'primary' }, cancel: { show: false } }
+                });
+            }
+        });
     }
 
     selectProject(project: any): void {

@@ -82,6 +82,12 @@ class Project(models.Model):
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE, verbose_name='customer')
     power_ratio = models.CharField(max_length=10, null=True, blank=True, verbose_name='power ratio')
+
+    hide = models.BooleanField(
+        default=False, verbose_name='hide')
+    count = models.BooleanField(
+        default=False, verbose_name='count')
+    
     man_hrs = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_hours')
     equip_hrs = models.DecimalField(
@@ -140,7 +146,8 @@ class Record(models.Model):
         TestItem, on_delete=models.CASCADE, verbose_name='test_item')
     walk_in = models.BooleanField(
         default=False, verbose_name='walk_in')
-
+    all_need_test = models.BooleanField(
+        default=False, verbose_name='all_need_test')
     concept_test_uut = models.IntegerField(
         null=True, blank=True, verbose_name='concept_test_uut')
     concept_need_test = models.BooleanField(

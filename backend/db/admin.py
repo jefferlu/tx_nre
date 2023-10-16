@@ -35,12 +35,12 @@ class FeeAdmin(admin.ModelAdmin):
 
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'customer', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'created_at', 'updated_at',)
+    list_display = ('id', 'hide', 'count', 'name', 'customer', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'created_at', 'updated_at',)
 
 
 @admin.register(models.Record)
 class RecordAdmin(admin.ModelAdmin):
-    list_display = ('id', 'test_item', 'project', 'walk_in', 'concept_test_uut',
+    list_display = ('id', 'test_item', 'project', 'walk_in', 'all_need_test', 'concept_test_uut',
                     'concept_need_test', 'concept_regression_rate',)
 
 
