@@ -32,7 +32,7 @@ export class NreListComponent implements OnInit {
     isCreate: boolean = false;
     rowNumber: number = 1;
     dataSource = null;
-    displayedColumns: string[] = ['no', 'name', 'hide', 'count', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'updated_at'];
+    displayedColumns: string[] = ['no', 'name', 'version', 'power_ratio', 'man_hrs', 'equip_hrs', 'fees', 'updated_at', 'hide', 'count'];
 
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
