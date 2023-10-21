@@ -353,170 +353,223 @@ export class NreDetailComponent implements OnInit {
                         item.current_fee = current_fee ? current_fee.amount : 'no fee';
                     }
 
-                    // Concept
-                    if (item.record.concept_need_test) {
-                        item['concept_capacity'] = item.record.concept_test_uut * this.page.project.power_ratio;
+                    // Concept/BU/CT/NT/OT
+                    for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
+                        if (item.record[n + '_need_test']) {
+                            item[n + '_capacity'] = item.record[n + '_test_uut'] * this.page.project.power_ratio;
 
-                        if (func.name === 'Reliability') item['concept_capacity'] *= 0.8;
-                        item['concept_chambers'] = this.selectChambers(item['concept_capacity'], item.record.walk_in);
-
-                        if (item.record.concept_regression_rate != null) {
-
-                            if (item.equip_working_hours != null) {
-                                item['concept_equip_hrs'] = parseFloat(item.record.concept_regression_rate) * item.equip_working_hours;
-
-                                // 乘上chamber數量
-                                if (item['concept_chambers'].length > 0) item['concept_equip_hrs'] *= item.concept_chambers[0].count;
-
-                                // 累加total
-                                if (item['sub_total'] == null) item['sub_total'] = 0;
-                                item['sub_total'] += item['concept_equip_hrs'];
-
-                                // 專案總設備工時
-                                this.page.data['proj_equip_hrs'] += item['concept_equip_hrs'];
+                            // 選擇Chamber
+                            item[n + '_chambers'] = [];
+                            if (func.name === 'Reliability') {  //S&V以及Other完全都不會用到chamber
+                                item[n + '_capacity'] *= 0.8;
+                                item[n + '_chambers'] = this.selectChambers(item[n + '_capacity'], item.record.walk_in);
                             }
 
-                            if (item.man_working_hours != null) {
-                                if (func['concept_man_hrs_sum'] == null) func['concept_man_hrs_sum'] = 0;
-                                func['concept_man_hrs_sum'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
+                            if (item.record[n + '_regression_rate'] != null) {
+                                if (item.equip_working_hours != null) {
+                                    item[n + '_equip_hrs'] = parseFloat(item.record[n + '_regression_rate']) * item.equip_working_hours;
 
-                                // 專案總人力工時
-                                this.page.data['proj_man_hrs'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
+                                    // 乘上chamber數量
+                                    if (item[n + '_chambers'].length > 0) item[n + '_equip_hrs'] *= item[n + '_chambers'][0].count;
+
+                                    // 累加total
+                                    if (item['sub_total'] == null) item['sub_total'] = 0;
+                                    item['sub_total'] += item[n + '_equip_hrs'];
+
+                                    // 專案總設備工時
+                                    this.page.data['proj_equip_hrs'] += item[n + '_equip_hrs'];
+                                }
+
+                                if (item.man_working_hours != null) {
+                                    if (func[n + '_man_hrs_sum'] == null) func[n + '_man_hrs_sum'] = 0;
+                                    func[n + '_man_hrs_sum'] += parseFloat(item.record[n + '_regression_rate']) * item.man_working_hours;
+
+                                    // 專案總人力工時
+                                    this.page.data['proj_man_hrs'] += parseFloat(item.record[n + '_regression_rate']) * item.man_working_hours;
+                                }
                             }
+
+                            // Reliability項目只要設備工時為0，就不會用到chamber
+                            if (item[n + '_equip_hrs'] == null || item[n + '_equip_hrs'] === 0) {
+                                item[n + '_chambers'] = [];
+                            }
+
                         }
                     }
 
-                    // BU        
-                    if (item.record.bu_need_test) {
-                        item['bu_capacity'] = item.record.bu_test_uut * this.page.project.power_ratio;
+                    // if (item.record.concept_need_test) {
+                    //     item['concept_capacity'] = item.record.concept_test_uut * this.page.project.power_ratio;
 
-                        if (func.name === 'Reliability') item['bu_capacity'] *= 0.8;
-                        item['bu_chambers'] = this.selectChambers(item['bu_capacity'], item.record.walk_in);
+                    //     // 選擇Chamber
+                    //     item['concept_chambers'] = [];
+                    //     if (func.name === 'Reliability') {  //S&V以及Other完全都不會用到chamber
+                    //         item['concept_capacity'] *= 0.8;
+                    //         item['concept_chambers'] = this.selectChambers(item['concept_capacity'], item.record.walk_in);
+                    //     }
 
-                        if (item.record.bu_regression_rate != null) {
+                    //     if (item.record.concept_regression_rate != null) {
 
-                            if (item.equip_working_hours != null) {
-                                item['bu_equip_hrs'] = parseFloat(item.record.bu_regression_rate) * item.equip_working_hours;
+                    //         if (item.equip_working_hours != null) {
+                    //             item['concept_equip_hrs'] = parseFloat(item.record.concept_regression_rate) * item.equip_working_hours;
 
-                                // 乘上chamber數量
-                                if (item['bu_chambers'].length > 0) item['bu_equip_hrs'] *= item.bu_chambers[0].count;
+                    //             // 乘上chamber數量
+                    //             if (item['concept_chambers'].length > 0) item['concept_equip_hrs'] *= item.concept_chambers[0].count;
 
-                                // 累加total
-                                if (item['sub_total'] == null) item['sub_total'] = 0;
-                                item['sub_total'] += item['bu_equip_hrs'];
+                    //             // 累加total
+                    //             if (item['sub_total'] == null) item['sub_total'] = 0;
+                    //             item['sub_total'] += item['concept_equip_hrs'];
 
-                                // 專案總設備工時
-                                this.page.data['proj_equip_hrs'] += item['bu_equip_hrs'];
-                            }
+                    //             // 專案總設備工時
+                    //             this.page.data['proj_equip_hrs'] += item['concept_equip_hrs'];
+                    //         }
 
-                            if (item.man_working_hours != null) {
-                                if (func['bu_man_hrs_sum'] == null) func['bu_man_hrs_sum'] = 0;
-                                func['bu_man_hrs_sum'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
+                    //         if (item.man_working_hours != null) {
+                    //             if (func['concept_man_hrs_sum'] == null) func['concept_man_hrs_sum'] = 0;
+                    //             func['concept_man_hrs_sum'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
 
-                                // 專案總人力工時
-                                this.page.data['proj_man_hrs'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
-                            }
-                        }
-                    }
+                    //             // 專案總人力工時
+                    //             this.page.data['proj_man_hrs'] += parseFloat(item.record.concept_regression_rate) * item.man_working_hours;
+                    //         }
+                    //     }
 
-                    // CT
-                    if (item.record.ct_need_test) {
-                        item['ct_capacity'] = item.record.ct_test_uut * this.page.project.power_ratio;
+                    //     // Reliability項目只要設備工時為0，就不會用到chamber
+                    //     if (item['concept_equip_hrs'] == null || item['concept_equip_hrs'] === 0) {
+                    //         item['concept_chambers'] = [];
+                    //     }
 
-                        if (func.name === 'Reliability') item['ct_capacity'] *= 0.8;
-                        item['ct_chambers'] = this.selectChambers(item['ct_capacity'], item.record.walk_in);
+                    // }
 
-                        if (item.record.ct_regression_rate != null) {
+                    // // BU        
+                    // if (item.record.bu_need_test) {
+                    //     item['bu_capacity'] = item.record.bu_test_uut * this.page.project.power_ratio;
 
-                            if (item.equip_working_hours != null) {
-                                item['ct_equip_hrs'] = parseFloat(item.record.ct_regression_rate) * item.equip_working_hours;
+                    //     if (func.name === 'Reliability') item['bu_capacity'] *= 0.8;
+                    //     item['bu_chambers'] = this.selectChambers(item['bu_capacity'], item.record.walk_in);
 
-                                // 乘上chamber數量
-                                if (item['ct_chambers'].length > 0) item['ct_equip_hrs'] *= item.ct_chambers[0].count;
+                    //     if (item.record.bu_regression_rate != null) {
 
-                                // 累加total
-                                if (item['sub_total'] == null) item['sub_total'] = 0;
-                                item['sub_total'] += item['ct_equip_hrs'];
+                    //         if (item.equip_working_hours != null) {
+                    //             item['bu_equip_hrs'] = parseFloat(item.record.bu_regression_rate) * item.equip_working_hours;
 
-                                // 專案總設備工時
-                                this.page.data['proj_equip_hrs'] += item['ct_equip_hrs'];
-                            }
+                    //             // 乘上chamber數量
+                    //             if (item['bu_chambers'].length > 0) item['bu_equip_hrs'] *= item.bu_chambers[0].count;
 
-                            if (item.man_working_hours != null) {
-                                if (func['ct_man_hrs_sum'] == null) func['ct_man_hrs_sum'] = 0;
-                                func['ct_man_hrs_sum'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
+                    //             // 累加total
+                    //             if (item['sub_total'] == null) item['sub_total'] = 0;
+                    //             item['sub_total'] += item['bu_equip_hrs'];
 
-                                // 專案總人力工時
-                                this.page.data['proj_man_hrs'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
-                            }
-                        }
-                    }
+                    //             // 專案總設備工時
+                    //             this.page.data['proj_equip_hrs'] += item['bu_equip_hrs'];
+                    //         }
 
-                    // NT
-                    if (item.record.nt_need_test) {
-                        item['nt_capacity'] = item.record.nt_test_uut * this.page.project.power_ratio;
+                    //         if (item.man_working_hours != null) {
+                    //             if (func['bu_man_hrs_sum'] == null) func['bu_man_hrs_sum'] = 0;
+                    //             func['bu_man_hrs_sum'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
 
-                        if (func.name === 'Reliability') item['nt_capacity'] *= 0.8;
-                        item['nt_chambers'] = this.selectChambers(item['nt_capacity'], item.record.walk_in);
+                    //             // 專案總人力工時
+                    //             this.page.data['proj_man_hrs'] += parseFloat(item.record.bu_regression_rate) * item.man_working_hours;
+                    //         }
+                    //     }
+                    // }
 
-                        if (item.record.nt_regression_rate != null) {
+                    // // CT
+                    // if (item.record.ct_need_test) {
+                    //     item['ct_capacity'] = item.record.ct_test_uut * this.page.project.power_ratio;
 
-                            if (item.equip_working_hours != null) {
-                                item['nt_equip_hrs'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
+                    //     if (func.name === 'Reliability') item['ct_capacity'] *= 0.8;
+                    //     item['ct_chambers'] = this.selectChambers(item['ct_capacity'], item.record.walk_in);
 
-                                // 乘上chamber數量
-                                if (item['nt_chambers'].length > 0) item['nt_equip_hrs'] *= item.nt_chambers[0].count;
+                    //     if (item.record.ct_regression_rate != null) {
 
-                                // 累加total
-                                if (item['sub_total'] == null) item['sub_total'] = 0;
-                                item['sub_total'] += item['nt_equip_hrs'];
+                    //         if (item.equip_working_hours != null) {
+                    //             item['ct_equip_hrs'] = parseFloat(item.record.ct_regression_rate) * item.equip_working_hours;
 
-                                // 專案總設備工時
-                                this.page.data['proj_equip_hrs'] += item['nt_equip_hrs'];
-                            }
+                    //             // 乘上chamber數量
+                    //             if (item['ct_chambers'].length > 0) item['ct_equip_hrs'] *= item.ct_chambers[0].count;
 
-                            if (item.man_working_hours != null) {
-                                if (func['nt_man_hrs_sum'] == null) func['nt_man_hrs_sum'] = 0
-                                func['nt_man_hrs_sum'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
+                    //             // 累加total
+                    //             if (item['sub_total'] == null) item['sub_total'] = 0;
+                    //             item['sub_total'] += item['ct_equip_hrs'];
 
-                                // 專案總人力工時
-                                this.page.data['proj_man_hrs'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
-                            }
-                        }
-                    }
+                    //             // 專案總設備工時
+                    //             this.page.data['proj_equip_hrs'] += item['ct_equip_hrs'];
+                    //         }
 
-                    // OT
-                    if (item.record.ot_need_test) {
-                        item['ot_capacity'] = item.record.ot_test_uut * this.page.project.power_ratio;
+                    //         if (item.man_working_hours != null) {
+                    //             if (func['ct_man_hrs_sum'] == null) func['ct_man_hrs_sum'] = 0;
+                    //             func['ct_man_hrs_sum'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
 
-                        if (func.name === 'Reliability') item['ot_capacity'] *= 0.8;
-                        item['ot_chambers'] = this.selectChambers(item['ot_capacity'], item.record.walk_in);
+                    //             // 專案總人力工時
+                    //             this.page.data['proj_man_hrs'] += parseFloat(item.record.ct_regression_rate) * item.man_working_hours;
+                    //         }
+                    //     }
+                    // }
 
-                        if (item.record.ot_regression_rate != null) {
+                    // // NT
+                    // if (item.record.nt_need_test) {
+                    //     item['nt_capacity'] = item.record.nt_test_uut * this.page.project.power_ratio;
 
-                            if (item.equip_working_hours != null) {
-                                item['ot_equip_hrs'] = parseFloat(item.record.ot_regression_rate) * item.equip_working_hours;
+                    //     if (func.name === 'Reliability') item['nt_capacity'] *= 0.8;
+                    //     item['nt_chambers'] = this.selectChambers(item['nt_capacity'], item.record.walk_in);
 
-                                // 乘上chamber數量
-                                if (item['ot_chambers'].length > 0) item['ot_equip_hrs'] *= item.ot_chambers[0].count;
+                    //     if (item.record.nt_regression_rate != null) {
 
-                                // 累加total
-                                if (item['sub_total'] == null) item['sub_total'] = 0;
-                                item['sub_total'] += item['ot_equip_hrs'];
+                    //         if (item.equip_working_hours != null) {
+                    //             item['nt_equip_hrs'] = parseFloat(item.record.nt_regression_rate) * item.equip_working_hours;
 
-                                // 專案總設備工時
-                                this.page.data['proj_equip_hrs'] += item['ot_equip_hrs'];
-                            }
+                    //             // 乘上chamber數量
+                    //             if (item['nt_chambers'].length > 0) item['nt_equip_hrs'] *= item.nt_chambers[0].count;
 
-                            if (item.man_working_hours != null) {
-                                if (func['ot_man_hrs_sum'] == null) func['ot_man_hrs_sum'] = 0
-                                func['ot_man_hrs_sum'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
+                    //             // 累加total
+                    //             if (item['sub_total'] == null) item['sub_total'] = 0;
+                    //             item['sub_total'] += item['nt_equip_hrs'];
 
-                                // 專案總人力工時
-                                this.page.data['proj_man_hrs'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
-                            }
-                        }
-                    }
+                    //             // 專案總設備工時
+                    //             this.page.data['proj_equip_hrs'] += item['nt_equip_hrs'];
+                    //         }
+
+                    //         if (item.man_working_hours != null) {
+                    //             if (func['nt_man_hrs_sum'] == null) func['nt_man_hrs_sum'] = 0
+                    //             func['nt_man_hrs_sum'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
+
+                    //             // 專案總人力工時
+                    //             this.page.data['proj_man_hrs'] += parseFloat(item.record.nt_regression_rate) * item.man_working_hours;
+                    //         }
+                    //     }
+                    // }
+
+                    // // OT
+                    // if (item.record.ot_need_test) {
+                    //     item['ot_capacity'] = item.record.ot_test_uut * this.page.project.power_ratio;
+
+                    //     if (func.name === 'Reliability') item['ot_capacity'] *= 0.8;
+                    //     item['ot_chambers'] = this.selectChambers(item['ot_capacity'], item.record.walk_in);
+
+                    //     if (item.record.ot_regression_rate != null) {
+
+                    //         if (item.equip_working_hours != null) {
+                    //             item['ot_equip_hrs'] = parseFloat(item.record.ot_regression_rate) * item.equip_working_hours;
+
+                    //             // 乘上chamber數量
+                    //             if (item['ot_chambers'].length > 0) item['ot_equip_hrs'] *= item.ot_chambers[0].count;
+
+                    //             // 累加total
+                    //             if (item['sub_total'] == null) item['sub_total'] = 0;
+                    //             item['sub_total'] += item['ot_equip_hrs'];
+
+                    //             // 專案總設備工時
+                    //             this.page.data['proj_equip_hrs'] += item['ot_equip_hrs'];
+                    //         }
+
+                    //         if (item.man_working_hours != null) {
+                    //             if (func['ot_man_hrs_sum'] == null) func['ot_man_hrs_sum'] = 0
+                    //             func['ot_man_hrs_sum'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
+
+                    //             // 專案總人力工時
+                    //             this.page.data['proj_man_hrs'] += parseFloat(item.record.ot_regression_rate) * item.man_working_hours;
+                    //         }
+                    //     }
+                    // }
 
                     // 設備使用費
                     if (item.current_fee && item.current_fee != 'no fee' && item.sub_total) {

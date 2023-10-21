@@ -398,8 +398,6 @@ class ProjectDistinctViewSet(
         if (not user.is_staff):
             qs = qs.filter(hide=False)
 
-        print(user, user.is_staff)
-
         if customer and name:
             qs = qs.filter(
                 customer=customer,
@@ -435,19 +433,20 @@ class ProjectDistinctViewSet(
         # return latest_projects
 
     def create(self, request, *args, **kwargs):
-        print('create')
 
         for data in request.data:
             id = data.pop('id', None)
             hide = data.pop('hide', None)
             count = data.pop('count', None)
+            fee_cost = data.pop('fee_cost', None)
 
             r = models.Project.objects.get(id=id)
             r.hide = hide
             r.count = count
+            r.fee_cost = fee_cost
+            r.updated_by = self.request.user
             r.save()
 
-        # return super().create(request, *args, **kwargs)
         return Response({'message': 'succeed'}, status=status.HTTP_200_OK)
 
 

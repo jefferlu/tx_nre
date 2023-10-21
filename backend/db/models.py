@@ -87,7 +87,9 @@ class Project(models.Model):
         default=False, verbose_name='hide')
     count = models.BooleanField(
         default=False, verbose_name='count')
-    
+    fee_cost = models.BooleanField(
+        default=False, verbose_name='fee_cost')
+
     man_hrs = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_hours')
     equip_hrs = models.DecimalField(
@@ -130,6 +132,7 @@ class Project(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='crated at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
+    user = models.ForeignKey(to='accounts.User', null=True, blank=True, on_delete=models.CASCADE, verbose_name='updated_by')
 
     class Meta:
         db_table = 'nre_project'

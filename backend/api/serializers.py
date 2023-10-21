@@ -245,6 +245,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class ProjectDistinctSerializer(serializers.ModelSerializer):
     customer_name = serializers.ReadOnlyField(source='customer.name')
+    updated_by = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = models.Project
@@ -255,7 +256,7 @@ class ProjectHistorySerializer(serializers.ModelSerializer):
     customer_name = serializers.ReadOnlyField(source='project.customer.name')
     project_name = serializers.ReadOnlyField(source='project.name')
     version = serializers.ReadOnlyField(source='project.version')
-    email = serializers.ReadOnlyField(source='user.email')
+    updated_by = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = models.ProjectHistory
