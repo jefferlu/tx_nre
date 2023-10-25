@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     drawerOpened: boolean = true;
-    displayed: boolean = true;
+    displayed: boolean = false;
 
     chartNreUpdates: ApexOptions;
     chartManHrs: ApexOptions;
