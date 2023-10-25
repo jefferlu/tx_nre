@@ -88,7 +88,7 @@ class Project(models.Model):
     count = models.BooleanField(
         default=False, verbose_name='count')
     fee_cost = models.BooleanField(
-        default=False, verbose_name='fee_cost')
+        default=True, verbose_name='fee_cost')
 
     man_hrs = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='man_hours')

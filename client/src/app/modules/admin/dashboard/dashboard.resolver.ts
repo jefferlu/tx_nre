@@ -5,6 +5,7 @@ import { DashboardService } from './dashboard.service';
 
 export const dashboardResolver: ResolveFn<any> = (route, state) => {
     return forkJoin([
+        inject(DashboardService).getProjects(),
         inject(DashboardService).getData()
     ]);
 };

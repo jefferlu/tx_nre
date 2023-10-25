@@ -1,0 +1,146 @@
+<div class="flex flex-col flex-auto w-full">
+    <div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8 md:pt-2">
+
+        <!-- Section title -->
+        <!-- <div class="w-full mt-12">
+            <div class="text-2xl font-semibold tracking-tight leading-6">Your Audience</div>
+            <div class="font-medium tracking-tight text-secondary">Demographic properties of your users</div>
+        </div> -->
+
+        <!-- 年度設備使用費 -->
+        <div class="flex flex-col flex-auto mt-2 bg-card border rounded-2xl overflow-hidden">
+            <div class="flex items-start justify-between m-6 mb-0">
+                <div class="text-lg font-medium tracking-tight leading-6 truncate">年度設備使用費</div>
+            </div>
+            <!-- <div class="flex items-start mt-6 mx-6">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <div class="font-medium text-secondary leading-5">Overall Score</div>
+                            <mat-icon class="ml-1.5 icon-size-4 text-hint" [svgIcon]="'heroicons_solid:information-circle'"
+                                [matTooltip]="'Score is calculated by using the historical ratio between Page Views and Visitors. Best score is 1000, worst score is 0.'"></mat-icon>
+                        </div>
+                        <div class="flex items-start mt-2">
+                            <div class="text-4xl font-bold tracking-tight leading-none">{{data.visitorsVsPageViews.overallScore}}</div>
+                            <div class="flex items-center ml-2">
+                                <mat-icon class="icon-size-5 text-green-500" [svgIcon]="'heroicons_solid:arrow-circle-up'"></mat-icon>
+                                <div class="ml-1 text-md font-medium text-green-500">42.9%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="flex flex-col flex-auto h-90 mt-3 p-6">
+                <apx-chart class="flex-auto w-full h-80" [chart]="chartEquipFeeYear.chart" [colors]="chartEquipFeeYear.colors"
+                    [dataLabels]="chartEquipFeeYear.dataLabels" [grid]="chartEquipFeeYear.grid" [labels]="chartEquipFeeYear.labels"
+                    [legend]="chartEquipFeeYear.legend" [plotOptions]="chartEquipFeeYear.plotOptions" [series]="chartEquipFeeYear.series"
+                    [states]="chartEquipFeeYear.states" [stroke]="chartEquipFeeYear.stroke" [tooltip]="chartEquipFeeYear.tooltip"
+                    [xaxis]="chartEquipFeeYear.xaxis" [yaxis]="chartEquipFeeYear.yaxis"></apx-chart>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full mt-6 md:mt-8">
+            <!-- NRE更新次數 -->
+            <div class="flex flex-col flex-auto bg-card border rounded-2xl overflow-hidden p-6 pr-2">
+                <div class="flex items-start justify-between">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">NRE更新次數</div>
+                </div>
+                <div class="flex flex-col flex-auto mt-6 h-44">
+                    <apx-chart class="flex flex-auto items-center justify-center w-full h-full" [chart]="chartNreUpdates.chart"
+                        [colors]="chartNreUpdates.colors" [labels]="chartNreUpdates.labels" [plotOptions]="chartNreUpdates.plotOptions"
+                        [series]="chartNreUpdates.series" [states]="chartNreUpdates.states" [tooltip]="chartNreUpdates.tooltip"></apx-chart>
+                </div>
+                <div class="mt-8">
+                    <div class="-my-3 divide-y min-h-20 max-h-20 overflow-y-auto pr-3">
+                        <ng-container *ngFor="let dataset of data.nre_updates.series; let i = index">
+                            <div class="grid grid-cols-3 py-3">
+                                <div class="flex items-center">
+                                    <div class="flex-0 w-2 h-2 rounded-full" [style.backgroundColor]="chartNreUpdates.colors[i]"></div>
+                                    <div class="ml-3 truncate">{{data.nre_updates.labels[i]}}</div>
+                                </div>
+                                <div class="font-medium text-right">{{dataset}}</div>
+                                <div class="text-right text-secondary">{{dataset / data.nre_updates.count * 100 | number:'1.0-2'}}%</div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <!-- 人力工時 -->
+            <div class="flex flex-col flex-auto bg-card border rounded-2xl overflow-hidden p-6 pr-2">
+                <div class="flex items-start justify-between">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">人力工時</div>
+                </div>
+                <div class="flex flex-col flex-auto mt-6 h-44">
+                    <apx-chart class="flex flex-auto items-center justify-center w-full h-full" [chart]="chartManHrs.chart"
+                        [colors]="chartManHrs.colors" [labels]="chartManHrs.labels" [plotOptions]="chartManHrs.plotOptions"
+                        [series]="chartManHrs.series" [states]="chartManHrs.states" [tooltip]="chartManHrs.tooltip"></apx-chart>
+                </div>
+                <div class="mt-8">
+                    <div class="-my-3 divide-y min-h-20 max-h-20 overflow-y-auto pr-3">
+                        <ng-container *ngFor="let dataset of data.man_hrs.series; let i = index">
+                            <div class="grid grid-cols-3 py-3">
+                                <div class="flex items-center">
+                                    <div class="flex-0 w-2 h-2 rounded-full" [style.backgroundColor]="chartManHrs.colors[i]"></div>
+                                    <div class="ml-3 truncate">{{data.man_hrs.labels[i]}}</div>
+                                </div>
+                                <div class="font-medium text-right">{{dataset}}</div>
+                                <div class="text-right text-secondary">{{dataset / data.man_hrs.count * 100 | number:'1.0-2'}}%</div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <!-- 設備工時 -->
+            <div class="flex flex-col flex-auto bg-card border rounded-2xl overflow-hidden p-6 pr-2">
+                <div class="flex items-start justify-between">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">設備工時</div>
+                </div>
+                <div class="flex flex-col flex-auto mt-6 h-44">
+                    <apx-chart class="flex flex-auto items-center justify-center w-full h-full" [chart]="chartEquipHrs.chart"
+                        [colors]="chartEquipHrs.colors" [labels]="chartEquipHrs.labels" [plotOptions]="chartEquipHrs.plotOptions"
+                        [series]="chartEquipHrs.series" [states]="chartEquipHrs.states" [tooltip]="chartEquipHrs.tooltip"></apx-chart>
+                </div>
+                <div class="mt-8">
+                    <div class="-my-3 divide-y min-h-20 max-h-20 overflow-y-auto pr-3">
+                        <ng-container *ngFor="let dataset of data.equip_hrs.series; let i = index">
+                            <div class="grid grid-cols-3 py-3">
+                                <div class="flex items-center">
+                                    <div class="flex-0 w-2 h-2 rounded-full" [style.backgroundColor]="chartEquipHrs.colors[i]"></div>
+                                    <div class="ml-3 truncate">{{data.equip_hrs.labels[i]}}</div>
+                                </div>
+                                <div class="font-medium text-right">{{dataset}}</div>
+                                <div class="text-right text-secondary">{{dataset / data.equip_hrs.count * 100 | number:'1.0-2'}}%</div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <!-- 設備費用 -->
+            <div class="flex flex-col flex-auto bg-card border rounded-2xl overflow-hidden p-6 pr-2">
+                <div class="flex items-start justify-between">
+                    <div class="text-lg font-medium tracking-tight leading-6 truncate">設備費用</div>
+                </div>
+                <div class="flex flex-col flex-auto mt-6 h-44">
+                    <apx-chart class="flex flex-auto items-center justify-center w-full h-full" [chart]="chartEquipFee.chart"
+                        [colors]="chartEquipFee.colors" [labels]="chartEquipFee.labels" [plotOptions]="chartEquipFee.plotOptions"
+                        [series]="chartEquipFee.series" [states]="chartEquipFee.states" [tooltip]="chartEquipFee.tooltip"></apx-chart>
+                </div>
+                <div class="mt-8">
+                    <div class="-my-3 divide-y min-h-20 max-h-20 overflow-y-auto pr-3">
+                        <ng-container *ngFor="let dataset of data.equip_fee.series; let i = index">
+                            <div class="grid grid-cols-3 py-3">
+                                <div class="flex items-center">
+                                    <div class="flex-0 w-2 h-2 rounded-full" [style.backgroundColor]="chartEquipFee.colors[i]"></div>
+                                    <div class="ml-3 truncate">{{data.equip_fee.labels[i]}}</div>
+                                </div>
+                                <div class="font-medium text-right">{{dataset}}</div>
+                                <div class="text-right text-secondary">{{dataset / data.equip_fee.count * 100 | number:'1.0-2'}}%</div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>

@@ -7,12 +7,25 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 })
 export class DashboardService {
 
+    private _projects: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
     private _data: BehaviorSubject<any[] | null> = new BehaviorSubject(null);
 
     constructor(private _appService: AppService) { }
 
+    get projects$(): Observable<any[]> {
+        return this._projects.asObservable();
+    }
+
     get data$(): Observable<any[]> {
         return this._data.asObservable();
+    }
+
+    getProjects(slug?: any): Observable<any> {
+        return this._appService.get('projects', { 'type': 'analytics' }).pipe(
+            tap((response: any) => {
+                this._projects.next(response);
+            })
+        );
     }
 
     getData(): Observable<any> {
@@ -21,5 +34,14 @@ export class DashboardService {
                 this._data.next(response);
             })
         );
+    }
+
+    blobToBase64(blob: Blob): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
     }
 }

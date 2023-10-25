@@ -642,6 +642,7 @@ export class NreDetailComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result === 'confirmed') {
                 this.export();
+                this._alert.open({ type: 'info', duration: 5, message: 'Export completed.' });
                 this._changeDetectorRef.markForCheck();
             }
         });

@@ -390,23 +390,27 @@ class ProjectDistinctViewSet(
 
         user = self.request.user
 
+        type = self.request.query_params.get('type')
         customer = self.request.query_params.get('customer')
         name = self.request.query_params.get('name')
 
-        qs = models.Project.objects.all().order_by('version')
+        qs = models.Project.objects.all().order_by('name')
 
-        if (not user.is_staff):
-            qs = qs.filter(hide=False)
+        if type == 'analytics':
+            qs = qs.filter(hide=False, count=False).distinct('name')
+        else:
+            if (not user.is_staff):
+                qs = qs.filter(hide=False)
 
-        if customer and name:
-            qs = qs.filter(
-                customer=customer,
-                name=name
-            )
-        elif customer:
-            qs = qs.filter(
-                customer=customer
-            )
+            if customer and name:
+                qs = qs.filter(
+                    customer=customer,
+                    name=name
+                )
+            elif customer:
+                qs = qs.filter(
+                    customer=customer
+                )
 
         return qs
 
@@ -497,7 +501,8 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
 
     def get_project_version(self, year):
 
-        queryset = models.Project.objects.filter(created_at__year=year).order_by('name').values('name').annotate(version_count=Count('version'))
+        # queryset = models.Project.objects.filter(created_at__year=year).order_by('name').values('name').annotate(version_count=Count('version'))
+        queryset = models.Project.objects.filter(hide=False, count=False).order_by('name').values('name').annotate(version_count=Count('version'))
 
         version_sum = 0
         for entry in queryset:
@@ -510,6 +515,23 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
         }
 
     def get_project_hrs(self, year):
+
+        qs = models.Project.objects.filter(hide=False, count=False, fee_cost=True)
+        man_hrs_qs = qs.values('name').annotate(man_hrs=Sum('man_hrs'))
+        equip_hrs_qs = qs.values('name').annotate(equip_hrs=Sum('equip_hrs'))
+        fees_qs = qs.values('name').annotate(fees=Sum('fees'))
+
+        return {
+            'man': {
+                'data': man_hrs_qs
+            },
+            'equip': {
+                'data': equip_hrs_qs
+            },
+            'fee': {
+                'data': fees_qs
+            },
+        }
 
         latest_versions_subquery = models.Project.objects.filter(
             name=OuterRef('name'),
@@ -531,7 +553,7 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
         fees_qs = models.Project.objects.filter(
             created_at__year=year,
             id=Subquery(latest_versions_subquery),
-            fees__isnull=False,
+            # fees__isnull=False,
         ).order_by('name').values('name', 'version', 'fees')
 
         man_hrs_sum = 0
@@ -539,13 +561,16 @@ class AnalyticsViewSet(AutoPrefetchViewSetMixin, viewsets.ViewSet):
         fees_sum = 0
 
         for entry in man_hrs_qs:
-            man_hrs_sum += entry['man_hrs']
+            if entry['man_hrs'] is not None:
+                man_hrs_sum += entry['man_hrs']
 
         for entry in equip_hrs_qs:
-            equip_hrs_sum += entry['equip_hrs']
+            if entry['equip_hrs'] is not None:
+                equip_hrs_sum += entry['equip_hrs']
 
         for entry in fees_qs:
-            fees_sum += entry['fees']
+            if entry['fees'] is not None:
+                fees_sum += entry['fees']
 
         return {
             'year': year,
