@@ -1255,12 +1255,12 @@ export class NreDetailComponent implements OnInit {
 
     autoFill(event: any, categ: string, type: string) {
 
-        for (let func of this.page.data.functions) {
-            for (let item of func.test_items) {
+        // for (let func of this.page.data.functions) {
+        //     for (let item of func.test_items) {
 
-                item.record[categ + type] = event.target.value;
-            }
-        }
+        //         item.record[categ + type] = event.target.value;
+        //     }
+        // }
     }
 
     ngOnDestroy(): void {
