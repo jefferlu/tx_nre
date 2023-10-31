@@ -1222,6 +1222,16 @@ export class NreDetailComponent implements OnInit {
 
     }
 
+    checkSingleNeedTest(event: any, categ: string) {
+        for (let func of this.page.data.functions) {
+            for (let item of func.test_items) {
+                item.record[categ + '_need_test'] = event.target.checked;
+                
+            }
+        }
+    }
+
+
     checkWalkin(event: any) {
         for (let func of this.page.data.functions) {
             for (let item of func.test_items) {
@@ -1232,7 +1242,7 @@ export class NreDetailComponent implements OnInit {
         }
     }
 
-    checkNeedTest(item: any) {
+    statusNeedTest(item: any) {
 
         let need_test: boolean = false;
         for (let n of ['concept', 'bu', 'ct', 'nt', 'ot']) {
@@ -1255,12 +1265,13 @@ export class NreDetailComponent implements OnInit {
 
     autoFill(event: any, categ: string, type: string) {
 
-        // for (let func of this.page.data.functions) {
-        //     for (let item of func.test_items) {
-
-        //         item.record[categ + type] = event.target.value;
-        //     }
-        // }
+        for (let func of this.page.data.functions) {
+            for (let item of func.test_items) {
+                if (item.record[categ + '_need_test']) {
+                    item.record[categ + type] = event.target.value;
+                }
+            }
+        }
     }
 
     ngOnDestroy(): void {

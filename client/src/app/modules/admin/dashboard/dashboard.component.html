@@ -47,8 +47,7 @@
             <ng-container *ngIf="displayed else noProjects">
 
                 <div class="flex-auto border-l z-20 absolute inset-0 lg:static lg:inset-auto flex">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 p-2 sm:px-4 w-full overflow-y-auto">
-                        <!-- NRE更新次數 -->
+                    <!-- <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-2 p-2 sm:px-4 w-full overflow-y-auto">                        
                         <div class="flex flex-col flex-auto bg-card border rounded-2xl">
                             <div class="flex flex-col flex-auto h-80 m-6">
                                 <apx-chart [title]="chartNreUpdates.title" [series]="chartNreUpdates.series" [chart]="chartNreUpdates.chart"
@@ -57,8 +56,7 @@
                                     #chartElement></apx-chart>
                             </div>
                         </div>
-
-                        <!-- 人力工時 -->
+                        
                         <div class="flex flex-col flex-auto bg-card border rounded-2xl">
                             <div class="flex flex-col flex-auto h-80 m-6">
                                 <apx-chart [title]="chartManHrs.title" [series]="chartManHrs.series" [chart]="chartManHrs.chart"
@@ -66,8 +64,7 @@
                                     [xaxis]="chartManHrs.xaxis" [tooltip]="chartManHrs.tooltip" #chartElement></apx-chart>
                             </div>
                         </div>
-
-                        <!-- 設備費用 -->
+                        
                         <div class="flex flex-col flex-auto bg-card border rounded-2xl">
                             <div class="flex flex-col flex-auto h-80 m-6">
                                 <apx-chart [title]="chartEquipFee.title" [series]="chartEquipFee.series" [chart]="chartEquipFee.chart"
@@ -76,49 +73,45 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div> -->
 
-                    <!-- <div class="flex flex-col flex-auto overflow-y-auto px-4  border-l">
+                    <div class="flex flex-col flex-auto overflow-y-auto px-4  border-l">
 
-                    <div class="w-full sm:w-1/2">
-                        <div class="flex flex-col flex-auto mt-2 bg-card border rounded-2xl overflow-hidden">
-                            <div class="flex items-start justify-between m-6 mb-0">
-                                <div class="text-3xl font-semibold tracking-tight leading-8">NRE更新次數</div>
+                        <!-- NRE更新次數 -->
+                        <div class="w-full md:w-3/4 lg:w-1/2">
+                            <div class="flex flex-col flex-auto mt-2 bg-card border rounded-2xl overflow-hidden">                                
+                                <div class="flex flex-col flex-auto h-90 m-6 mb-12">
+                                    <apx-chart [title]="chartNreUpdates.title" [series]="chartNreUpdates.series" [chart]="chartNreUpdates.chart"
+                                        [colors]="chartNreUpdates.colors" [dataLabels]="chartNreUpdates.dataLabels"
+                                        [plotOptions]="chartNreUpdates.plotOptions" [xaxis]="chartNreUpdates.xaxis"
+                                        [tooltip]="chartNreUpdates.tooltip" #chartElement></apx-chart>
+                                </div>
                             </div>
-                            <div class="flex flex-col flex-auto h-90 m-6 mt-0">
-                                <apx-chart [series]="chartNreUpdates.series" [chart]="chartNreUpdates.chart" [colors]="chartNreUpdates.colors"
-                                    [dataLabels]="chartNreUpdates.dataLabels" [plotOptions]="chartNreUpdates.plotOptions"
-                                    [xaxis]="chartNreUpdates.xaxis" [tooltip]="chartNreUpdates.tooltip"></apx-chart>
+                        </div>
+
+                        <!-- 人力工時 -->
+                        <div class="w-full md:w-3/4 lg:w-1/2">
+                            <div class="flex flex-col flex-auto mt-2 bg-card border rounded-2xl overflow-hidden">                                
+                                <div class="flex flex-col flex-auto h-90 m-6 mb-12">
+                                    <apx-chart [title]="chartManHrs.title" [series]="chartManHrs.series" [chart]="chartManHrs.chart"
+                                        [colors]="chartManHrs.colors" [dataLabels]="chartManHrs.dataLabels" [plotOptions]="chartManHrs.plotOptions"
+                                        [xaxis]="chartManHrs.xaxis" [tooltip]="chartManHrs.tooltip" #chartElement></apx-chart>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 設備費用 -->
+                        <div class="w-full md:w-3/4 lg:w-1/2 pb-10">
+                            <div class="flex flex-col flex-auto mt-2 bg-card border rounded-2xl overflow-hidden">                                
+                                <div class="flex flex-col flex-auto h-90 m-6 mb-12">
+                                    <apx-chart [title]="chartEquipFee.title" [series]="chartEquipFee.series" [chart]="chartEquipFee.chart"
+                                        [colors]="chartEquipFee.colors" [dataLabels]="chartEquipFee.dataLabels"
+                                        [plotOptions]="chartEquipFee.plotOptions" [xaxis]="chartEquipFee.xaxis" [tooltip]="chartEquipFee.tooltip"
+                                        #chartElement></apx-chart>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="w-full sm:w-1/2">
-                        <div class="flex flex-col flex-auto mt-2 bg-card border rounded-2xl overflow-hidden">
-                            <div class="flex items-start justify-between m-6 mb-0">
-                                <div class="text-3xl font-semibold tracking-tight leading-8">人力工時</div>
-                            </div>
-                            <div class="flex flex-col flex-auto h-90 m-6 mt-0">
-                                <apx-chart [series]="chartManHrs.series" [chart]="chartManHrs.chart" [colors]="chartManHrs.colors"
-                                    [dataLabels]="chartManHrs.dataLabels" [plotOptions]="chartManHrs.plotOptions" [xaxis]="chartManHrs.xaxis"
-                                    [tooltip]="chartManHrs.tooltip"></apx-chart>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="w-full sm:w-1/2">
-                        <div class="flex flex-col flex-auto mt-2 bg-card border rounded-2xl overflow-hidden">
-                            <div class="flex items-start justify-between m-6 mb-0">
-                                <div class="text-3xl font-semibold tracking-tight leading-8">設備費用</div>
-                            </div>
-                            <div class="flex flex-col flex-auto h-90 m-6 mt-0">
-                                <apx-chart [series]="chartEquipHrs.series" [chart]="chartEquipHrs.chart" [colors]="chartEquipHrs.colors"
-                                    [dataLabels]="chartEquipHrs.dataLabels" [plotOptions]="chartEquipHrs.plotOptions" [xaxis]="chartEquipHrs.xaxis"
-                                    [tooltip]="chartEquipHrs.tooltip"></apx-chart>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
                 </div>
             </ng-container>
 

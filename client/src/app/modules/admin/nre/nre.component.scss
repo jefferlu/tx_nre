@@ -31,8 +31,12 @@ table.cust-table {
         }
     }
 
-    .need-test{
-        @apply  bg-white;
+    .edit-header {
+        @apply w-full text-center font-normal truncate;
+    }
+
+    .need-test {
+        @apply bg-white;
     }
 
     .view {
@@ -62,7 +66,7 @@ table.result-table {
             @apply w-full text-center truncate;
         }
     }
-    
+
     .view {
         @apply min-w-16 text-center;
     }
@@ -98,7 +102,7 @@ input[type="number"] {
 
 :host ::ng-deep .mat-tab-header {
     top: 0;
-    z-index: 1000; 
+    z-index: 1000;
     position: sticky;
-    position: -webkit-sticky; /* macOS/iOS Safari */    
+    position: -webkit-sticky; /* macOS/iOS Safari */
 }
