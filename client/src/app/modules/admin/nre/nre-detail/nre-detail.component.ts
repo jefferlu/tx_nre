@@ -42,6 +42,7 @@ export class NreDetailComponent implements OnInit {
     records: any;
     selectedCustomer: any;
 
+    modeltemp: any;
     page: any = {
         debounce: 300,
         minLength: 3,
@@ -1226,7 +1227,7 @@ export class NreDetailComponent implements OnInit {
         for (let func of this.page.data.functions) {
             for (let item of func.test_items) {
                 item.record[categ + '_need_test'] = event.target.checked;
-                
+
             }
         }
     }
@@ -1265,10 +1266,11 @@ export class NreDetailComponent implements OnInit {
 
     autoFill(event: any, categ: string, type: string) {
 
+        console.log(event.target.value)
         for (let func of this.page.data.functions) {
             for (let item of func.test_items) {
                 if (item.record[categ + '_need_test']) {
-                    item.record[categ + type] = event.target.value;
+                    item.record[categ + type] = event.target.value === '' ? null : event.target.value;
                 }
             }
         }

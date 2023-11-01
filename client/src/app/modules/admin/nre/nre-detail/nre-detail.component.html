@@ -247,24 +247,24 @@
                                 <th><input type="checkbox" class="hover:cursor-pointer" (change)="checkWalkin($event)"></th>
 
                                 <th><input type="checkbox" class="hover:cursor-pointer" (change)="checkSingleNeedTest($event,'concept')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'concept', '_test_uut')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()"(keyup)="autoFill($event, 'concept', '_regression_rate')"></th>
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'concept', '_test_uut')" [(ngModel)]="modeltemp" numeric-only></th>
+                                <th><input type="number" class="edit-header" (change)="change()"(keyup)="autoFill($event, 'concept', '_regression_rate')" [(ngModel)]="modeltemp" numeric-two-digit></th>
                                 
                                 <th><input type="checkbox" class="hover:cursor-pointer w-18" (change)="checkSingleNeedTest($event,'bu')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'bu', '_test_uut')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'bu', '_regression_rate')">
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'bu', '_test_uut')"  [(ngModel)]="modeltemp" numeric-only></th>
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'bu', '_regression_rate')" [(ngModel)]="modeltemp" numeric-two-digit>
                                 </th>
                                 <th><input type="checkbox" class="hover:cursor-pointer" (change)="checkSingleNeedTest($event,'ct')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ct', '_test_uut')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ct', '_regression_rate')">
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ct', '_test_uut')"  [(ngModel)]="modeltemp" numeric-only></th>
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ct', '_regression_rate')" [(ngModel)]="modeltemp" numeric-two-digit>
                                 </th>
                                 <th><input type="checkbox" class="hover:cursor-pointer" (change)="checkSingleNeedTest($event,'nt')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'nt', '_test_uut')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'nt', '_regression_rate')">
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'nt', '_test_uut')"  [(ngModel)]="modeltemp" numeric-only></th>
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'nt', '_regression_rate')" [(ngModel)]="modeltemp" numeric-two-digit>
                                 </th>
                                 <th><input type="checkbox" class="hover:cursor-pointer" (change)="checkSingleNeedTest($event,'ot')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ot', '_test_uut')"></th>
-                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ot', '_regression_rate')">
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ot', '_test_uut')"  [(ngModel)]="modeltemp" numeric-only></th>
+                                <th><input type="number" class="edit-header" (change)="change()" (keyup)="autoFill($event, 'ot', '_regression_rate')" [(ngModel)]="modeltemp" numeric-two-digit>
                                 </th>
                             </tr>
                         </thead>
@@ -290,8 +290,7 @@
                                                     [disabled]="!item.record[n + '_need_test']">
                                             </td>
                                             <td class="edit" [ngClass]="{'need-test':item.record[n + '_need_test']}"><input input type="number"
-                                                    [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()"
-                                                    (keyup)="autoFill($event, n, '_regression_rate')" numeric-two-digit
+                                                    [(ngModel)]="item.record[n + '_regression_rate']" (change)="change()" numeric-two-digit
                                                     [disabled]="!item.record[n + '_need_test']"></td>
                                         </ng-container>
                                     </tr>
