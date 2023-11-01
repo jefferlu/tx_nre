@@ -213,7 +213,7 @@ export class NreDetailComponent implements OnInit {
 
         // 圖表用
         this.page.project.man_hrs = parseFloat(this.page.data.proj_man_hrs).toFixed(2);
-        this.page.project.equip_hrs = parseFloat(this.page.data.proj_equip_hrs).toFixed(2);
+        // this.page.project.equip_hrs = parseFloat(this.page.data.proj_equip_hrs).toFixed(2);
         this.page.project.fees = parseFloat(this.page.data.proj_fees).toFixed(2);
 
         this.page.project.records = [];
