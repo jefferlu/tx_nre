@@ -42,7 +42,7 @@ export class NreDetailComponent implements OnInit {
     records: any;
     selectedCustomer: any;
 
-    modeltemp: any;
+    modeltemp = [];
     page: any = {
         debounce: 300,
         minLength: 3,
