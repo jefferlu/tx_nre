@@ -368,10 +368,19 @@ export class NreDetailComponent implements OnInit {
 
                             if (item.record[n + '_regression_rate'] != null) {
                                 if (item.equip_working_hours != null && !isNaN(item.equip_working_hours)) {
-                                    item[n + '_equip_hrs'] = parseFloat(item.record[n + '_regression_rate']) * item.equip_working_hours;
 
-                                    // 乘上chamber數量
-                                    if (item[n + '_chambers'].length > 0) item[n + '_equip_hrs'] *= item[n + '_chambers'][0].count;
+                                    // Reliability equpip_hrs計算方式
+                                    if (func.name === 'Reliability') {
+                                        item[n + '_equip_hrs'] = parseFloat(item.record[n + '_regression_rate']) * item.equip_working_hours;
+
+                                        // 乘上chamber數量
+                                        if (item[n + '_chambers'].length > 0) item[n + '_equip_hrs'] *= item[n + '_chambers'][0].count;
+                                    }
+                                    // S&V以及Other計算方式 (regression_rate*test_uut*設備工時)
+                                    else {
+                                        item[n + '_equip_hrs'] = parseFloat(item.record[n + '_regression_rate']) * item.equip_working_hours * parseFloat(item.record[n + '_test_uut']);
+                                    }
+
 
                                     // 累加total
                                     if (item['sub_total'] == null) item['sub_total'] = 0;
