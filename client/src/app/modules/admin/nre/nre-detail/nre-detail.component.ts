@@ -367,7 +367,7 @@ export class NreDetailComponent implements OnInit {
                             }
 
                             if (item.record[n + '_regression_rate'] != null) {
-                                if (item.equip_working_hours != null) {
+                                if (item.equip_working_hours != null && !isNaN(item.equip_working_hours)) {
                                     item[n + '_equip_hrs'] = parseFloat(item.record[n + '_regression_rate']) * item.equip_working_hours;
 
                                     // 乘上chamber數量
@@ -381,12 +381,12 @@ export class NreDetailComponent implements OnInit {
                                     this.page.data['proj_equip_hrs'] += item[n + '_equip_hrs'];
                                 }
 
-                                if (item.man_working_hours != null) {
+                                if (item.man_working_hours != null && !isNaN(item.man_working_hours)) {
                                     if (func[n + '_man_hrs_sum'] == null) func[n + '_man_hrs_sum'] = 0;
-                                    func[n + '_man_hrs_sum'] += parseFloat(item.record[n + '_regression_rate']) * item.man_working_hours;
+                                    func[n + '_man_hrs_sum'] += parseFloat(item.record[n + '_regression_rate']) * item.man_working_hours * parseFloat(item.record[n + '_test_uut']);
 
                                     // 專案總人力工時
-                                    this.page.data['proj_man_hrs'] += parseFloat(item.record[n + '_regression_rate']) * item.man_working_hours;
+                                    this.page.data['proj_man_hrs'] += parseFloat(item.record[n + '_regression_rate']) * item.man_working_hours * parseFloat(item.record[n + '_test_uut']);
                                 }
                             }
 
