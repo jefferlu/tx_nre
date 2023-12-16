@@ -669,8 +669,8 @@ export class NreDetailComponent implements OnInit {
                 name: '使用者填入',
                 headers: [
                     ["Reliability/S&V Test"],
-                    ["Function", "Test Item", "Walk-in", "Concept", null, null, null, "BU", null, null, null, "CT", null, null, null, "NT", null, null, null, "OT"],
-                    [null, null, null, "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment", "Test UUT", "Regression Rate", "HRS", "Equipment"]
+                    ["Function", "Test Item", "Walk-in", "Concept", null, null, null, "BU", null, null, null, "CT/EVT", null, null, null, "NT/DVT", null, null, null, "OT/PVT"],
+                    [null, null, null, "Test UUT", "Regression", "Hrs", "Equipment", "Test UUT", "Regression", "Hrs", "Equipment", "Test UUT", "Regression", "Hrs", "Equipment", "Test UUT", "Regression", "Hrs", "Equipment", "Test UUT", "Regression", "Hrs", "Equipment"]
                 ],
                 records: []
             },
@@ -678,20 +678,20 @@ export class NreDetailComponent implements OnInit {
                 name: '成果_Equipment',
                 headers: [
                     ["Reliability/S&V Test"],
-                    ["Function", "Test Item", "Lab Location", "Lab Rate", "Concept", "BU", "CT", "NT", "OT", "Sub Total"],
-                    [null, null, null, null, "HRS", "HRS", "HRS", "HRS", "HRS", null]
+                    ["Function", "Test Item", "Lab Location", "Lab Rate", "Concept", "BU", "CT/EVT", "NT/DVT", "OT/PVT", "Sub Total"],
+                    [null, null, null, null, "Hrs", "Hrs", "Hrs", "Hrs", "Hrs", null]
                 ],
                 records: []
             },
             {
                 name: '成果_Man Power',
-                headers: [[null, 'Concept', 'BU(hrs)', 'CT(hrs)', 'NT(hrs)', 'OT(hrs)']],
+                headers: [[null, 'Concept', 'BU(hrs)', 'CT/EVT(hrs)', 'NT/DVT(hrs)', 'OT/PVT(hrs)']],
                 records: [],
-                headers_rel: [['REL', 'Concept', null, 'BU', null, 'CT', null, 'NT', null, 'OT', null]],
+                headers_rel: [['REL', null, 'Concept', 'BU', 'CT/EVT', 'NT/DVT', 'OT/PVT']],
                 records_rel: [],
-                headers_sv: [['SV', 'Concept', null, 'BU', null, 'CT', null, 'NT', null, 'OT', null]],
+                headers_sv: [['S&V', null, 'Concept', 'BU', 'CT/EVT', 'NT/DVT', 'OT/PVT']],
                 records_sv: [],
-                headers_pkg: [['PKG', 'Concept', null, 'BU', null, 'CT', null, 'NT', null, 'OT', null]],
+                headers_pkg: [['PKG', null, 'Concept', 'BU', 'CT/EVT', 'NT/DVT', 'OT/PVT']],
                 records_pkg: []
             }
         ]
@@ -964,13 +964,16 @@ export class NreDetailComponent implements OnInit {
                         row.font = { name: 'Calibri', bold: true };
                         row.alignment = { horizontal: 'center', vertical: 'middle' };
                     }
+                    // worksheet.getCell('A2').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('A3').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('A4').font = { name: 'Calibri', bold: true };
 
                     // Merge header columns
-                    worksheet.mergeCells('B7:C7');
-                    worksheet.mergeCells('D7:E7');
-                    worksheet.mergeCells('F7:G7');
-                    worksheet.mergeCells('H7:I7');
-                    worksheet.mergeCells('J7:K7');
+                    // worksheet.mergeCells('B7:C7');
+                    // worksheet.mergeCells('D7:E7');
+                    // worksheet.mergeCells('F7:G7');
+                    // worksheet.mergeCells('H7:I7');
+                    // worksheet.mergeCells('J7:K7');
 
                     let data = this.page.project;
 
@@ -985,35 +988,35 @@ export class NreDetailComponent implements OnInit {
                     let rel_ot_hr = null;
                     if (data.rel_ot_duration && data.rel_ot_duty_rate) rel_ot_hr = data.rel_ot_duration / 5 * data.rel_ot_duty_rate;
 
-                    row = worksheet.addRow(['PL', 'Duration(Day)', data.rel_concept_duration, 'Duration(Day)', data.rel_bu_duration, 'Duration(Day)', data.rel_ct_duration, 'Duration(Day)', data.rel_nt_duration, 'Duration(Day)', data.rel_ot_duration]);
+                    row = worksheet.addRow(['PL', 'Duration(Working Day)', data.rel_concept_duration, data.rel_bu_duration, data.rel_ct_duration, data.rel_nt_duration, data.rel_ot_duration]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
-                    row = worksheet.addRow(['PL', 'Duty Rate(Hr)', data.rel_concept_duty_rate, 'Duty Rate(Hr)', data.rel_bu_duty_rate, 'Duty Rate(Hr)', data.rel_ct_duty_rate, 'Duty Rate(Hr)', data.rel_nt_duty_rate, 'Duty Rate(Hr)', data.rel_ot_duty_rate]);
+                    row = worksheet.addRow(['PL', 'Duty Rate(Hr/week)', data.rel_concept_duty_rate, data.rel_bu_duty_rate, data.rel_ct_duty_rate, data.rel_nt_duty_rate, data.rel_ot_duty_rate]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
-                    row = worksheet.addRow(['PL', 'Hr', rel_concept_hr, 'Hr', rel_bu_hr, 'Hr', rel_ct_hr, 'Hr', rel_nt_hr, 'Hr', rel_ot_hr]);
+                    row = worksheet.addRow(['PL', 'Hr', rel_concept_hr, rel_bu_hr, rel_ct_hr, rel_nt_hr, rel_ot_hr]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
 
                     worksheet.mergeCells('A8:A10');
                     worksheet.getCell('A8').font = { name: 'Calibri', bold: true };
                     worksheet.getCell('B8').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D8').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F8').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H8').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J8').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D8').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F8').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H8').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J8').font = { name: 'Calibri', bold: true };
 
                     worksheet.getCell('B9').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D9').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F9').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H9').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J9').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D9').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F9').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H9').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J9').font = { name: 'Calibri', bold: true };
 
                     worksheet.getCell('B10').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D10').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F10').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H10').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J10').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D10').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F10').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H10').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J10').font = { name: 'Calibri', bold: true };
 
 
                     // Fill headers_sv
@@ -1025,11 +1028,11 @@ export class NreDetailComponent implements OnInit {
                         row.font = { name: 'Calibri', bold: true };
                         row.alignment = { horizontal: 'center', vertical: 'middle' };
                     }
-                    worksheet.mergeCells('B13:C13');
-                    worksheet.mergeCells('D13:E13');
-                    worksheet.mergeCells('F13:G13');
-                    worksheet.mergeCells('H13:I13');
-                    worksheet.mergeCells('J13:K13');
+                    // worksheet.mergeCells('B13:C13');
+                    // worksheet.mergeCells('D13:E13');
+                    // worksheet.mergeCells('F13:G13');
+                    // worksheet.mergeCells('H13:I13');
+                    // worksheet.mergeCells('J13:K13');
 
                     let sv_concept_hr = null;
                     if (data.sv_concept_duration && data.sv_concept_duty_rate) sv_concept_hr = data.sv_concept_duration / 5 * data.sv_concept_duty_rate;
@@ -1042,35 +1045,35 @@ export class NreDetailComponent implements OnInit {
                     let sv_ot_hr = null;
                     if (data.sv_ot_duration && data.sv_ot_duty_rate) sv_ot_hr = data.sv_ot_duration / 5 * data.sv_ot_duty_rate;
 
-                    row = worksheet.addRow(['PL', 'Duration(Day)', data.sv_concept_duration, 'Duration(Day)', data.sv_bu_duration, 'Duration(Day)', data.sv_ct_duration, 'Duration(Day)', data.sv_nt_duration, 'Duration(Day)', data.sv_ot_duration]);
+                    row = worksheet.addRow(['PL', 'Duration(Working Day)', data.sv_concept_duration, data.sv_bu_duration, data.sv_ct_duration, data.sv_nt_duration, data.sv_ot_duration]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
-                    row = worksheet.addRow(['PL', 'Duty Rate(Hr)', data.sv_concept_duty_rate, 'Duty Rate(Hr)', data.sv_bu_duty_rate, 'Duty Rate(Hr)', data.sv_ct_duty_rate, 'Duty Rate(Hr)', data.sv_nt_duty_rate, 'Duty Rate(Hr)', data.sv_ot_duty_rate]);
+                    row = worksheet.addRow(['PL', 'Duty Rate(Hr/week)', data.sv_concept_duty_rate, data.sv_bu_duty_rate, data.sv_ct_duty_rate, data.sv_nt_duty_rate, data.sv_ot_duty_rate]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
-                    row = worksheet.addRow(['PL', 'Hr', sv_concept_hr, 'Hr', sv_bu_hr, 'Hr', sv_ct_hr, 'Hr', sv_nt_hr, 'Hr', sv_ot_hr]);
+                    row = worksheet.addRow(['PL', 'Hr', sv_concept_hr, sv_bu_hr, sv_ct_hr, sv_nt_hr, sv_ot_hr]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
 
                     worksheet.mergeCells('A14:A16');
                     worksheet.getCell('A14').font = { name: 'Calibri', bold: true };
                     worksheet.getCell('B14').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D14').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F14').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H14').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J14').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D14').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F14').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H14').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J14').font = { name: 'Calibri', bold: true };
 
                     worksheet.getCell('B15').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D15').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F15').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H15').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J15').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D15').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F15').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H15').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J15').font = { name: 'Calibri', bold: true };
 
                     worksheet.getCell('B16').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D16').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F16').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H16').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J16').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D16').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F16').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H16').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J16').font = { name: 'Calibri', bold: true };
 
                     // Fill headers_pkg
                     worksheet.addRow([]);
@@ -1082,11 +1085,11 @@ export class NreDetailComponent implements OnInit {
                         row.alignment = { horizontal: 'center', vertical: 'middle' };
                     }
 
-                    worksheet.mergeCells('B19:C19');
-                    worksheet.mergeCells('D19:E19');
-                    worksheet.mergeCells('F19:G19');
-                    worksheet.mergeCells('H19:I19');
-                    worksheet.mergeCells('J19:K19');
+                    // worksheet.mergeCells('B19:C19');
+                    // worksheet.mergeCells('D19:E19');
+                    // worksheet.mergeCells('F19:G19');
+                    // worksheet.mergeCells('H19:I19');
+                    // worksheet.mergeCells('J19:K19');
 
                     let pkg_concept_hr = null;
                     if (data.pkg_concept_duration && data.pkg_concept_duty_rate) pkg_concept_hr = data.pkg_concept_duration / 5 * data.pkg_concept_duty_rate;
@@ -1100,35 +1103,35 @@ export class NreDetailComponent implements OnInit {
                     if (data.pkg_ot_duration && data.pkg_ot_duty_rate) pkg_ot_hr = data.pkg_ot_duration / 5 * data.pkg_ot_duty_rate;
 
 
-                    row = worksheet.addRow(['PL', 'Duration(Day)', data.pkg_concept_duration, 'Duration(Day)', data.pkg_bu_duration, 'Duration(Day)', data.pkg_ct_duration, 'Duration(Day)', data.pkg_nt_duration, 'Duration(Day)', data.pkg_ot_duration]);
+                    row = worksheet.addRow(['PL', 'Duration(Working Day)', data.pkg_concept_duration, data.pkg_bu_duration, data.pkg_ct_duration, data.pkg_nt_duration, data.pkg_ot_duration]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
-                    row = worksheet.addRow(['PL', 'Duty Rate(Hr)', data.pkg_concept_duty_rate, 'Duty Rate(Hr)', data.pkg_bu_duty_rate, 'Duty Rate(Hr)', data.pkg_ct_duty_rate, 'Duty Rate(Hr)', data.pkg_nt_duty_rate, 'Duty Rate(Hr)', data.pkg_ot_duty_rate]);
+                    row = worksheet.addRow(['PL', 'Duty Rate(Hr/week)', data.pkg_concept_duty_rate, data.pkg_bu_duty_rate, data.pkg_ct_duty_rate, data.pkg_nt_duty_rate, data.pkg_ot_duty_rate]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
-                    row = worksheet.addRow(['PL', 'Hr', pkg_concept_hr, 'Hr', pkg_bu_hr, 'Hr', pkg_ct_hr, 'Hr', pkg_nt_hr, 'Hr', pkg_ot_hr]);
+                    row = worksheet.addRow(['PL', 'Hr', pkg_concept_hr, pkg_bu_hr, pkg_ct_hr, pkg_nt_hr, pkg_ot_hr]);
                     row.font = { name: 'Calibri' };
                     row.alignment = { horizontal: 'center', vertical: 'middle' };
 
                     worksheet.mergeCells('A20:A22');
                     worksheet.getCell('A20').font = { name: 'Calibri', bold: true };
                     worksheet.getCell('B20').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D20').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F20').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H20').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J20').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D20').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F20').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H20').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J20').font = { name: 'Calibri', bold: true };
 
                     worksheet.getCell('B21').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D21').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F21').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H21').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J21').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D21').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F21').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H21').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J21').font = { name: 'Calibri', bold: true };
 
                     worksheet.getCell('B22').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('D22').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('F22').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('H22').font = { name: 'Calibri', bold: true };
-                    worksheet.getCell('J22').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('D22').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('F22').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('H22').font = { name: 'Calibri', bold: true };
+                    // worksheet.getCell('J22').font = { name: 'Calibri', bold: true };
 
                     // 繪製框線                    
                     worksheet.eachRow({ includeEmpty: true }, (row, rowIndex) => {

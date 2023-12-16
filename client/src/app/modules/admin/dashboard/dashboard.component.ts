@@ -220,7 +220,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // NRE更新次數
         this.chartNreUpdates = {
             title: {
-                text: 'NRE更新次數',
+                text: 'NRE update Times',
                 align: 'left',
                 floating: true,
                 style: {
@@ -264,7 +264,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // 人力工時
         this.chartManHrs = {
             title: {
-                text: '人力工時',
+                text: 'Staff Hour',
                 align: 'left',
                 floating: true,
                 offsetY: -6,
@@ -309,7 +309,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         // 設備費用
         this.chartEquipFee = {
             title: {
-                text: '設備費用',
+                text: 'Test Fee',
                 align: 'left',
                 floating: true,
                 style: {

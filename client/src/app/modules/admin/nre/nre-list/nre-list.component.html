@@ -19,7 +19,8 @@
                 </mat-form-field>
 
                 <!-- Search button -->
-                <button class="w-full sm:w-auto sm:ml-4 mt-4 mr-auto sm:-mt-1 bg-accent" mat-flat-button [color]="'primary'" (click)="onSearch()">
+                <button class="w-full sm:w-auto sm:ml-4 mt-4 mr-auto sm:-mt-1 bg-accent" mat-flat-button
+                    [color]="'primary'" (click)="onSearch()">
                     <mat-icon fontIcon="search"></mat-icon>
                     <span class="ml-2 mr-1">Search</span>
                 </button>
@@ -28,14 +29,16 @@
         </div>
         <div class="flex flex-col ml-auto">
             <!-- Save button-->
-            <button *ngIf="page.data.length>0" class="w-full sm:w-auto sm:ml-10 bg-accent" mat-flat-button [color]="'primary'" (click)="onSave()">
+            <button *ngIf="page.data.length>0" class="w-full sm:w-auto sm:ml-10 bg-accent" mat-flat-button
+                [color]="'primary'" (click)="onSave()">
                 <mat-icon fontIcon="save"></mat-icon>
                 <span class="ml-2 mr-1">Save</span>
             </button>
         </div>
         <div class="flex flex-col">
             <!-- Create button-->
-            <button class="w-full sm:w-auto sm:ml-4 mt-4 sm:mt-0 bg-accent" mat-flat-button color="primary" (click)="onCreate()">
+            <button class="w-full sm:w-auto sm:ml-4 mt-4 sm:mt-0 bg-accent" mat-flat-button color="primary"
+                (click)="onCreate()">
                 <mat-icon fontIcon="add"></mat-icon>
                 <span class="ml-2 mr-1">Create</span>
             </button>
@@ -50,9 +53,10 @@
 
         <!-- Count Column -->
         <ng-container matColumnDef="count">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Not Count </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Ignore Count </th>
             <td mat-cell *matCellDef="let element">
-                <input type="checkbox" class="w-4 h-4 sm:ml-3 sm:mt-2 hover:cursor-pointer accent-slate-600" [(ngModel)]="element.count">
+                <input type="checkbox" class="w-4 h-4 sm:ml-3 sm:mt-2 hover:cursor-pointer accent-slate-600"
+                    [(ngModel)]="element.count">
             </td>
         </ng-container>
 
@@ -60,15 +64,17 @@
         <ng-container matColumnDef="hide">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Hide </th>
             <td mat-cell *matCellDef="let element">
-                <input type="checkbox" class="w-4 h-4 sm:ml-2 sm:mt-2 hover:cursor-pointer accent-slate-600" [(ngModel)]="element.hide">
+                <input type="checkbox" class="w-4 h-4 sm:ml-2 sm:mt-2 hover:cursor-pointer accent-slate-600"
+                    [(ngModel)]="element.hide">
             </td>
         </ng-container>
 
         <!-- Fee & Cost Column -->
         <ng-container matColumnDef="fee_cost">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> 工時/費用 </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> NRE Count </th>
             <td mat-cell *matCellDef="let element">
-                <input type="checkbox" class="w-4 h-4 sm:ml-2 sm:mt-2 hover:cursor-pointer accent-slate-600" [(ngModel)]="element.fee_cost">
+                <input type="checkbox" class="w-4 h-4 sm:ml-2 sm:mt-2 hover:cursor-pointer accent-slate-600"
+                    [(ngModel)]="element.fee_cost">
             </td>
         </ng-container>
 
@@ -82,7 +88,8 @@
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky top-0"> Name </th>
             <td mat-cell *matCellDef="let element">
-                <a class="text-blue-600 hover:text-blue-400 hover:cursor-pointer" (click)="selectProject(element)">{{element.name}} </a>
+                <a class="text-blue-600 hover:text-blue-400 hover:cursor-pointer"
+                    (click)="selectProject(element)">{{element.name}} </a>
             </td>
         </ng-container>
 

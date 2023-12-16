@@ -39,7 +39,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
             {
                 id: 'default-items',
                 icon: '',
-                title: '人力設備工時',
+                title: 'Staff & Lab Hour',
                 description: ''
             },
             {
@@ -48,7 +48,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
             },           
             {
                 id: 'account',
-                title: '帳號管理',
+                title: 'Acount Management',
             }
         ];
 
