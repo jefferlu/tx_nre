@@ -29,7 +29,7 @@
                         <mat-icon class="ml-1.5 hover:cursor-pointer" fontSet="material-icons-outlined"
                             [matMenuTriggerFor]="conversionMenu">arrow_drop_down</mat-icon>
                         <mat-menu #conversionMenu="matMenu">
-                            <button mat-menu-item *ngFor="let ver of page.dataset.versions"
+                            <button mat-menu-item *ngFor="let ver of page.dataset.versions;trackBy: trackByFn"
                                 (click)="search(ver.version)">{{ver.version}}</button>
                         </mat-menu>
                     </ng-container>
@@ -119,10 +119,10 @@
                             </thead>
                             <tbody>
                                 <ng-container
-                                    *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate (Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index">
+                                    *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate (Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index;trackBy: trackByFn">
                                     <tr>
                                         <td *ngIf="idx==0" class="text-center font-semibold" rowspan="3">PL</td>
-                                        <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index">
+                                        <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index;trackBy: trackByFn">
                                             <td *ngIf="idx_1==0" class="text-center font-semibold">{{n.v}}</td>
                                             <td *ngIf="n.k!=='_hr'" class="edit"><input input type="number"
                                                     (change)="change()" numeric-two-digit
@@ -145,7 +145,7 @@
                         <table class="table-auto w-full result-table mb-6">
                             <thead>
                                 <tr>
-                                    <th class="w-20">S&V</th>
+                                    <th class="w-20">SV</th>
                                     <th class="w-20"></th>
                                     <th>Concept</th>
                                     <th>BU</th>
@@ -156,10 +156,10 @@
                             </thead>
                             <tbody>
                                 <ng-container
-                                    *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index">
+                                    *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index;trackBy: trackByFn">
                                     <tr>
                                         <td *ngIf="idx==0" class="text-center font-semibold" rowspan="3">PL</td>
-                                        <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index">
+                                        <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index;trackBy: trackByFn">
                                             <td *ngIf="idx_1==0" class="text-center font-semibold">{{n.v}}</td>
                                             <td *ngIf="n.k!=='_hr'" class="edit"><input input type="number"
                                                     (change)="change()" numeric-two-digit
@@ -192,10 +192,10 @@
                             </thead>
                             <tbody>
                                 <ng-container
-                                    *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index">
+                                    *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index;trackBy: trackByFn">
                                     <tr>
                                         <td *ngIf="idx==0" class="text-center font-semibold" rowspan="3">PL</td>
-                                        <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index">
+                                        <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index;trackBy: trackByFn">
                                             <td *ngIf="idx_1==0" class="text-center font-semibold">{{n.v}}</td>
                                             <td *ngIf="n.k!=='_hr'" class="edit"><input input type="number"
                                                     (change)="change()" numeric-two-digit
@@ -298,8 +298,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <ng-container *ngFor="let func of page.data?.functions">
-                                <ng-container *ngFor="let item of func.test_items;let idx=index">
+                            <ng-container *ngFor="let func of page.data?.functions;trackBy: trackByFn">
+                                <ng-container *ngFor="let item of func.test_items;let idx=index;trackBy: trackByFn">
                                     <tr>
                                         <!-- <tr class="hover:bg-gray-200"> -->
                                         <td *ngIf="idx == 0" class="text-center px-2"
@@ -312,7 +312,7 @@
                                         <!-- <td class="edit" [ngClass]="statusNeedTest(item)"><input type="checkbox" class="hover:cursor-pointer"
                                                 [(ngModel)]="item.record.all_need_test" (change)="checkAllNeedTest(item)"></td> -->
 
-                                        <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot']">
+                                        <ng-container *ngFor="let n of ['concept','bu','ct','nt','ot'];trackBy: trackByFn">
                                             <td class="edit" [ngClass]="{'need-test':item.record[n + '_need_test']}">
                                                 <input type="checkbox" class="hover:cursor-pointer"
                                                     [(ngModel)]="item.record[n + '_need_test']" (change)="change(item)">
@@ -378,8 +378,8 @@
 
                         <tbody *ngIf="page.data">
 
-                            <ng-container *ngFor="let func of page.data?.functions">
-                                <ng-container *ngFor="let item of func.test_items;let idx=index">
+                            <ng-container *ngFor="let func of page.data?.functions;trackBy: trackByFn">
+                                <ng-container *ngFor="let item of func.test_items;let idx=index;trackBy: trackByFn">
                                     <tr>
                                         <td *ngIf="idx == 0" class="text-center px-2"
                                             [rowSpan]="func.test_items?.length">{{func.name}}</td>
@@ -389,7 +389,7 @@
                                             {{item.current_fee}}</td>
                                         <td class="view">{{item.concept_equip_hrs | number:'1.0-2'}}</td>
                                         <td class="view">
-                                            <ng-container *ngFor="let chamber of item.concept_chambers; let idx=index">
+                                            <ng-container *ngFor="let chamber of item.concept_chambers; let idx=index;trackBy: trackByFn">
                                                 <span [matTooltip]="idx==0?'Ratio: ' + item.concept_capacity+'W':''"
                                                     class="inline-flex items-center font-bold text-sm px-1.5 rounded-full tracking-wide"
                                                     [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50':true,
@@ -402,7 +402,7 @@
                                         </td>
                                         <td class="view">{{item.bu_equip_hrs | number:'1.0-2'}}</td>
                                         <td class="view">
-                                            <ng-container *ngFor="let chamber of item.bu_chambers;let idx=index">
+                                            <ng-container *ngFor="let chamber of item.bu_chambers;let idx=index;trackBy: trackByFn">
                                                 <span [matTooltip]="idx==0?'Ratio: ' + item.bu_capacity+'W':''"
                                                     class="inline-flex items-center font-bold text-sm px-1.5 rounded-full tracking-wide"
                                                     [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50':true,
@@ -415,7 +415,7 @@
                                         </td>
                                         <td class="view">{{item.ct_equip_hrs | number:'1.0-2'}}</td>
                                         <td class="view">
-                                            <ng-container *ngFor="let chamber of item.ct_chambers;let idx=index">
+                                            <ng-container *ngFor="let chamber of item.ct_chambers;let idx=index;trackBy: trackByFn">
                                                 <span [matTooltip]="idx==0?'Ratio: ' + item.ct_capacity+'W':''"
                                                     class="inline-flex items-center font-bold text-sm px-1.5 rounded-full tracking-wide"
                                                     [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50':true,
@@ -428,7 +428,7 @@
                                         </td>
                                         <td class="view">{{item.nt_equip_hrs | number:'1.0-2'}}</td>
                                         <td class="view">
-                                            <ng-container *ngFor="let chamber of item.nt_chambers;let idx=index">
+                                            <ng-container *ngFor="let chamber of item.nt_chambers;let idx=index;trackBy: trackByFn">
                                                 <span [matTooltip]="idx==0?'Ratio: ' + item.nt_capacity+'W':''"
                                                     class="inline-flex items-center font-bold text-sm px-1.5 rounded-full tracking-wide"
                                                     [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50':true,
@@ -441,7 +441,7 @@
                                         </td>
                                         <td class="view">{{item.ot_equip_hrs | number:'1.0-2'}}</td>
                                         <td class="view">
-                                            <ng-container *ngFor="let chamber of item.ot_chambers;let idx=index">
+                                            <ng-container *ngFor="let chamber of item.ot_chambers;let idx=index;trackBy: trackByFn">
                                                 <span [matTooltip]="idx==0?'Ratio: ' + item.ot_capacity+'W':''"
                                                     class="inline-flex items-center font-bold text-sm px-1.5 rounded-full tracking-wide"
                                                     [ngClass]="{'bg-blue-200 text-blue-800 dark:bg-blue-600 dark:text-blue-50':true,
@@ -480,7 +480,7 @@
                                 </tr>
                             </thead>
                             <tbody *ngIf="page.data">
-                                <ng-container *ngFor="let func of page.data?.functions">
+                                <ng-container *ngFor="let func of page.data?.functions;trackBy: trackByFn">
                                     <tr>
                                         <td class="text-center font-semibold">{{func.name}}</td>
                                         <ng-container *ngIf="func.name==='Reliability'">
@@ -556,10 +556,10 @@
                                 </thead>
                                 <tbody>
                                     <ng-container
-                                        *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index">
+                                        *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index;trackBy: trackByFn">
                                         <tr>
                                             <td *ngIf="idx==0" class="text-center font-semibold" rowspan="3">PL</td>
-                                            <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index">
+                                            <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index;trackBy: trackByFn">
                                                 <td *ngIf="idx_1==0" class="text-center font-semibold">{{n.v}}</td>
                                                 <td *ngIf="n.k!=='_hr'" class="view">{{page.project['rel_'+ m + n.k]}}
                                                 </td>
@@ -578,7 +578,7 @@
                             <table class="table-auto w-full result-table mb-6">
                                 <thead>
                                     <tr>
-                                        <th class="w-40">S&V</th>
+                                        <th class="w-40">SV</th>
                                         <th class="w-60"></th>
                                         <th>Concept</th>
                                         <th>BU</th>
@@ -589,10 +589,10 @@
                                 </thead>
                                 <tbody>
                                     <ng-container
-                                        *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index">
+                                        *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index;trackBy: trackByFn">
                                         <tr>
                                             <td *ngIf="idx==0" class="text-center font-semibold" rowspan="3">PL</td>
-                                            <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index">
+                                            <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index;trackBy: trackByFn">
                                                 <td *ngIf="idx_1==0" class="text-center font-semibold">{{n.v}}</td>
                                                 <td *ngIf="n.k!=='_hr'" class="view">{{page.project['sv_'+ m + n.k]}}
                                                 </td>
@@ -623,10 +623,10 @@
                                 </thead>
                                 <tbody>
                                     <ng-container
-                                        *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index">
+                                        *ngFor="let n of [{k:'_duration',v:'Duration(Working Day)'},{k:'_duty_rate',v:'Duty Rate(Hr/week)'},{k:'_hr',v:'Hr'}];let idx=index;trackBy: trackByFn">
                                         <tr>
                                             <td *ngIf="idx==0" class="text-center font-semibold" rowspan="3">PL</td>
-                                            <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index">
+                                            <ng-container *ngFor="let m of ['concept','bu','ct','nt','ot'];let idx_1=index;trackBy: trackByFn">
                                                 <td *ngIf="idx_1==0" class="text-center font-semibold">{{n.v}}</td>
                                                 <td *ngIf="n.k!=='_hr'" class="view">{{page.project['pkg_'+ m + n.k]}}
                                                 </td>
