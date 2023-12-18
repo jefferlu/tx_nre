@@ -517,7 +517,7 @@
                                                 {{func.ot_man_hrs_sum==null?null:func.ot_man_hrs_sum+(page.project.sv_ot_duration/5*page.project.sv_ot_duty_rate)
                                                 | number:'1.0-2'}}</td>
                                         </ng-container>
-                                        <ng-container *ngIf="func.name==='Others'">
+                                        <ng-container *ngIf="func.name==='PKG'">
                                             <td class="view">
                                                 {{func.concept_man_hrs_sum==null?null:func.concept_man_hrs_sum+(page.project.pkg_concept_duration/5*page.project.pkg_concept_duty_rate)
                                                 | number:'1.0-2'}}</td>
