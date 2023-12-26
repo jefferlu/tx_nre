@@ -361,7 +361,7 @@ export class NreDetailComponent implements OnInit {
 
                             // 選擇Chamber
                             item[n + '_chambers'] = [];
-                            if (func.name === 'Reliability') {  //S&V以及Other完全都不會用到chamber
+                            if (func.name === 'Reliability') {  //S&V以及PKG完全都不會用到chamber
                                 item[n + '_capacity'] *= 0.8;
                                 item[n + '_chambers'] = this.selectChambers(item[n + '_capacity'], item.record.walk_in);
                             }
@@ -774,7 +774,7 @@ export class NreDetailComponent implements OnInit {
                 record.push(func.nt_man_hrs_sum ? func.nt_man_hrs_sum + (this.page.project.sv_nt_duration / 5 * this.page.project.sv_nt_duty_rate) : null);
                 record.push(func.ot_man_hrs_sum ? func.ot_man_hrs_sum + (this.page.project.sv_ot_duration / 5 * this.page.project.sv_ot_duty_rate) : null);
             }
-            if (func.name === 'Others') {
+            if (func.name === 'PKG') {
                 record.push(func.concept_man_hrs_sum ? func.concept_man_hrs_sum + (this.page.project.pkg_concept_duration / 5 * this.page.project.pkg_concept_duty_rate) : null);
                 record.push(func.bu_man_hrs_sum ? func.bu_man_hrs_sum + (this.page.project.pkg_bu_duration / 5 * this.page.project.pkg_bu_duty_rate) : null);
                 record.push(func.ct_man_hrs_sum ? func.ct_man_hrs_sum + (this.page.project.pkg_ct_duration / 5 * this.page.project.pkg_ct_duty_rate) : null);
