@@ -83,8 +83,8 @@ class ChamberViewSet(AutoPrefetchViewSetMixin, mixins.ListModelMixin, viewsets.G
 
 
 class ItemViewSet(AutoPrefetchViewSetMixin, viewsets.ModelViewSet):
-    # if (not settings.DEBUG):
-    #     permission_classes = (IsAuthenticated, )
+    if (not settings.DEBUG):
+        permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ItemSerializer
     # list_serializer_class = serializers.ItemListSerializer
     queryset = models.Item.objects.all().order_by('id')
