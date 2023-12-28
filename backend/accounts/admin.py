@@ -11,13 +11,15 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = models.User
-    list_display = ('username', 'first_name', 'email', 'is_staff', 'is_active', 'is_superuser',  'last_login', 'date_joined', )
+    list_display = ('email', 'username', 'first_name',  'is_staff',
+                    'is_active', 'is_superuser',  'last_login', 'date_joined', )
     list_filter = ('username', 'email', 'is_staff', 'is_active',)
 
     # 定義在編輯使用者時顯示的字段
     fieldsets = (
         # *UserAdmin.fieldsets,
-        (None, {'fields': ('username', 'password', 'is_staff', 'is_active', 'is_superuser',)}),
+        (None, {'fields': ('username', 'password',
+         'is_staff', 'is_active', 'is_superuser',)}),
         # (_('Personal info'), {'fields': ('first_name', 'email',)}),
         # (_('Permissions'), {
         #  'fields': ('is_staff', 'is_active', 'is_superuser',)}),
