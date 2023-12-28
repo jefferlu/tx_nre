@@ -11,7 +11,7 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = models.User
-    list_display = ('email', 'username', 'first_name',  'is_staff',
+    list_display = ('email', 'username', 'first_name', 'is_staff',
                     'is_active', 'is_superuser',  'last_login', 'date_joined', )
     list_filter = ('username', 'email', 'is_staff', 'is_active',)
 
