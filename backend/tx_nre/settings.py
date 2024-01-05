@@ -121,13 +121,23 @@ WSGI_APPLICATION = 'tx_nre.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'nre_dev',
+#         'USER': 'giantcld',
+#         'PASSWORD': '90637925',
+#         'HOST': 'giantcld.com',
+#         'PORT': '5432',
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nre_dev',
-        'USER': 'giantcld',
-        'PASSWORD': '90637925',
-        'HOST': 'giantcld.com',
+        'NAME': 'nre',
+        'USER': 'nre',
+        'PASSWORD': '21222725',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
