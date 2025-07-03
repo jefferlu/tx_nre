@@ -12,6 +12,7 @@ django-filter = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
 django-auto-prefetching = "*"
+channels = {extras = ["daphne"], version = "*"}
 
 [dev-packages]
 

@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 
 from pathlib import Path
 from datetime import timedelta
@@ -24,7 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-p2&&v8!^!yzvc&!!awv@xjrclfzrh5e50o=x5a5g_+i1!exld6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -33,6 +36,15 @@ AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/admin/login/'
+
+# 設定 PostgreSQL 主機和端口
+POSTGRES = {
+    'HOST': os.getenv('HOST', 'localhost'),
+    'PORT': os.getenv('PORT', 5432),
+    'USER': os.getenv('POSTGRESQL_USERNAME', 'nre'),
+    'PASSWORD': os.getenv('POSTGRESQL_PASSWORD', 'qbZucM8vvGwpfTd'),
+    'NAME': os.getenv('POSTGRESQL_DATABASE', 'nre'),
+}
 
 # Application definition
 
@@ -61,6 +73,7 @@ REST_FRAMEWORK = {
 }
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -109,6 +122,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'tx_nre.wsgi.application'
+ASGI_APPLICATION = 'tx_nre.asgi.application'
 
 
 # Database
@@ -131,14 +145,26 @@ WSGI_APPLICATION = 'tx_nre.wsgi.application'
 #         'PORT': '5432',
 #     }
 # }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'nre',
+#         'USER': 'nre',
+#         'PASSWORD': '21222725',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nre',
-        'USER': 'nre',
-        'PASSWORD': '21222725',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME':  POSTGRES['NAME'],
+        'USER':  POSTGRES['USER'],
+        'PASSWORD': POSTGRES['PASSWORD'],
+        'HOST': POSTGRES['HOST'],
+        'PORT':  POSTGRES['PORT'],
     }
 }
 

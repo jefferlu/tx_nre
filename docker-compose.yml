@@ -1,0 +1,64 @@
+services:
+    client:
+        build: client
+        container_name: nre_client
+        restart: always
+        networks:
+            - internal_network
+        environment:
+            - NODE_ENV=production
+            - TZ=Asia/Taipei
+        volumes:
+            - static_data:/app/static-root
+        ports:
+            - "80:80"
+
+    backend:
+        build: backend
+        container_name: nre_backend
+        restart: always
+        entrypoint: ./entrypoint.sh
+        networks:
+            - internal_network
+        environment:
+            - DEBUG=FALSE
+            - CSRF_TRUSTED_ORIGINS=https://bmms.gtsoftec.com
+            - POSTGRESQL_USERNAME=nre
+            - POSTGRESQL_PASSWORD=qbZucM8vvGwpfTd
+            - POSTGRESQL_DATABASE=nre
+            - HOST=postgres
+            - PORT=5432
+            - TZ=Asia/Taipei
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - static_data:/app/static-root
+        depends_on:
+            - postgres
+        ports:
+            - "8000:80"
+
+    postgres:
+        image: bitnami/postgresql:latest
+        container_name: nre_postgres
+        restart: always
+        networks:
+            - internal_network
+        environment:
+            - POSTGRESQL_USERNAME=nre
+            - POSTGRESQL_PASSWORD=qbZucM8vvGwpfTd
+            - POSTGRESQL_DATABASE=nre
+            - TZ=Asia/Taipei
+        volumes:
+            - postgresql_data:/bitnami/postgresql
+            - ./db:/docker-entrypoint-initdb.d
+            - ./backend/media-root/backups:/backups
+        ports:
+            - 5432:5432
+
+volumes:
+    static_data:
+    postgresql_data:
+
+networks:
+    internal_network:
+        driver: bridge
