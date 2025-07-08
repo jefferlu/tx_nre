@@ -39,7 +39,7 @@ LOGOUT_REDIRECT_URL = '/admin/login/'
 
 # 設定 PostgreSQL 主機和端口
 POSTGRES = {
-    'HOST': os.getenv('HOST', 'localhost'),
+    'HOST': os.getenv('HOST', 'giantcld.com'),
     'PORT': os.getenv('PORT', 5432),
     'USER': os.getenv('POSTGRESQL_USERNAME', 'nre'),
     'PASSWORD': os.getenv('POSTGRESQL_PASSWORD', 'qbZucM8vvGwpfTd'),
@@ -54,7 +54,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     # 'ACCESS_TOKEN_LIFETIME': timedelta(seconds=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
+    'ROTATE_REFRESH_TOKENS': False,
 }
 
 REST_FRAMEWORK = {

@@ -1,0 +1,31 @@
+
+1.  檢查 Gunicorn 日誌
+    sudo journalctl -u tx_nre.service -n 100 --no-pager
+    
+2.  驗證 Gunicorn 和 Nginx 連線
+    sudo systemctl status tx_nre.service
+    sudo systemctl status tx_nre.socket
+    sudo nginx -t
+    sudo systemctl restart nginx
+
+3.  測試 Django 應用
+    sudo systemctl stop tx_nre.service
+    /home/giantcld/workspace/tx_nre/backend/.venv/bin/python manage.py runserver 0.0.0.0:8000
+
+4.  檢查 PostgreSQL 服務狀態
+    sudo systemctl status postgresql
+    sudo systemctl start postgresql
+
+    //檢查 postgresql.conf 的連線設置
+    sudo vi /etc/postgresql/9.5/main/postgresql.conf
+    ```
+    listen_addresses = 'localhost'  # 或 '10.109.43.25', '*' 表示所有地址
+    port = 5432
+    max_connections = 100
+    ```
+
+    // 檢查 pg_hba.conf
+    sudo nano /etc/postgresql/12/main/pg_hba.confa
+    host    all             all              0.0.0.0/0                       md5
+
+    sudo systemctl restart postgresql
