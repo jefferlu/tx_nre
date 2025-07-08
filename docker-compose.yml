@@ -11,7 +11,7 @@ services:
         volumes:
             - static_data:/app/static-root
         ports:
-            - "80:80"
+            - "4002:80"
 
     backend:
         build: backend
@@ -34,8 +34,8 @@ services:
             - static_data:/app/static-root
         depends_on:
             - postgres
-        ports:
-            - "8000:80"
+        # ports:
+        #     - "8000:80"
 
     postgres:
         image: bitnami/postgresql:latest
@@ -52,8 +52,8 @@ services:
             - postgresql_data:/bitnami/postgresql
             - ./db:/docker-entrypoint-initdb.d
             - ./backend/media-root/backups:/backups
-        ports:
-            - 5432:5432
+        # ports:
+        #     - 5432:5432
 
 volumes:
     static_data:
