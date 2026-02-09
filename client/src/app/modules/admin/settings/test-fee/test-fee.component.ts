@@ -41,12 +41,13 @@ export class TestFeeComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
+        console.log('check')
         // Get the customers
         this._settingService.customers$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((res: any) => {
                 if (res && res.length > 0) {
+                    console.log(res)
                     this.page.customers = res;
                     // this.form.get('customer').setValue(res[0].id)
                     this.page.customer = res[0].id
