@@ -258,8 +258,8 @@ def manageData(request_data, user, is_restore=False):
     pkg_nt_duty_rate = data.get('pkg_nt_duty_rate')
     pkg_ot_duty_rate = data.get('pkg_ot_duty_rate')
 
-    # 檢查新增時是否已存在
-    if (id is None):
+    # 檢查新增時是否已存在（還原時跳過此檢查）
+    if (id is None and not is_restore):
         qs = models.Project.objects.filter(name=name, customer=customer, version=version)
         if (len(qs) > 0):
             return HttpResponse(status=409, content="資料已存在")
