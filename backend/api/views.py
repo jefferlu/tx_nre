@@ -274,20 +274,30 @@ def manageData(request_data, user, is_restore=False):
         'pkg_concept_duration': pkg_concept_duration, 'pkg_bu_duration': pkg_bu_duration, 'pkg_ct_duration': pkg_ct_duration, 'pkg_nt_duration': pkg_nt_duration, 'pkg_ot_duration': pkg_ot_duration,
         'pkg_concept_duty_rate': pkg_concept_duty_rate, 'pkg_bu_duty_rate': pkg_bu_duty_rate, 'pkg_ct_duty_rate': pkg_ct_duty_rate, 'pkg_nt_duty_rate': pkg_nt_duty_rate, 'pkg_ot_duty_rate': pkg_ot_duty_rate, })
 
-    for record_data in records_data:
-        record_id = record_data.pop('id', None)
-
-        if created:
+    # 還原時：清除現有 records 後重建
+    if is_restore:
+        models.Record.objects.filter(project=project).delete()
+        for record_data in records_data:
+            record_data.pop('id', None)
+            record_data.pop('project', None)
             serializer = serializers.RecordSerializer(data=record_data)
-        else:
-            if record_id:
-                instance = models.Record.objects.get(id=record_id)
-                serializer = serializers.RecordSerializer(instance, data=record_data, partial=True)
-            else:
-                serializer = serializers.RecordSerializer(data=record_data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(project=project)
+    else:
+        for record_data in records_data:
+            record_id = record_data.pop('id', None)
 
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(project=project)  # 綁定project
+            if created:
+                serializer = serializers.RecordSerializer(data=record_data)
+            else:
+                if record_id:
+                    instance = models.Record.objects.get(id=record_id)
+                    serializer = serializers.RecordSerializer(instance, data=record_data, partial=True)
+                else:
+                    serializer = serializers.RecordSerializer(data=record_data)
+
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(project=project)  # 綁定project
 
     # 記錄修改資料
     if (not is_restore):
