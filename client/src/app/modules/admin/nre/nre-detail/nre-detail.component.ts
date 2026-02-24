@@ -351,7 +351,7 @@ export class NreDetailComponent implements OnInit {
                     // 選擇fee
                     if (item.fee) {
                         let chamber = item.record.walk_in ? 'WALKIN' : '2K';
-                        let current_fee = item.fee.find((e: any) => e.chamber == chamber)
+                        let current_fee = item.fee.find((e: any) => e.chamber.toUpperCase() === chamber)
                         item.current_fee = current_fee ? current_fee.amount : 'no fee';
                     }
 
