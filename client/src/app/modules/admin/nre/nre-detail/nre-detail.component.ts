@@ -116,7 +116,8 @@ export class NreDetailComponent implements OnInit {
             .subscribe((res: any) => {
                 if (res && res.length > 0) {
                     this.page.dataset.customers = res;
-                    this.form.get('customer').setValue(res[0].name);
+                    const customer = res.find((c: any) => c.id === this.page.project.customer);
+                    this.form.get('customer').setValue(customer ? customer.name : res[0].name);
                 }
             });
 
