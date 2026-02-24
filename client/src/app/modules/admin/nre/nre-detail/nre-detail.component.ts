@@ -351,7 +351,7 @@ export class NreDetailComponent implements OnInit {
                     // 選擇fee
                     if (item.fee) {
                         let chamber = item.record.walk_in ? 'WALKIN' : '2K';
-                        let current_fee = item.fee.find((e: any) => e.chamber == chamber)
+                        let current_fee = item.fee.find((e: any) => e.chamber.toUpperCase() === chamber)
                         item.current_fee = current_fee ? current_fee.amount : 'no fee';
                     }
 
@@ -600,6 +600,8 @@ export class NreDetailComponent implements OnInit {
         //     { name: 'Walk-in', capacity: 6000, 'amount': 2 }
         // ];
         const chambers = this.page.dataset.chambers;
+        if (!chambers || chambers.length === 0) return [];
+
         chambers.sort((a, b) => b.capacity - a.capacity); // 按照容量從大到小排序
 
         let sortedChambers = JSON.parse(JSON.stringify(chambers));
@@ -613,6 +615,8 @@ export class NreDetailComponent implements OnInit {
             // 限制只使用walk-in
             if (walk_in) {
                 let chamber = chambers.find(e => e.name.toUpperCase() === 'WALK-IN');
+                if (!chamber) return [];
+
                 let count = Math.floor(remainingRate / chamber.capacity);
 
                 remainingRate -= (count * chamber.capacity);
@@ -625,6 +629,8 @@ export class NreDetailComponent implements OnInit {
             // 改成只使用2K
             else {
                 let chamber = chambers.find(e => e.name.toUpperCase() === '2K');
+                if (!chamber) return [];
+
                 let count = Math.floor(remainingRate / chamber.capacity);
 
                 remainingRate -= (count * chamber.capacity);
