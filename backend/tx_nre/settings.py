@@ -46,9 +46,11 @@ POSTGRES = {
     'NAME': os.getenv('POSTGRESQL_DATABASE', 'nre'),
 }
 
-# Application definition
-
+# CORS definition
 CORS_ALLOW_ALL_ORIGINS = True
+
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [] if DEBUG else os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
